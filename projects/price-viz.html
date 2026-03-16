@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Price Visualization · Mengnan</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    .dataset-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .tab-btn {
+      font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em;
+      padding: 0.4em 1em; border: 1px solid var(--border); border-radius: 6px;
+      background: transparent; color: var(--text-dim); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,0.1); }
+    .tab-btn:hover:not(.active) { border-color: var(--text-dim); color: var(--text); }
+
+    .chart-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 700px) { .chart-wrap { grid-template-columns: 1fr; } }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+    }
+    .stat-card .stat-label {
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem;
+    }
+    .stat-card .stat-val {
+      font-size: 1.5rem; font-weight: 700; color: var(--text);
+    }
+    .stat-card .stat-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem; }
+
+    .bar-chart-v { height: 240px; display: flex; align-items: flex-end; gap: 6px; }
+    .bv-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .bv-fill {
+      width: 100%; border-radius: 4px 4px 0 0;
+      position: relative; cursor: pointer; transition: filter 0.2s;
+    }
+    .bv-fill:hover { filter: brightness(1.3); }
+    .bv-fill .bv-val {
+      position: absolute; top: -1.4rem; left: 50%; transform: translateX(-50%);
+      font-family: var(--mono); font-size: 0.6rem; white-space: nowrap; color: var(--text);
+    }
+    .bv-label { font-family: var(--mono); font-size: 0.6rem; color: var(--text-dim); text-align: center; }
+
+    /* Scatter plot */
+    .scatter-wrap { position: relative; }
+    #scatter-canvas { border-radius: 8px; background: var(--bg3); display: block; width: 100%; }
+
+    /* Line chart */
+    #line-canvas { border-radius: 8px; background: var(--bg3); display: block; width: 100%; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a href="../index.html" class="nav-logo">MC</a>
+      <ul class="nav-links">
+        <li><a href="../index.html#projects">Projects</a></li>
+        <li><a href="../index.html#about">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-hero">
+      <a href="../index.html" class="back-link">← Back</a>
+      <h1>Price<br><span style="color:var(--text-dim);font-weight:400">Visualization</span></h1>
+      <p>Explore price trends across different categories. Switch datasets to compare markets.</p>
+    </div>
+
+    <div class="page-content">
+      <div class="dataset-tabs">
+        <button class="tab-btn active" onclick="loadDataset('food')">Food &amp; Groceries</button>
+        <button class="tab-btn" onclick="loadDataset('tech')">Consumer Tech</button>
+        <button class="tab-btn" onclick="loadDataset('energy')">Energy</button>
+      </div>
+
+      <div class="stat-grid" id="stat-grid"></div>
+
+      <div class="chart-wrap">
+        <div class="chart-container">
+          <div class="chart-title">Bar Comparison</div>
+          <div class="bar-chart-v" id="bar-chart"></div>
+        </div>
+        <div class="chart-container">
+          <div class="chart-title">Trend Over Time</div>
+          <canvas id="line-canvas" height="240"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-container" style="margin-top:0">
+        <div class="chart-title">Price vs Volume (Scatter)</div>
+        <canvas id="scatter-canvas" height="200"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2024 Mengnan Cui · Illustrative data for visualization purposes</p>
+    </div>
+  </footer>
+
+  <script>
+  const datasets = {
+    food: {
+      items: ["Bread","Eggs","Milk","Rice","Tomato","Chicken","Butter","Coffee"],
+      prices: [2.4, 3.8, 1.9, 1.2, 2.1, 7.5, 4.2, 12.0],
+      volumes: [420, 680, 390, 820, 510, 340, 210, 180],
+      unit: "$/unit",
+      trend: {
+        labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+        series: [
+          { name:"Bread",  color:"#6c63ff", data:[2.1,2.2,2.3,2.3,2.4,2.4] },
+          { name:"Chicken",color:"#ff6584", data:[6.8,7.0,7.2,7.3,7.5,7.5] },
+          { name:"Coffee", color:"#43e97b", data:[11.0,11.4,11.8,11.9,12.0,12.0] },
+        ]
+      }
+    },
+    tech: {
+      items: ["Phone","Laptop","Tablet","Headphones","Monitor","Keyboard","Mouse","SSD"],
+      prices: [799,1199,499,249,349,129,59,89],
+      volumes: [120,80,55,200,65,180,240,150],
+      unit: "$/unit",
+      trend: {
+        labels: ["2019","2020","2021","2022","2023","2024"],
+        series: [
+          { name:"Phone",  color:"#6c63ff", data:[749,769,779,799,799,799] },
+          { name:"Laptop", color:"#ff6584", data:[999,1049,1099,1149,1199,1199] },
+          { name:"SSD",    color:"#43e97b", data:[120,105,98,93,89,89] },
+        ]
+      }
+    },
+    energy: {
+      items: ["Natural Gas","Coal","Solar","Wind","Nuclear","Hydro","Oil","Geothermal"],
+      prices: [3.2,1.1,4.5,5.0,9.8,2.3,6.7,8.1],
+      volumes: [850,1200,320,280,140,650,980,90],
+      unit: "¢/kWh",
+      trend: {
+        labels: ["2019","2020","2021","2022","2023","2024"],
+        series: [
+          { name:"Solar",color:"#f7971e", data:[6.0,5.5,5.0,4.7,4.5,4.5] },
+          { name:"Wind", color:"#43e97b", data:[6.0,5.6,5.3,5.1,5.0,5.0] },
+          { name:"Gas",  color:"#6c63ff", data:[2.8,2.9,3.0,3.1,3.2,3.2] },
+        ]
+      }
+    }
+  };
+
+  const GRAD_COLORS = ['#6c63ff','#ff6584','#43e97b','#f7971e','#00b4d8','#e040fb','#ff9f43','#1dd1a1'];
+
+  function lerp(a,b,t){ return a+(b-a)*t; }
+
+  function renderStats(ds) {
+    const prices = ds.prices;
+    const avg = prices.reduce((a,b)=>a+b,0)/prices.length;
+    const mn = Math.min(...prices), mx = Math.max(...prices);
+    const grid = document.getElementById('stat-grid');
+    grid.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Average Price</div>
+        <div class="stat-val">${avg.toFixed(2)}</div>
+        <div class="stat-sub">${ds.unit}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Min Price</div>
+        <div class="stat-val">${mn}</div>
+        <div class="stat-sub">${ds.items[prices.indexOf(mn)]}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Max Price</div>
+        <div class="stat-val">${mx}</div>
+        <div class="stat-sub">${ds.items[prices.indexOf(mx)]}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Items</div>
+        <div class="stat-val">${prices.length}</div>
+        <div class="stat-sub">categories</div>
+      </div>
+    `;
+  }
+
+  function renderBar(ds) {
+    const container = document.getElementById('bar-chart');
+    container.innerHTML = '';
+    const mx = Math.max(...ds.prices);
+    ds.items.forEach((item, i) => {
+      const pct = (ds.prices[i] / mx) * 100;
+      const color = GRAD_COLORS[i % GRAD_COLORS.length];
+      const div = document.createElement('div');
+      div.className = 'bv-item';
+      div.innerHTML = `
+        <div class="bv-fill" style="height:${pct}%; background:${color};">
+          <span class="bv-val">${ds.prices[i]}</span>
+        </div>
+        <span class="bv-label">${item}</span>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function renderLine(ds) {
+    const canvas = document.getElementById('line-canvas');
+    const W = canvas.offsetWidth || 400;
+    const H = 240;
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#111118';
+    ctx.fillRect(0, 0, W, H);
+
+    const pad = { top: 30, right: 20, bottom: 40, left: 50 };
+    const innerW = W - pad.left - pad.right;
+    const innerH = H - pad.top - pad.bottom;
+    const { labels, series } = ds.trend;
+
+    // Compute range
+    const allVals = series.flatMap(s => s.data);
+    const mn = Math.min(...allVals) * 0.9;
+    const mx = Math.max(...allVals) * 1.05;
+
+    const xPos = (i) => pad.left + (i / (labels.length - 1)) * innerW;
+    const yPos = (v) => pad.top + innerH - ((v - mn) / (mx - mn)) * innerH;
+
+    // Grid lines
+    ctx.strokeStyle = '#2a2a3a';
+    ctx.lineWidth = 1;
+    for (let t = 0; t <= 4; t++) {
+      const y = pad.top + (t / 4) * innerH;
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+      const val = mx - (t / 4) * (mx - mn);
+      ctx.fillStyle = '#8888aa';
+      ctx.font = '9px Space Mono, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(val.toFixed(1), pad.left - 6, y + 3);
+    }
+
+    // X labels
+    labels.forEach((lbl, i) => {
+      ctx.fillStyle = '#8888aa';
+      ctx.font = '9px Space Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(lbl, xPos(i), H - 10);
+    });
+
+    // Series
+    series.forEach(s => {
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      s.data.forEach((v, i) => {
+        i === 0 ? ctx.moveTo(xPos(i), yPos(v)) : ctx.lineTo(xPos(i), yPos(v));
+      });
+      ctx.stroke();
+
+      // Dots
+      s.data.forEach((v, i) => {
+        ctx.beginPath();
+        ctx.arc(xPos(i), yPos(v), 3, 0, Math.PI*2);
+        ctx.fillStyle = s.color;
+        ctx.fill();
+      });
+
+      // Legend
+      const li = series.indexOf(s);
+      ctx.fillStyle = s.color;
+      ctx.fillRect(pad.left + li * 80, 10, 10, 10);
+      ctx.fillStyle = '#e8e8f0';
+      ctx.font = '9px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(s.name, pad.left + li * 80 + 14, 19);
+    });
+  }
+
+  function renderScatter(ds) {
+    const canvas = document.getElementById('scatter-canvas');
+    const W = canvas.offsetWidth || 800;
+    const H = 200;
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#111118';
+    ctx.fillRect(0, 0, W, H);
+
+    const pad = { top: 20, right: 20, bottom: 40, left: 50 };
+    const innerW = W - pad.left - pad.right;
+    const innerH = H - pad.top - pad.bottom;
+
+    const mxP = Math.max(...ds.prices) * 1.1;
+    const mxV = Math.max(...ds.volumes) * 1.1;
+    const xPos = (v) => pad.left + (v / mxP) * innerW;
+    const yPos = (v) => pad.top + innerH - (v / mxV) * innerH;
+
+    // Axes
+    ctx.strokeStyle = '#2a2a3a'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, H - pad.bottom);
+    ctx.lineTo(W - pad.right, H - pad.bottom);
+    ctx.stroke();
+
+    ctx.fillStyle = '#8888aa';
+    ctx.font = '9px Space Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Price →', W/2, H - 8);
+    ctx.save(); ctx.translate(12, H/2); ctx.rotate(-Math.PI/2);
+    ctx.fillText('Volume →', 0, 0); ctx.restore();
+
+    // Points
+    ds.items.forEach((item, i) => {
+      const x = xPos(ds.prices[i]);
+      const y = yPos(ds.volumes[i]);
+      const color = GRAD_COLORS[i % GRAD_COLORS.length];
+      const r = 8;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI*2);
+      ctx.fillStyle = color + '55';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.font = '8px Space Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(item, x, y - 12);
+    });
+  }
+
+  let currentDs = 'food';
+
+  function loadDataset(key) {
+    currentDs = key;
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.toggle('active', b.onclick.toString().includes(`'${key}'`));
+    });
+    const ds = datasets[key];
+    renderStats(ds);
+    renderBar(ds);
+    requestAnimationFrame(() => { renderLine(ds); renderScatter(ds); });
+  }
+
+  window.addEventListener('resize', () => {
+    renderLine(datasets[currentDs]);
+    renderScatter(datasets[currentDs]);
+  });
+
+  loadDataset('food');
+  </script>
+</body>
+</html>
