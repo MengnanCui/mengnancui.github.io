@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Periodic Table — Atomic Radius · Mengnan</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a href="../index.html" class="nav-logo">MC</a>
+      <ul class="nav-links">
+        <li><a href="../index.html#projects">Projects</a></li>
+        <li><a href="../index.html#about">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-hero">
+      <a href="../index.html" class="back-link">← Back</a>
+      <h1>Periodic Table<br><span style="color:var(--text-dim);font-weight:400">Atomic Radius</span></h1>
+      <p>Atomic radius varies systematically across the periodic table. Hover any element to see its radius. Colors encode size from small (purple) to large (green).</p>
+    </div>
+
+    <div class="page-content">
+      <div class="legend">
+        <span class="legend-title">Radius</span>
+        <div>
+          <div class="legend-bar"></div>
+          <div class="legend-labels"><span>Small (25 pm)</span><span>Large (298 pm)</span></div>
+        </div>
+      </div>
+
+      <div class="element-grid" id="periodic-table"></div>
+
+      <div class="tooltip" id="tooltip">
+        <div class="t-name" id="t-name"></div>
+        <div class="t-detail" id="t-detail"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2024 Mengnan Cui · Atomic radii from empirical data</p>
+    </div>
+  </footer>
+
+  <script>
+  // Atomic radius data (empirical/calculated, in picometers)
+  // [atomic number, symbol, name, period, group, radius_pm, category]
+  const elements = [
+    [1,"H","Hydrogen",1,1,53,"nonmetal"],
+    [2,"He","Helium",1,18,31,"noble-gas"],
+    [3,"Li","Lithium",2,1,167,"alkali"],
+    [4,"Be","Beryllium",2,2,112,"alkaline"],
+    [5,"B","Boron",2,13,87,"metalloid"],
+    [6,"C","Carbon",2,14,67,"nonmetal"],
+    [7,"N","Nitrogen",2,15,56,"nonmetal"],
+    [8,"O","Oxygen",2,16,48,"nonmetal"],
+    [9,"F","Fluorine",2,17,42,"nonmetal"],
+    [10,"Ne","Neon",2,18,38,"noble-gas"],
+    [11,"Na","Sodium",3,1,190,"alkali"],
+    [12,"Mg","Magnesium",3,2,145,"alkaline"],
+    [13,"Al","Aluminum",3,13,118,"post-trans"],
+    [14,"Si","Silicon",3,14,111,"metalloid"],
+    [15,"P","Phosphorus",3,15,98,"nonmetal"],
+    [16,"S","Sulfur",3,16,88,"nonmetal"],
+    [17,"Cl","Chlorine",3,17,79,"nonmetal"],
+    [18,"Ar","Argon",3,18,71,"noble-gas"],
+    [19,"K","Potassium",4,1,243,"alkali"],
+    [20,"Ca","Calcium",4,2,194,"alkaline"],
+    [21,"Sc","Scandium",4,3,184,"transition"],
+    [22,"Ti","Titanium",4,4,176,"transition"],
+    [23,"V","Vanadium",4,5,171,"transition"],
+    [24,"Cr","Chromium",4,6,166,"transition"],
+    [25,"Mn","Manganese",4,7,161,"transition"],
+    [26,"Fe","Iron",4,8,156,"transition"],
+    [27,"Co","Cobalt",4,9,152,"transition"],
+    [28,"Ni","Nickel",4,10,149,"transition"],
+    [29,"Cu","Copper",4,11,145,"transition"],
+    [30,"Zn","Zinc",4,12,142,"transition"],
+    [31,"Ga","Gallium",4,13,136,"post-trans"],
+    [32,"Ge","Germanium",4,14,125,"metalloid"],
+    [33,"As","Arsenic",4,15,114,"metalloid"],
+    [34,"Se","Selenium",4,16,103,"nonmetal"],
+    [35,"Br","Bromine",4,17,94,"nonmetal"],
+    [36,"Kr","Krypton",4,18,88,"noble-gas"],
+    [37,"Rb","Rubidium",5,1,265,"alkali"],
+    [38,"Sr","Strontium",5,2,219,"alkaline"],
+    [39,"Y","Yttrium",5,3,212,"transition"],
+    [40,"Zr","Zirconium",5,4,206,"transition"],
+    [41,"Nb","Niobium",5,5,198,"transition"],
+    [42,"Mo","Molybdenum",5,6,190,"transition"],
+    [43,"Tc","Technetium",5,7,183,"transition"],
+    [44,"Ru","Ruthenium",5,8,178,"transition"],
+    [45,"Rh","Rhodium",5,9,173,"transition"],
+    [46,"Pd","Palladium",5,10,169,"transition"],
+    [47,"Ag","Silver",5,11,165,"transition"],
+    [48,"Cd","Cadmium",5,12,161,"transition"],
+    [49,"In","Indium",5,13,156,"post-trans"],
+    [50,"Sn","Tin",5,14,145,"post-trans"],
+    [51,"Sb","Antimony",5,15,133,"metalloid"],
+    [52,"Te","Tellurium",5,16,123,"metalloid"],
+    [53,"I","Iodine",5,17,115,"nonmetal"],
+    [54,"Xe","Xenon",5,18,108,"noble-gas"],
+    [55,"Cs","Cesium",6,1,298,"alkali"],
+    [56,"Ba","Barium",6,2,253,"alkaline"],
+    [57,"La","Lanthanum",6,null,195,"lanthanide"],
+    [58,"Ce","Cerium",6,null,185,"lanthanide"],
+    [59,"Pr","Praseodymium",6,null,185,"lanthanide"],
+    [60,"Nd","Neodymium",6,null,185,"lanthanide"],
+    [61,"Pm","Promethium",6,null,185,"lanthanide"],
+    [62,"Sm","Samarium",6,null,185,"lanthanide"],
+    [63,"Eu","Europium",6,null,185,"lanthanide"],
+    [64,"Gd","Gadolinium",6,null,180,"lanthanide"],
+    [65,"Tb","Terbium",6,null,175,"lanthanide"],
+    [66,"Dy","Dysprosium",6,null,175,"lanthanide"],
+    [67,"Ho","Holmium",6,null,175,"lanthanide"],
+    [68,"Er","Erbium",6,null,175,"lanthanide"],
+    [69,"Tm","Thulium",6,null,175,"lanthanide"],
+    [70,"Yb","Ytterbium",6,null,175,"lanthanide"],
+    [71,"Lu","Lutetium",6,3,175,"lanthanide"],
+    [72,"Hf","Hafnium",6,4,208,"transition"],
+    [73,"Ta","Tantalum",6,5,200,"transition"],
+    [74,"W","Tungsten",6,6,193,"transition"],
+    [75,"Re","Rhenium",6,7,188,"transition"],
+    [76,"Os","Osmium",6,8,185,"transition"],
+    [77,"Ir","Iridium",6,9,180,"transition"],
+    [78,"Pt","Platinum",6,10,177,"transition"],
+    [79,"Au","Gold",6,11,174,"transition"],
+    [80,"Hg","Mercury",6,12,171,"transition"],
+    [81,"Tl","Thallium",6,13,156,"post-trans"],
+    [82,"Pb","Lead",6,14,154,"post-trans"],
+    [83,"Bi","Bismuth",6,15,143,"post-trans"],
+    [84,"Po","Polonium",6,16,135,"metalloid"],
+    [85,"At","Astatine",6,17,127,"nonmetal"],
+    [86,"Rn","Radon",6,18,120,"noble-gas"],
+    [87,"Fr","Francium",7,1,null,"alkali"],
+    [88,"Ra","Radium",7,2,null,"alkaline"],
+    [89,"Ac","Actinium",7,null,null,"actinide"],
+    [90,"Th","Thorium",7,null,null,"actinide"],
+    [91,"Pa","Protactinium",7,null,null,"actinide"],
+    [92,"U","Uranium",7,null,175,"actinide"],
+    [93,"Np","Neptunium",7,null,175,"actinide"],
+    [94,"Pu","Plutonium",7,null,175,"actinide"],
+    [95,"Am","Americium",7,null,175,"actinide"],
+    [96,"Cm","Curium",7,null,null,"actinide"],
+    [97,"Bk","Berkelium",7,null,null,"actinide"],
+    [98,"Cf","Californium",7,null,null,"actinide"],
+    [99,"Es","Einsteinium",7,null,null,"actinide"],
+    [100,"Fm","Fermium",7,null,null,"actinide"],
+    [101,"Md","Mendelevium",7,null,null,"actinide"],
+    [102,"No","Nobelium",7,null,null,"actinide"],
+    [103,"Lr","Lawrencium",7,3,null,"actinide"],
+    [104,"Rf","Rutherfordium",7,4,null,"transition"],
+    [105,"Db","Dubnium",7,5,null,"transition"],
+    [106,"Sg","Seaborgium",7,6,null,"transition"],
+    [107,"Bh","Bohrium",7,7,null,"transition"],
+    [108,"Hs","Hassium",7,8,null,"transition"],
+    [109,"Mt","Meitnerium",7,9,null,"transition"],
+    [110,"Ds","Darmstadtium",7,10,null,"transition"],
+    [111,"Rg","Roentgenium",7,11,null,"transition"],
+    [112,"Cn","Copernicium",7,12,null,"transition"],
+    [113,"Nh","Nihonium",7,13,null,"post-trans"],
+    [114,"Fl","Flerovium",7,14,null,"post-trans"],
+    [115,"Mc","Moscovium",7,15,null,"post-trans"],
+    [116,"Lv","Livermorium",7,16,null,"post-trans"],
+    [117,"Ts","Tennessine",7,17,null,"nonmetal"],
+    [118,"Og","Oganesson",7,18,null,"noble-gas"],
+  ];
+
+  const MIN_R = 25, MAX_R = 298;
+
+  function radiusToColor(r) {
+    if (r === null) return '#2a2a3a';
+    const t = (r - MIN_R) / (MAX_R - MIN_R);
+    // purple → blue → teal → green
+    const stops = [
+      [0,   [40, 10, 80]],
+      [0.3, [108, 99, 255]],
+      [0.6, [67, 210, 220]],
+      [1.0, [67, 233, 123]]
+    ];
+    let c0, c1, t0, t1;
+    for (let i = 0; i < stops.length - 1; i++) {
+      if (t >= stops[i][0] && t <= stops[i+1][0]) {
+        t0 = stops[i][0]; c0 = stops[i][1];
+        t1 = stops[i+1][0]; c1 = stops[i+1][1];
+        break;
+      }
+    }
+    if (!c0) { c0 = stops[stops.length-1][1]; c1 = c0; t0 = 0; t1 = 1; }
+    const f = (t - t0) / (t1 - t0);
+    const rgb = c0.map((v,i) => Math.round(v + (c1[i] - v) * f));
+    return `rgb(${rgb.join(',')})`;
+  }
+
+  // Build grid: 18 columns × 9 rows
+  // Map each element to its grid position
+  const grid = Array.from({length: 10}, () => Array(18).fill(null));
+
+  // Standard layout mapping
+  // Period 1: group 1, 18
+  // Periods 2-3: groups 1-2, 13-18
+  // Periods 4-7: groups 1-18
+  // Lanthanides: row 9, cols 3-17 (elements 57-71)
+  // Actinides: row 10, cols 3-17 (elements 89-103)
+
+  elements.forEach(([z, sym, name, period, group, radius, cat]) => {
+    if (group === null) return; // place lanthanides/actinides separately
+    const row = period - 1;
+    const col = group - 1;
+    if (row >= 0 && row < 9 && col >= 0 && col < 18) {
+      grid[row][col] = [z, sym, name, period, group, radius, cat];
+    }
+  });
+
+  // Lanthanides row (index 8), cols 2-16
+  const lanthanides = elements.filter(e => e[6] === 'lanthanide');
+  lanthanides.forEach((el, i) => { grid[8][i + 2] = el; });
+
+  // Actinides row (index 9), cols 2-16
+  const actinides = elements.filter(e => e[6] === 'actinide');
+  actinides.forEach((el, i) => { grid[9][i + 2] = el; });
+
+  const table = document.getElementById('periodic-table');
+  const tooltip = document.getElementById('tooltip');
+  const tName = document.getElementById('t-name');
+  const tDetail = document.getElementById('t-detail');
+
+  // Add spacer rows
+  for (let row = 0; row < 10; row++) {
+    if (row === 7) {
+      // Spacer row
+      for (let col = 0; col < 18; col++) {
+        const spacer = document.createElement('div');
+        spacer.className = 'element-empty';
+        spacer.style.height = '6px';
+        table.appendChild(spacer);
+      }
+    }
+    for (let col = 0; col < 18; col++) {
+      const el = grid[row][col];
+      const cell = document.createElement('div');
+      if (!el) {
+        cell.className = 'element-empty';
+      } else {
+        const [z, sym, name, period, group, radius, cat] = el;
+        cell.className = 'element-cell';
+        const color = radiusToColor(radius);
+        cell.style.background = color + '55';
+        cell.style.borderColor = color + '99';
+        cell.innerHTML = `<span class="number">${z}</span><span class="symbol">${sym}</span>`;
+        cell.addEventListener('mousemove', (e) => {
+          tName.textContent = `${name} (${sym})`;
+          tDetail.innerHTML = radius
+            ? `Atomic radius: <b>${radius} pm</b><br>Z = ${z} · Period ${period}`
+            : `Atomic radius: <b>unknown</b><br>Z = ${z} · Period ${period}`;
+          tooltip.classList.add('visible');
+          tooltip.style.left = (e.clientX + 14) + 'px';
+          tooltip.style.top  = (e.clientY - 10) + 'px';
+        });
+        cell.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+      }
+      table.appendChild(cell);
+    }
+  }
+  </script>
+</body>
+</html>
