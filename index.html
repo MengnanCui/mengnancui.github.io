@@ -1,171 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mengnan — Design Portfolio</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mengnan Cui — Design Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.65;color:#404040;background:#edf0f2;}
+/* ── RTD SIDEBAR ── */
+.wy-nav-side{position:fixed;top:0;left:0;width:300px;height:100%;background:#343131;z-index:200;display:flex;flex-direction:column;transition:transform .25s;}
+.wy-side-scroll{overflow-y:auto;height:100%;padding-bottom:3rem;}
+.wy-side-nav-search{background:#2980b9;padding:.809rem;}
+.wy-side-nav-search>a{display:block;color:#fcfcfc;font-size:1rem;font-weight:700;padding:.25em 0 .1em;text-decoration:none;}
+.wy-side-nav-search>a:hover{text-decoration:underline;}
+.wy-side-nav-ver{color:rgba(255,255,255,.6);font-size:.75rem;margin-bottom:.6em;}
+.wy-menu-vertical p.caption{color:#9b9b9b;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.7rem 1.618rem .2rem;margin-top:.5rem;}
+.wy-menu-vertical ul{list-style:none;}
+.wy-menu-vertical li a{display:flex;align-items:center;color:#d9d9d9;padding:.4045rem 1.618rem;font-size:.875rem;text-decoration:none;transition:background .1s;cursor:pointer;}
+.wy-menu-vertical li a:hover{background:#4e4a4a;color:#fff;text-decoration:none;}
+.wy-menu-vertical li.current>a{background:#2980b9;color:#fff;}
+.wy-nav-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px;flex-shrink:0;}
+/* ── RTD CONTENT ── */
+.wy-nav-content-wrap{margin-left:300px;background:#fcfcfc;min-height:100vh;}
+.wy-nav-top{display:none;background:#2980b9;color:#fff;padding:.5em .809em;align-items:center;gap:.7em;}
+.wy-nav-top a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem;}
+.wy-nav-top-btn{background:none;border:none;color:#fff;font-size:1.4em;cursor:pointer;line-height:1;padding:0;}
+.wy-nav-content{max-width:800px;margin:0 auto;padding:1.618em 3.236em 4em;}
+/* ── RST TYPOGRAPHY ── */
+.rst-content h1{font-size:175%;font-weight:700;color:#404040;border-bottom:1px solid #e1e4e5;padding-bottom:.5rem;margin-bottom:.8rem;}
+.rst-content h2{font-size:150%;font-weight:700;color:#404040;border-bottom:1px solid #e1e4e5;padding-bottom:.3rem;margin:2.5em 0 .8em;}
+.rst-content p{font-size:14px;line-height:1.7;margin-bottom:.7em;color:#404040;}
+.rst-content a{color:#2980b9;text-decoration:none;}
+.rst-content a:hover{text-decoration:underline;}
+/* admonitions */
+.admonition{padding:12px 14px;margin-bottom:14px;border-left:3px solid;}
+.admonition.note{background:#e7f2fa;border-color:#6ab0de;}
+.admonition.tip{background:#dbfaf4;border-color:#1abc9c;}
+.admonition-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block;}
+.admonition.note .admonition-title{color:#2980b9;}
+.admonition.tip .admonition-title{color:#0d8c6c;}
+.admonition p{margin:0;font-size:.88rem;color:#404040;line-height:1.72;}
+/* field table */
+.field-list{border-collapse:collapse;width:100%;margin:.4em 0 .9em;font-size:.82rem;}
+.field-list th{background:#f3f6f6;color:#2980b9;font-weight:700;padding:5px 10px;border:1px solid #e1e4e5;text-align:left;white-space:nowrap;font-family:'DM Mono',monospace;}
+.field-list td{padding:5px 10px;border:1px solid #e1e4e5;font-family:'DM Mono',monospace;color:#404040;}
+/* project entries */
+.project-entry{margin-bottom:3em;padding-bottom:2.5em;border-bottom:1px solid #e1e4e5;}
+.project-entry:last-child{border-bottom:none;}
+.project-entry h3{font-size:1.15rem;font-weight:700;color:#404040;margin-bottom:.5em;}
+.project-entry h3 a{color:#2980b9;text-decoration:none;}
+.project-entry h3 a:hover{text-decoration:underline;}
+.project-entry p{font-size:.9rem;color:#404040;line-height:1.7;margin-bottom:.8em;}
+.project-preview-wrap{float:right;margin:0 0 1em 1.5em;width:220px;border:1px solid #e1e4e5;border-radius:3px;overflow:hidden;background:#f3f6f6;}
+.project-preview-inner{height:140px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.project-link-btn{display:inline-block;padding:4px 14px;background:#2980b9;color:#fff;border-radius:2px;font-size:.8rem;text-decoration:none;font-family:'DM Mono',monospace;transition:background .1s;}
+.project-link-btn:hover{background:#1f6391;text-decoration:none;color:#fff;}
+.clearfix::after{content:'';display:table;clear:both;}
+/* mini-table thumbnail */
+.mini-table{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:.9rem;}
+.mini-cell{width:38px;height:38px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.65rem;font-weight:700;background:rgba(41,128,185,calc(var(--size)*0.15));border:1px solid rgba(41,128,185,calc(var(--size)*0.6));color:#404040;}
+/* price bars thumbnail */
+.price-bars-thumb{display:flex;align-items:flex-end;gap:6px;padding:.9rem 1rem .6rem;height:140px;}
+.price-bar-thumb{flex:1;border-radius:2px 2px 0 0;background:linear-gradient(180deg,#2980b9,#1abc9c);opacity:.8;min-height:12px;}
+/* symmetry canvas thumbnail */
+.sym-thumb{display:flex;align-items:center;justify-content:center;height:140px;}
+/* about section */
+.about-links{margin-top:1em;display:flex;gap:.7em;flex-wrap:wrap;}
+.about-link-btn{display:inline-block;padding:4px 14px;border:1px solid #2980b9;color:#2980b9;border-radius:2px;font-size:.8rem;text-decoration:none;font-family:'DM Mono',monospace;transition:background .1s,color .1s;}
+.about-link-btn:hover{background:#2980b9;color:#fff;text-decoration:none;}
+/* footer */
+.rst-footer{margin-top:3em;padding-top:1em;border-top:1px solid #e1e4e5;color:#9b9b9b;font-size:.75rem;text-align:center;font-family:'DM Mono',monospace;}
+/* scrollbar */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:2px;}
+/* mobile */
+@media(max-width:768px){
+  .wy-nav-side{transform:translateX(-300px);}
+  .wy-nav-side.open{transform:translateX(0);}
+  .wy-nav-content-wrap{margin-left:0;}
+  .wy-nav-top{display:flex;}
+  .wy-nav-content{padding:1em 1.2em;}
+  .project-preview-wrap{float:none;width:100%;margin:0 0 1em 0;}
+}
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <nav class="nav">
-      <a href="index.html" class="nav-logo">MC</a>
-      <ul class="nav-links">
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#about">About</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="hero-content">
-        <p class="hero-label">Design &amp; Data Visualization</p>
-        <h1 class="hero-title">Mengnan Cui</h1>
-        <p class="hero-subtitle">Interactive visualizations, scientific data, and beautiful patterns — exploring ideas through design.</p>
+<div class="wy-grid-for-nav">
+  <nav class="wy-nav-side">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="index.html">Mengnan Cui</a>
+        <div class="wy-side-nav-ver">Design &amp; Data Visualization</div>
       </div>
-    </section>
-
-    <section class="projects" id="projects">
-      <div class="container">
-        <h2 class="section-title">Projects</h2>
-        <div class="project-grid">
-
-          <a href="projects/periodic-table.html" class="project-card" data-index="01">
-            <div class="project-card-inner">
-              <div class="project-preview periodic-preview">
-                <div class="mini-table">
-                  <div class="mini-cell" style="--size:0.4">H</div>
-                  <div class="mini-cell" style="--size:0.9">Li</div>
-                  <div class="mini-cell" style="--size:1.0">Na</div>
-                  <div class="mini-cell" style="--size:1.2">K</div>
-                  <div class="mini-cell" style="--size:0.5">C</div>
-                  <div class="mini-cell" style="--size:0.7">Si</div>
-                  <div class="mini-cell" style="--size:0.6">N</div>
-                  <div class="mini-cell" style="--size:0.5">O</div>
-                  <div class="mini-cell" style="--size:0.3">F</div>
-                </div>
-              </div>
-              <div class="project-info">
-                <span class="project-number">01</span>
-                <h3>Crystal Structure<br><em>Museum</em></h3>
-                <p>Interactive 3D viewer of classic crystal structures — BCC, FCC, NaCl, perovskite and more. Drag to rotate, scroll to zoom.</p>
-                <span class="project-tag">Chemistry · 3D · Crystal</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="projects/price-viz.html" class="project-card" data-index="02">
-            <div class="project-card-inner">
-              <div class="project-preview price-preview">
-                <div class="price-bars">
-                  <div class="price-bar" style="--h:60%"><span>A</span></div>
-                  <div class="price-bar" style="--h:85%"><span>B</span></div>
-                  <div class="price-bar" style="--h:45%"><span>C</span></div>
-                  <div class="price-bar" style="--h:100%"><span>D</span></div>
-                  <div class="price-bar" style="--h:70%"><span>E</span></div>
-                  <div class="price-bar" style="--h:55%"><span>F</span></div>
-                </div>
-              </div>
-              <div class="project-info">
-                <span class="project-number">02</span>
-                <h3>Price<br><em>Visualization</em></h3>
-                <p>Dynamic charts comparing pricing across categories. Clean, readable financial data made visual.</p>
-                <span class="project-tag">Economics · Charts</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="projects/symmetry.html" class="project-card" data-index="03">
-            <div class="project-card-inner">
-              <div class="project-preview symmetry-preview">
-                <canvas id="sym-canvas" width="200" height="160"></canvas>
-              </div>
-              <div class="project-info">
-                <span class="project-number">03</span>
-                <h3>Classic<br><em>Symmetry</em></h3>
-                <p>Geometric patterns generated from mathematical symmetry groups. Crystallographic wallpaper groups brought to life.</p>
-                <span class="project-tag">Math · Generative Art</span>
-              </div>
-            </div>
-          </a>
-
-        </div>
+      <div class="wy-menu-vertical">
+        <p class="caption">Overview</p>
+        <ul>
+          <li id="nav-about"><a href="#about">About</a></li>
+        </ul>
+        <p class="caption">Projects</p>
+        <ul>
+          <li id="nav-crystal">
+            <a href="projects/periodic-table.html">
+              <span class="wy-nav-dot" style="background:#60a5fa"></span>Crystal Structure Museum
+            </a>
+          </li>
+          <li id="nav-price">
+            <a href="projects/price-viz.html">
+              <span class="wy-nav-dot" style="background:#34d399"></span>Price Visualization
+            </a>
+          </li>
+          <li id="nav-symmetry">
+            <a href="projects/symmetry.html">
+              <span class="wy-nav-dot" style="background:#a78bfa"></span>Classic Symmetry
+            </a>
+          </li>
+        </ul>
       </div>
-    </section>
-
-    <section class="about" id="about">
-      <div class="container about-content">
-        <div class="about-text">
-          <h2>About</h2>
-          <p>I'm interested in making complex data and abstract ideas accessible through interactive design. These projects explore the intersection of science, mathematics, and visual communication.</p>
-          <p>Each piece is built with plain HTML, CSS, and JavaScript — no frameworks, just fundamentals.</p>
-        </div>
-        <div class="about-links">
-          <a href="https://github.com/MengnanCui" class="link-btn" target="_blank" rel="noopener">GitHub</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      <p>© 2024 Mengnan Cui · Built with curiosity</p>
     </div>
-  </footer>
+  </nav>
 
-  <script src="js/main.js"></script>
-  <script>
-    const canvas = document.getElementById('sym-canvas');
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      const w = canvas.width, h = canvas.height;
-      ctx.fillStyle = '#f1f3f5';
-      ctx.fillRect(0, 0, w, h);
-      const colors = ['#2563eb','#7c3aed','#059669','#d97706'];
-      for (let i = 0; i < 6; i++) {
-        const angle = (i / 6) * Math.PI * 2;
-        const x = w/2 + Math.cos(angle) * 55;
-        const y = h/2 + Math.sin(angle) * 45;
-        ctx.beginPath();
-        ctx.arc(x, y, 18, 0, Math.PI * 2);
-        ctx.fillStyle = colors[i % colors.length] + '28';
-        ctx.strokeStyle = colors[i % colors.length];
-        ctx.lineWidth = 1.5;
-        ctx.fill();
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = colors[i % colors.length];
-        ctx.fill();
-      }
-      ctx.beginPath();
-      ctx.arc(w/2, h/2, 10, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(37,99,235,0.12)';
-      ctx.strokeStyle = 'rgba(37,99,235,0.4)';
-      ctx.lineWidth = 1;
-      ctx.fill();
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(0,0,0,0.08)';
-      ctx.lineWidth = 1;
-      for (let i = 0; i < 6; i++) {
-        const a1 = (i / 6) * Math.PI * 2;
-        const x1 = w/2 + Math.cos(a1) * 55;
-        const y1 = h/2 + Math.sin(a1) * 45;
-        for (let j = i+1; j < 6; j++) {
-          const a2 = (j / 6) * Math.PI * 2;
-          const x2 = w/2 + Math.cos(a2) * 55;
-          const y2 = w/2 + Math.sin(a2) * 45;
-          ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
-          ctx.stroke();
-        }
-      }
+  <div class="wy-nav-content-wrap">
+    <div class="wy-nav-top">
+      <button class="wy-nav-top-btn" onclick="document.querySelector('.wy-nav-side').classList.toggle('open')">☰</button>
+      <a href="index.html">Mengnan Cui</a>
+    </div>
+    <div class="wy-nav-content">
+      <div class="rst-content">
+
+        <h1>Mengnan Cui <small style="font-size:55%;color:#9b9b9b;font-weight:400">Design Portfolio</small></h1>
+
+        <div class="admonition note" style="margin-bottom:1.8em;">
+          <span class="admonition-title">About This Site</span>
+          <p>Interactive visualizations, scientific data, and geometric patterns — exploring ideas at the intersection of science, mathematics, and visual communication. Each project is built with plain HTML, CSS, and JavaScript.</p>
+        </div>
+
+        <h2>Projects</h2>
+
+        <!-- Project 01 -->
+        <div class="project-entry clearfix">
+          <div class="project-preview-wrap">
+            <div class="project-preview-inner">
+              <div class="mini-table">
+                <div class="mini-cell" style="--size:0.4">H</div>
+                <div class="mini-cell" style="--size:0.9">Li</div>
+                <div class="mini-cell" style="--size:1.0">Na</div>
+                <div class="mini-cell" style="--size:1.2">K</div>
+                <div class="mini-cell" style="--size:0.5">C</div>
+                <div class="mini-cell" style="--size:0.7">Si</div>
+                <div class="mini-cell" style="--size:0.6">N</div>
+                <div class="mini-cell" style="--size:0.5">O</div>
+                <div class="mini-cell" style="--size:0.3">F</div>
+              </div>
+            </div>
+          </div>
+          <h3><a href="projects/periodic-table.html">01. Crystal Structure Museum</a></h3>
+          <p>Interactive 3D viewer of 13 classic inorganic crystal structures — BCC, FCC, NaCl, perovskite, diamond, graphite and more, organized by Bravais lattice type. Drag to rotate, scroll to zoom, toggle between primitive cell and supercell views.</p>
+          <table class="field-list">
+            <tr><th>Tags</th><td>Chemistry · 3D · Three.js · Crystal</td></tr>
+            <tr><th>Structures</th><td>13 crystal types across 7 crystal systems</td></tr>
+          </table>
+          <a href="projects/periodic-table.html" class="project-link-btn">Open Project →</a>
+        </div>
+
+        <!-- Project 02 -->
+        <div class="project-entry clearfix">
+          <div class="project-preview-wrap">
+            <div class="project-preview-inner">
+              <div class="price-bars-thumb">
+                <div class="price-bar-thumb" style="height:60%"></div>
+                <div class="price-bar-thumb" style="height:85%"></div>
+                <div class="price-bar-thumb" style="height:45%"></div>
+                <div class="price-bar-thumb" style="height:100%"></div>
+                <div class="price-bar-thumb" style="height:70%"></div>
+                <div class="price-bar-thumb" style="height:55%"></div>
+              </div>
+            </div>
+          </div>
+          <h3><a href="projects/price-viz.html">02. Price Visualization</a></h3>
+          <p>Dynamic charts comparing pricing across categories. Clean, readable financial data made visual with interactive bar charts and clear typography.</p>
+          <table class="field-list">
+            <tr><th>Tags</th><td>Economics · Charts · Data</td></tr>
+          </table>
+          <a href="projects/price-viz.html" class="project-link-btn">Open Project →</a>
+        </div>
+
+        <!-- Project 03 -->
+        <div class="project-entry clearfix">
+          <div class="project-preview-wrap">
+            <div class="project-preview-inner sym-thumb">
+              <canvas id="sym-canvas" width="180" height="130"></canvas>
+            </div>
+          </div>
+          <h3><a href="projects/symmetry.html">03. Classic Symmetry</a></h3>
+          <p>Geometric patterns generated from mathematical symmetry groups. All 17 crystallographic wallpaper groups brought to life through interactive controls — change the group, colors, and density in real time.</p>
+          <table class="field-list">
+            <tr><th>Tags</th><td>Mathematics · Generative Art · Symmetry</td></tr>
+            <tr><th>Groups</th><td>17 wallpaper groups</td></tr>
+          </table>
+          <a href="projects/symmetry.html" class="project-link-btn">Open Project →</a>
+        </div>
+
+        <h2 id="about">About</h2>
+        <p>I'm interested in making complex data and abstract ideas accessible through interactive design. These projects explore the intersection of science, mathematics, and visual communication.</p>
+        <p>Each piece is built with plain HTML, CSS, and JavaScript — no frameworks, just fundamentals.</p>
+        <div class="about-links">
+          <a href="https://github.com/MengnanCui" class="about-link-btn" target="_blank" rel="noopener">GitHub</a>
+        </div>
+
+        <div class="rst-footer">© 2024 Mengnan Cui · Built with curiosity</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Draw symmetry thumbnail
+const canvas = document.getElementById('sym-canvas');
+if(canvas){
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.fillStyle = '#f3f6f6';
+  ctx.fillRect(0, 0, w, h);
+  const colors = ['#2980b9','#8e44ad','#27ae60','#e67e22'];
+  for(let i=0;i<6;i++){
+    const angle=(i/6)*Math.PI*2;
+    const x=w/2+Math.cos(angle)*48;
+    const y=h/2+Math.sin(angle)*38;
+    ctx.beginPath();ctx.arc(x,y,15,0,Math.PI*2);
+    ctx.fillStyle=colors[i%colors.length]+'28';
+    ctx.strokeStyle=colors[i%colors.length];
+    ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);
+    ctx.fillStyle=colors[i%colors.length];ctx.fill();
+  }
+  ctx.beginPath();ctx.arc(w/2,h/2,9,0,Math.PI*2);
+  ctx.fillStyle='rgba(41,128,185,0.12)';
+  ctx.strokeStyle='rgba(41,128,185,0.4)';
+  ctx.lineWidth=1;ctx.fill();ctx.stroke();
+  ctx.strokeStyle='rgba(0,0,0,0.07)';ctx.lineWidth=1;
+  for(let i=0;i<6;i++){
+    const a1=(i/6)*Math.PI*2;
+    const x1=w/2+Math.cos(a1)*48, y1=h/2+Math.sin(a1)*38;
+    for(let j=i+1;j<6;j++){
+      const a2=(j/6)*Math.PI*2;
+      const x2=w/2+Math.cos(a2)*48, y2=h/2+Math.sin(a2)*38;
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
     }
-  </script>
+  }
+}
+
+// Highlight current nav item on scroll
+const sections = [{id:'about',nav:'nav-about'}];
+window.addEventListener('scroll',()=>{
+  sections.forEach(({id,nav})=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const rect=el.getBoundingClientRect();
+    const li=document.getElementById(nav);
+    if(li){
+      if(rect.top<200&&rect.bottom>0)li.classList.add('current');
+      else li.classList.remove('current');
+    }
+  });
+});
+</script>
 </body>
 </html>
