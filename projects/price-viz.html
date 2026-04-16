@@ -1,358 +1,353 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Price Visualization · Mengnan</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    .dataset-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
-    .tab-btn {
-      font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em;
-      padding: 0.4em 1em; border: 1px solid var(--border); border-radius: 6px;
-      background: transparent; color: var(--text-dim); cursor: pointer;
-      transition: all 0.2s;
-    }
-    .tab-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,0.1); }
-    .tab-btn:hover:not(.active) { border-color: var(--text-dim); color: var(--text); }
-
-    .chart-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    @media (max-width: 700px) { .chart-wrap { grid-template-columns: 1fr; } }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .stat-card {
-      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
-    }
-    .stat-card .stat-label {
-      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem;
-    }
-    .stat-card .stat-val {
-      font-size: 1.5rem; font-weight: 700; color: var(--text);
-    }
-    .stat-card .stat-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem; }
-
-    .bar-chart-v { height: 240px; display: flex; align-items: flex-end; gap: 6px; }
-    .bv-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .bv-fill {
-      width: 100%; border-radius: 4px 4px 0 0;
-      position: relative; cursor: pointer; transition: filter 0.2s;
-    }
-    .bv-fill:hover { filter: brightness(1.3); }
-    .bv-fill .bv-val {
-      position: absolute; top: -1.4rem; left: 50%; transform: translateX(-50%);
-      font-family: var(--mono); font-size: 0.6rem; white-space: nowrap; color: var(--text);
-    }
-    .bv-label { font-family: var(--mono); font-size: 0.6rem; color: var(--text-dim); text-align: center; }
-
-    /* Scatter plot */
-    .scatter-wrap { position: relative; }
-    #scatter-canvas { border-radius: 8px; background: var(--bg3); display: block; width: 100%; }
-
-    /* Line chart */
-    #line-canvas { border-radius: 8px; background: var(--bg3); display: block; width: 100%; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>元素价格可视化 · Element Price Table</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.65;color:#404040;background:#edf0f2;}
+/* ── RTD SIDEBAR ── */
+.wy-nav-side{position:fixed;top:0;left:0;width:300px;height:100%;background:#343131;z-index:200;display:flex;flex-direction:column;transition:transform .25s;}
+.wy-side-scroll{overflow-y:auto;height:100%;padding-bottom:3rem;}
+.wy-side-nav-search{background:#2980b9;padding:.809rem;}
+.wy-side-nav-search>a{display:block;color:#fcfcfc;font-size:1rem;font-weight:700;padding:.25em 0 .1em;text-decoration:none;}
+.wy-side-nav-search>a:hover{text-decoration:underline;}
+.wy-side-nav-ver{color:rgba(255,255,255,.6);font-size:.75rem;margin-bottom:.6em;}
+.wy-menu-vertical p.caption{color:#9b9b9b;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.7rem 1.618rem .2rem;margin-top:.5rem;}
+.wy-menu-vertical ul{list-style:none;}
+.wy-menu-vertical li a{display:flex;align-items:center;color:#d9d9d9;padding:.4045rem 1.618rem;font-size:.875rem;text-decoration:none;transition:background .1s;cursor:pointer;}
+.wy-menu-vertical li a:hover{background:#4e4a4a;color:#fff;text-decoration:none;}
+.wy-menu-vertical li.current>a{background:#2980b9;color:#fff;}
+/* ── RTD CONTENT ── */
+.wy-nav-content-wrap{margin-left:300px;background:#fcfcfc;min-height:100vh;}
+.wy-nav-top{display:none;background:#2980b9;color:#fff;padding:.5em .809em;align-items:center;gap:.7em;}
+.wy-nav-top a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem;}
+.wy-nav-top-btn{background:none;border:none;color:#fff;font-size:1.4em;cursor:pointer;line-height:1;padding:0;}
+.wy-nav-content{max-width:1080px;margin:0 auto;padding:1.618em 2.5em 4em;}
+/* ── RST TYPOGRAPHY ── */
+.rst-content h1{font-size:175%;font-weight:700;color:#404040;border-bottom:1px solid #e1e4e5;padding-bottom:.5rem;margin-bottom:.8rem;}
+.rst-content p{font-size:14px;line-height:1.7;margin-bottom:.7em;color:#404040;}
+.rst-content a{color:#2980b9;text-decoration:none;}
+.rst-content a:hover{text-decoration:underline;}
+/* admonitions */
+.admonition{padding:12px 14px;margin-bottom:14px;border-left:3px solid;}
+.admonition.note{background:#e7f2fa;border-color:#6ab0de;}
+.admonition.tip{background:#dbfaf4;border-color:#1abc9c;}
+.admonition-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block;}
+.admonition.note .admonition-title{color:#2980b9;}
+.admonition.tip .admonition-title{color:#0d8c6c;}
+.admonition p{margin:0;font-size:.88rem;color:#404040;line-height:1.72;}
+/* ── CONTROLS ── */
+.controls-bar{display:flex;align-items:center;gap:1.5em;flex-wrap:wrap;margin-bottom:1.2em;padding:.7em 1em;background:#f3f6f6;border:1px solid #e1e4e5;border-radius:3px;}
+.ctrl-label{font-family:'DM Mono',monospace;font-size:.75rem;color:#2980b9;font-weight:700;white-space:nowrap;}
+.ctrl-select{background:#fff;border:1px solid #e1e4e5;color:#404040;border-radius:2px;padding:3px 8px;font-family:'DM Mono',monospace;font-size:.78rem;cursor:pointer;outline:none;}
+.ctrl-select:hover{border-color:#2980b9;}
+.ctrl-range{accent-color:#2980b9;cursor:pointer;width:110px;}
+.ctrl-val{font-family:'DM Mono',monospace;font-size:.78rem;color:#9b9b9b;min-width:2.5em;}
+/* ── LEGEND ── */
+.legend-row{display:flex;gap:1.5em;flex-wrap:wrap;margin-bottom:1.2em;align-items:center;}
+.legend-item{display:flex;align-items:center;gap:.5em;font-size:.8rem;font-family:'DM Mono',monospace;color:#404040;}
+.legend-dot{border-radius:50%;border:1.5px solid rgba(0,0,0,.2);flex-shrink:0;}
+/* ── PERIODIC TABLE ── */
+.periodic-table{display:grid;grid-template-columns:repeat(18,1fr);gap:3px;margin-bottom:8px;}
+.element-cell{aspect-ratio:1;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;}
+.element-cell:hover{transform:scale(1.15);z-index:10;}
+.element-circle{width:100%;height:100%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid rgba(0,0,0,.2);transition:all .15s;}
+.element-circle:hover{border-width:2px;box-shadow:0 0 12px rgba(0,0,0,.25);}
+.atomic-number{font-size:.52em;color:rgba(0,0,0,.55);font-weight:700;line-height:1;}
+.symbol{font-size:1.05em;font-weight:700;color:#000;line-height:1.1;}
+.el-name{font-size:.45em;color:rgba(0,0,0,.65);line-height:1;}
+.empty-cell{opacity:0;pointer-events:none;}
+.lanthanides,.actinides{grid-column:3/span 15;display:grid;grid-template-columns:repeat(15,1fr);gap:3px;margin-top:6px;}
+/* ── TOOLTIP ── */
+.el-tooltip{position:fixed;background:rgba(30,30,30,.95);color:#fff;padding:10px 14px;border-radius:3px;font-size:13px;pointer-events:none;z-index:1000;display:none;max-width:240px;box-shadow:0 4px 16px rgba(0,0,0,.3);}
+.el-tooltip.active{display:block;}
+.tooltip-name{font-size:15px;font-weight:700;margin-bottom:5px;}
+.tooltip-row{margin:2px 0;font-family:'DM Mono',monospace;font-size:.8rem;color:rgba(255,255,255,.85);}
+.tooltip-row strong{color:#fff;}
+/* footer */
+.rst-footer{margin-top:3em;padding-top:1em;border-top:1px solid #e1e4e5;color:#9b9b9b;font-size:.75rem;text-align:center;font-family:'DM Mono',monospace;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:2px;}
+@media(max-width:768px){
+  .wy-nav-side{transform:translateX(-300px);}
+  .wy-nav-side.open{transform:translateX(0);}
+  .wy-nav-content-wrap{margin-left:0;}
+  .wy-nav-top{display:flex;}
+  .wy-nav-content{padding:1em 1em;}
+  .el-name{display:none;}
+}
+@media(max-width:900px){.el-name{display:none;}}
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <nav class="nav">
-      <a href="../index.html" class="nav-logo">MC</a>
-      <ul class="nav-links">
-        <li><a href="../index.html#projects">Projects</a></li>
-        <li><a href="../index.html#about">About</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <main>
-    <div class="page-hero">
-      <a href="../index.html" class="back-link">← Back</a>
-      <h1>Price<br><span style="color:var(--text-dim);font-weight:400">Visualization</span></h1>
-      <p>Explore price trends across different categories. Switch datasets to compare markets.</p>
-    </div>
-
-    <div class="page-content">
-      <div class="dataset-tabs">
-        <button class="tab-btn active" onclick="loadDataset('food')">Food &amp; Groceries</button>
-        <button class="tab-btn" onclick="loadDataset('tech')">Consumer Tech</button>
-        <button class="tab-btn" onclick="loadDataset('energy')">Energy</button>
+<div class="wy-grid-for-nav">
+  <nav class="wy-nav-side">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../index.html">Mengnan Cui</a>
+        <div class="wy-side-nav-ver">Element Price Table</div>
       </div>
+      <div class="wy-menu-vertical">
+        <p class="caption">导航</p>
+        <ul>
+          <li><a href="../index.html">← 首页</a></li>
+        </ul>
+        <p class="caption">本页</p>
+        <ul>
+          <li id="nav-intro"><a href="#intro">说明</a></li>
+          <li id="nav-table"><a href="#table">周期表</a></li>
+        </ul>
+        <p class="caption">按价格筛选</p>
+        <ul>
+          <li><a onclick="setFilter('cheap')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff6b6b;margin-right:7px;flex-shrink:0"></span>&lt; $1 / kg</a></li>
+          <li><a onclick="setFilter('low')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ecdc4;margin-right:7px;flex-shrink:0"></span>$1 – $100 / kg</a></li>
+          <li><a onclick="setFilter('mid')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#95e1d3;margin-right:7px;flex-shrink:0"></span>$100 – $10k / kg</a></li>
+          <li><a onclick="setFilter('expensive')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f38181;margin-right:7px;flex-shrink:0"></span>&gt; $10,000 / kg</a></li>
+          <li><a onclick="setFilter('all')">全部显示</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-      <div class="stat-grid" id="stat-grid"></div>
+  <div class="wy-nav-content-wrap">
+    <div class="wy-nav-top">
+      <button class="wy-nav-top-btn" onclick="document.querySelector('.wy-nav-side').classList.toggle('open')">☰</button>
+      <a href="../index.html">元素价格可视化</a>
+    </div>
+    <div class="wy-nav-content">
+      <div class="rst-content">
 
-      <div class="chart-wrap">
-        <div class="chart-container">
-          <div class="chart-title">Bar Comparison</div>
-          <div class="bar-chart-v" id="bar-chart"></div>
+        <h1>元素价格可视化 <small style="font-size:55%;color:#9b9b9b;font-weight:400">Element Price Table</small></h1>
+
+        <div class="admonition note" id="intro" style="scroll-margin-top:1em;">
+          <span class="admonition-title">说明</span>
+          <p>圆形大小代表元素价格（美元/千克），使用对数缩放。颜色代表价格区间。悬停查看详细信息，可通过控件筛选价格范围或调整圆形大小。</p>
         </div>
-        <div class="chart-container">
-          <div class="chart-title">Trend Over Time</div>
-          <canvas id="line-canvas" height="240"></canvas>
+
+        <div class="admonition tip">
+          <span class="admonition-title">最贵与最便宜</span>
+          <p>最贵：Fr（钫）≈ $1T/kg、Po（钋）≈ $49T/kg（放射性稀有元素）；最便宜：S（硫）≈ $0.09/kg、C（碳）≈ $0.12/kg。铑（Rh）是常见贵金属中价格最高者，约 $147,000/kg。</p>
         </div>
-      </div>
 
-      <div class="chart-container" style="margin-top:0">
-        <div class="chart-title">Price vs Volume (Scatter)</div>
-        <canvas id="scatter-canvas" height="200"></canvas>
+        <div class="controls-bar">
+          <span class="ctrl-label">价格筛选</span>
+          <select class="ctrl-select" id="priceFilter">
+            <option value="all">全部</option>
+            <option value="cheap">便宜 (&lt; $1/kg)</option>
+            <option value="low">低价 ($1–$100/kg)</option>
+            <option value="mid">中等 ($100–$10k/kg)</option>
+            <option value="expensive">昂贵 (&gt; $10k/kg)</option>
+          </select>
+          <span class="ctrl-label" style="margin-left:.5em;">圆形缩放</span>
+          <input class="ctrl-range" type="range" id="scaleSlider" min="0.5" max="2" step="0.1" value="1">
+          <span class="ctrl-val" id="scaleValue">1.0×</span>
+        </div>
+
+        <div class="legend-row">
+          <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b;width:10px;height:10px;"></div>&lt; $1/kg</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#4ecdc4;width:16px;height:16px;"></div>$1 – $100/kg</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#95e1d3;width:22px;height:22px;"></div>$100 – $10k/kg</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f38181;width:28px;height:28px;"></div>&gt; $10k/kg</div>
+        </div>
+
+        <div class="periodic-table" id="periodicTable" id="table" style="scroll-margin-top:1em;"></div>
+
+        <div class="rst-footer">价格数据来源：RSC (Royal Society of Chemistry) · 单位：USD/kg · 放射性稀有元素价格仅供参考</div>
       </div>
     </div>
-  </main>
+  </div>
+</div>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>© 2024 Mengnan Cui · Illustrative data for visualization purposes</p>
-    </div>
-  </footer>
+<div class="el-tooltip" id="tooltip"></div>
 
-  <script>
-  const datasets = {
-    food: {
-      items: ["Bread","Eggs","Milk","Rice","Tomato","Chicken","Butter","Coffee"],
-      prices: [2.4, 3.8, 1.9, 1.2, 2.1, 7.5, 4.2, 12.0],
-      volumes: [420, 680, 390, 820, 510, 340, 210, 180],
-      unit: "$/unit",
-      trend: {
-        labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-        series: [
-          { name:"Bread",  color:"#6c63ff", data:[2.1,2.2,2.3,2.3,2.4,2.4] },
-          { name:"Chicken",color:"#ff6584", data:[6.8,7.0,7.2,7.3,7.5,7.5] },
-          { name:"Coffee", color:"#43e97b", data:[11.0,11.4,11.8,11.9,12.0,12.0] },
-        ]
-      }
-    },
-    tech: {
-      items: ["Phone","Laptop","Tablet","Headphones","Monitor","Keyboard","Mouse","SSD"],
-      prices: [799,1199,499,249,349,129,59,89],
-      volumes: [120,80,55,200,65,180,240,150],
-      unit: "$/unit",
-      trend: {
-        labels: ["2019","2020","2021","2022","2023","2024"],
-        series: [
-          { name:"Phone",  color:"#6c63ff", data:[749,769,779,799,799,799] },
-          { name:"Laptop", color:"#ff6584", data:[999,1049,1099,1149,1199,1199] },
-          { name:"SSD",    color:"#43e97b", data:[120,105,98,93,89,89] },
-        ]
-      }
-    },
-    energy: {
-      items: ["Natural Gas","Coal","Solar","Wind","Nuclear","Hydro","Oil","Geothermal"],
-      prices: [3.2,1.1,4.5,5.0,9.8,2.3,6.7,8.1],
-      volumes: [850,1200,320,280,140,650,980,90],
-      unit: "¢/kWh",
-      trend: {
-        labels: ["2019","2020","2021","2022","2023","2024"],
-        series: [
-          { name:"Solar",color:"#f7971e", data:[6.0,5.5,5.0,4.7,4.5,4.5] },
-          { name:"Wind", color:"#43e97b", data:[6.0,5.6,5.3,5.1,5.0,5.0] },
-          { name:"Gas",  color:"#6c63ff", data:[2.8,2.9,3.0,3.1,3.2,3.2] },
-        ]
-      }
+<script>
+const ELEMENTS=[
+  {n:1,s:'H',name:'氢',price:1.39,x:1,y:1},
+  {n:2,s:'He',name:'氦',price:24,x:18,y:1},
+  {n:3,s:'Li',name:'锂',price:70,x:1,y:2},
+  {n:4,s:'Be',name:'铍',price:857,x:2,y:2},
+  {n:5,s:'B',name:'硼',price:3.7,x:13,y:2},
+  {n:6,s:'C',name:'碳',price:0.122,x:14,y:2},
+  {n:7,s:'N',name:'氮',price:0.14,x:15,y:2},
+  {n:8,s:'O',name:'氧',price:0.154,x:16,y:2},
+  {n:9,s:'F',name:'氟',price:1.9,x:17,y:2},
+  {n:10,s:'Ne',name:'氖',price:240,x:18,y:2},
+  {n:11,s:'Na',name:'钠',price:3,x:1,y:3},
+  {n:12,s:'Mg',name:'镁',price:2.32,x:2,y:3},
+  {n:13,s:'Al',name:'铝',price:1.79,x:13,y:3},
+  {n:14,s:'Si',name:'硅',price:1.7,x:14,y:3},
+  {n:15,s:'P',name:'磷',price:2.69,x:15,y:3},
+  {n:16,s:'S',name:'硫',price:0.088,x:16,y:3},
+  {n:17,s:'Cl',name:'氯',price:0.28,x:17,y:3},
+  {n:18,s:'Ar',name:'氩',price:0.931,x:18,y:3},
+  {n:19,s:'K',name:'钾',price:13.6,x:1,y:4},
+  {n:20,s:'Ca',name:'钙',price:2.7,x:2,y:4},
+  {n:21,s:'Sc',name:'钪',price:4000,x:3,y:4},
+  {n:22,s:'Ti',name:'钛',price:11.1,x:4,y:4},
+  {n:23,s:'V',name:'钒',price:27.3,x:5,y:4},
+  {n:24,s:'Cr',name:'铬',price:9,x:6,y:4},
+  {n:25,s:'Mn',name:'锰',price:1.82,x:7,y:4},
+  {n:26,s:'Fe',name:'铁',price:0.424,x:8,y:4},
+  {n:27,s:'Co',name:'钴',price:32.8,x:9,y:4},
+  {n:28,s:'Ni',name:'镍',price:13.9,x:10,y:4},
+  {n:29,s:'Cu',name:'铜',price:6,x:11,y:4},
+  {n:30,s:'Zn',name:'锌',price:2.55,x:12,y:4},
+  {n:31,s:'Ga',name:'镓',price:300,x:13,y:4},
+  {n:32,s:'Ge',name:'锗',price:1200,x:14,y:4},
+  {n:33,s:'As',name:'砷',price:1.4,x:15,y:4},
+  {n:34,s:'Se',name:'硒',price:21.4,x:16,y:4},
+  {n:35,s:'Br',name:'溴',price:4.39,x:17,y:4},
+  {n:36,s:'Kr',name:'氪',price:290,x:18,y:4},
+  {n:37,s:'Rb',name:'铷',price:15500,x:1,y:5},
+  {n:38,s:'Sr',name:'锶',price:6.5,x:2,y:5},
+  {n:39,s:'Y',name:'钇',price:31,x:3,y:5},
+  {n:40,s:'Zr',name:'锆',price:34.9,x:4,y:5},
+  {n:41,s:'Nb',name:'铌',price:41.1,x:5,y:5},
+  {n:42,s:'Mo',name:'钼',price:17.7,x:6,y:5},
+  {n:43,s:'Tc',name:'锝',price:100000,x:7,y:5},
+  {n:44,s:'Ru',name:'钌',price:7250,x:8,y:5},
+  {n:45,s:'Rh',name:'铑',price:147000,x:9,y:5},
+  {n:46,s:'Pd',name:'钯',price:49321,x:10,y:5},
+  {n:47,s:'Ag',name:'银',price:521,x:11,y:5},
+  {n:48,s:'Cd',name:'镉',price:2.76,x:12,y:5},
+  {n:49,s:'In',name:'铟',price:167,x:13,y:5},
+  {n:50,s:'Sn',name:'锡',price:18.7,x:14,y:5},
+  {n:51,s:'Sb',name:'锑',price:5.79,x:15,y:5},
+  {n:52,s:'Te',name:'碲',price:63.5,x:16,y:5},
+  {n:53,s:'I',name:'碘',price:35,x:17,y:5},
+  {n:54,s:'Xe',name:'氙',price:1800,x:18,y:5},
+  {n:55,s:'Cs',name:'铯',price:61800,x:1,y:6},
+  {n:56,s:'Ba',name:'钡',price:0.27,x:2,y:6},
+  {n:57,s:'La',name:'镧',price:5.3,x:3,y:9},
+  {n:58,s:'Ce',name:'铈',price:5.3,x:4,y:9},
+  {n:59,s:'Pr',name:'镨',price:83.7,x:5,y:9},
+  {n:60,s:'Nd',name:'钕',price:57.2,x:6,y:9},
+  {n:61,s:'Pm',name:'钷',price:500000,x:7,y:9},
+  {n:62,s:'Sm',name:'钐',price:13.6,x:8,y:9},
+  {n:63,s:'Eu',name:'铕',price:310,x:9,y:9},
+  {n:64,s:'Gd',name:'钆',price:29.8,x:10,y:9},
+  {n:65,s:'Tb',name:'铽',price:667,x:11,y:9},
+  {n:66,s:'Dy',name:'镝',price:308,x:12,y:9},
+  {n:67,s:'Ho',name:'钬',price:56,x:13,y:9},
+  {n:68,s:'Er',name:'铒',price:28.9,x:14,y:9},
+  {n:69,s:'Tm',name:'铥',price:4400,x:15,y:9},
+  {n:70,s:'Yb',name:'镱',price:26.5,x:16,y:9},
+  {n:71,s:'Lu',name:'镥',price:603,x:17,y:9},
+  {n:72,s:'Hf',name:'铪',price:900,x:4,y:6},
+  {n:73,s:'Ta',name:'钽',price:160,x:5,y:6},
+  {n:74,s:'W',name:'钨',price:30,x:6,y:6},
+  {n:75,s:'Re',name:'铼',price:2000,x:7,y:6},
+  {n:76,s:'Os',name:'锇',price:400,x:8,y:6},
+  {n:77,s:'Ir',name:'铱',price:56000,x:9,y:6},
+  {n:78,s:'Pt',name:'铂',price:29000,x:10,y:6},
+  {n:79,s:'Au',name:'金',price:56000,x:11,y:6},
+  {n:80,s:'Hg',name:'汞',price:24.7,x:12,y:6},
+  {n:81,s:'Tl',name:'铊',price:4400,x:13,y:6},
+  {n:82,s:'Pb',name:'铅',price:2,x:14,y:6},
+  {n:83,s:'Bi',name:'铋',price:9.7,x:15,y:6},
+  {n:84,s:'Po',name:'钋',price:49200000000000,x:16,y:6},
+  {n:85,s:'At',name:'砹',price:100000000,x:17,y:6},
+  {n:86,s:'Rn',name:'氡',price:100000,x:18,y:6},
+  {n:87,s:'Fr',name:'钫',price:1000000000000,x:1,y:7},
+  {n:88,s:'Ra',name:'镭',price:100000000,x:2,y:7},
+  {n:89,s:'Ac',name:'锕',price:29000000,x:3,y:10},
+  {n:90,s:'Th',name:'钍',price:300,x:4,y:10},
+  {n:91,s:'Pa',name:'镤',price:280000,x:5,y:10},
+  {n:92,s:'U',name:'铀',price:101,x:6,y:10},
+  {n:93,s:'Np',name:'镎',price:660000,x:7,y:10},
+  {n:94,s:'Pu',name:'钚',price:6490000,x:8,y:10},
+  {n:95,s:'Am',name:'镅',price:728000,x:9,y:10},
+  {n:96,s:'Cm',name:'锔',price:185000000,x:10,y:10},
+  {n:97,s:'Bk',name:'锫',price:185000000000,x:11,y:10},
+  {n:98,s:'Cf',name:'锎',price:27000000,x:12,y:10},
+  {n:99,s:'Es',name:'锿',price:1000000000,x:13,y:10},
+];
+function getColor(p){
+  if(p<1)return'#ff6b6b';
+  if(p<100)return'#4ecdc4';
+  if(p<10000)return'#95e1d3';
+  return'#f38181';
+}
+function getSize(p,scale){
+  const log=Math.log10(Math.max(p,0.01));
+  const norm=(log+2)/15;
+  return(30+norm*70)*scale;
+}
+function fmtPrice(p){
+  if(p>=1e12)return'$'+(p/1e12).toFixed(1)+'T';
+  if(p>=1e9)return'$'+(p/1e9).toFixed(1)+'B';
+  if(p>=1e6)return'$'+(p/1e6).toFixed(2)+'M';
+  if(p>=1e3)return'$'+(p/1e3).toFixed(2)+'K';
+  return'$'+p.toFixed(p<1?3:2);
+}
+function passFilter(p,f){
+  if(f==='all')return true;
+  if(f==='cheap')return p<1;
+  if(f==='low')return p>=1&&p<100;
+  if(f==='mid')return p>=100&&p<10000;
+  if(f==='expensive')return p>=10000;
+  return true;
+}
+function makeCell(el,scale,filter){
+  const cell=document.createElement('div');
+  cell.className='element-cell';
+  if(!passFilter(el.price,filter))cell.style.opacity='0.15';
+  const sz=getSize(el.price,scale);
+  const col=getColor(el.price);
+  cell.innerHTML=`<div class="element-circle" style="width:${sz}%;height:${sz}%;background:${col}">
+    <div class="atomic-number">${el.n}</div>
+    <div class="symbol">${el.s}</div>
+    <div class="el-name">${el.name}</div>
+  </div>`;
+  cell.addEventListener('mouseenter',e=>showTip(e,el));
+  cell.addEventListener('mousemove',moveTip);
+  cell.addEventListener('mouseleave',hideTip);
+  return cell;
+}
+function emptyCell(){const d=document.createElement('div');d.className='element-cell empty-cell';return d;}
+function render(){
+  const table=document.getElementById('periodicTable');
+  table.innerHTML='';
+  const scale=parseFloat(document.getElementById('scaleSlider').value);
+  const filter=document.getElementById('priceFilter').value;
+  for(let row=1;row<=7;row++)
+    for(let col=1;col<=18;col++){
+      const el=ELEMENTS.find(e=>e.x===col&&e.y===row);
+      table.appendChild(el?makeCell(el,scale,filter):emptyCell());
     }
-  };
-
-  const GRAD_COLORS = ['#6c63ff','#ff6584','#43e97b','#f7971e','#00b4d8','#e040fb','#ff9f43','#1dd1a1'];
-
-  function lerp(a,b,t){ return a+(b-a)*t; }
-
-  function renderStats(ds) {
-    const prices = ds.prices;
-    const avg = prices.reduce((a,b)=>a+b,0)/prices.length;
-    const mn = Math.min(...prices), mx = Math.max(...prices);
-    const grid = document.getElementById('stat-grid');
-    grid.innerHTML = `
-      <div class="stat-card">
-        <div class="stat-label">Average Price</div>
-        <div class="stat-val">${avg.toFixed(2)}</div>
-        <div class="stat-sub">${ds.unit}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Min Price</div>
-        <div class="stat-val">${mn}</div>
-        <div class="stat-sub">${ds.items[prices.indexOf(mn)]}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Max Price</div>
-        <div class="stat-val">${mx}</div>
-        <div class="stat-sub">${ds.items[prices.indexOf(mx)]}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Items</div>
-        <div class="stat-val">${prices.length}</div>
-        <div class="stat-sub">categories</div>
-      </div>
-    `;
+  const lRow=document.createElement('div');lRow.className='lanthanides';
+  const aRow=document.createElement('div');aRow.className='actinides';
+  for(let i=0;i<15;i++){
+    const la=ELEMENTS.filter(e=>e.y===9)[i];
+    const ac=ELEMENTS.filter(e=>e.y===10)[i];
+    lRow.appendChild(la?makeCell(la,scale,filter):emptyCell());
+    aRow.appendChild(ac?makeCell(ac,scale,filter):emptyCell());
   }
-
-  function renderBar(ds) {
-    const container = document.getElementById('bar-chart');
-    container.innerHTML = '';
-    const mx = Math.max(...ds.prices);
-    ds.items.forEach((item, i) => {
-      const pct = (ds.prices[i] / mx) * 100;
-      const color = GRAD_COLORS[i % GRAD_COLORS.length];
-      const div = document.createElement('div');
-      div.className = 'bv-item';
-      div.innerHTML = `
-        <div class="bv-fill" style="height:${pct}%; background:${color};">
-          <span class="bv-val">${ds.prices[i]}</span>
-        </div>
-        <span class="bv-label">${item}</span>
-      `;
-      container.appendChild(div);
-    });
-  }
-
-  function renderLine(ds) {
-    const canvas = document.getElementById('line-canvas');
-    const W = canvas.offsetWidth || 400;
-    const H = 240;
-    canvas.width = W; canvas.height = H;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#111118';
-    ctx.fillRect(0, 0, W, H);
-
-    const pad = { top: 30, right: 20, bottom: 40, left: 50 };
-    const innerW = W - pad.left - pad.right;
-    const innerH = H - pad.top - pad.bottom;
-    const { labels, series } = ds.trend;
-
-    // Compute range
-    const allVals = series.flatMap(s => s.data);
-    const mn = Math.min(...allVals) * 0.9;
-    const mx = Math.max(...allVals) * 1.05;
-
-    const xPos = (i) => pad.left + (i / (labels.length - 1)) * innerW;
-    const yPos = (v) => pad.top + innerH - ((v - mn) / (mx - mn)) * innerH;
-
-    // Grid lines
-    ctx.strokeStyle = '#2a2a3a';
-    ctx.lineWidth = 1;
-    for (let t = 0; t <= 4; t++) {
-      const y = pad.top + (t / 4) * innerH;
-      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
-      const val = mx - (t / 4) * (mx - mn);
-      ctx.fillStyle = '#8888aa';
-      ctx.font = '9px Space Mono, monospace';
-      ctx.textAlign = 'right';
-      ctx.fillText(val.toFixed(1), pad.left - 6, y + 3);
-    }
-
-    // X labels
-    labels.forEach((lbl, i) => {
-      ctx.fillStyle = '#8888aa';
-      ctx.font = '9px Space Mono, monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(lbl, xPos(i), H - 10);
-    });
-
-    // Series
-    series.forEach(s => {
-      ctx.strokeStyle = s.color;
-      ctx.lineWidth = 2;
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      s.data.forEach((v, i) => {
-        i === 0 ? ctx.moveTo(xPos(i), yPos(v)) : ctx.lineTo(xPos(i), yPos(v));
-      });
-      ctx.stroke();
-
-      // Dots
-      s.data.forEach((v, i) => {
-        ctx.beginPath();
-        ctx.arc(xPos(i), yPos(v), 3, 0, Math.PI*2);
-        ctx.fillStyle = s.color;
-        ctx.fill();
-      });
-
-      // Legend
-      const li = series.indexOf(s);
-      ctx.fillStyle = s.color;
-      ctx.fillRect(pad.left + li * 80, 10, 10, 10);
-      ctx.fillStyle = '#e8e8f0';
-      ctx.font = '9px Inter, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(s.name, pad.left + li * 80 + 14, 19);
-    });
-  }
-
-  function renderScatter(ds) {
-    const canvas = document.getElementById('scatter-canvas');
-    const W = canvas.offsetWidth || 800;
-    const H = 200;
-    canvas.width = W; canvas.height = H;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#111118';
-    ctx.fillRect(0, 0, W, H);
-
-    const pad = { top: 20, right: 20, bottom: 40, left: 50 };
-    const innerW = W - pad.left - pad.right;
-    const innerH = H - pad.top - pad.bottom;
-
-    const mxP = Math.max(...ds.prices) * 1.1;
-    const mxV = Math.max(...ds.volumes) * 1.1;
-    const xPos = (v) => pad.left + (v / mxP) * innerW;
-    const yPos = (v) => pad.top + innerH - (v / mxV) * innerH;
-
-    // Axes
-    ctx.strokeStyle = '#2a2a3a'; ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, H - pad.bottom);
-    ctx.lineTo(W - pad.right, H - pad.bottom);
-    ctx.stroke();
-
-    ctx.fillStyle = '#8888aa';
-    ctx.font = '9px Space Mono, monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('Price →', W/2, H - 8);
-    ctx.save(); ctx.translate(12, H/2); ctx.rotate(-Math.PI/2);
-    ctx.fillText('Volume →', 0, 0); ctx.restore();
-
-    // Points
-    ds.items.forEach((item, i) => {
-      const x = xPos(ds.prices[i]);
-      const y = yPos(ds.volumes[i]);
-      const color = GRAD_COLORS[i % GRAD_COLORS.length];
-      const r = 8;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
-      ctx.fillStyle = color + '55';
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.5;
-      ctx.fill(); ctx.stroke();
-      ctx.fillStyle = color;
-      ctx.font = '8px Space Mono, monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(item, x, y - 12);
-    });
-  }
-
-  let currentDs = 'food';
-
-  function loadDataset(key) {
-    currentDs = key;
-    document.querySelectorAll('.tab-btn').forEach(b => {
-      b.classList.toggle('active', b.onclick.toString().includes(`'${key}'`));
-    });
-    const ds = datasets[key];
-    renderStats(ds);
-    renderBar(ds);
-    requestAnimationFrame(() => { renderLine(ds); renderScatter(ds); });
-  }
-
-  window.addEventListener('resize', () => {
-    renderLine(datasets[currentDs]);
-    renderScatter(datasets[currentDs]);
-  });
-
-  loadDataset('food');
-  </script>
+  table.appendChild(lRow);
+  table.appendChild(aRow);
+}
+function showTip(e,el){
+  const t=document.getElementById('tooltip');
+  const tier=el.price<1?'便宜 (<$1)':el.price<100?'低价 ($1–$100)':el.price<10000?'中等 ($100–$10k)':'昂贵 (>$10k)';
+  t.innerHTML=`<div class="tooltip-name">${el.n}. ${el.name}（${el.s}）</div>
+    <div class="tooltip-row"><strong>价格：</strong>${fmtPrice(el.price)} / kg</div>
+    <div class="tooltip-row"><strong>区间：</strong>${tier}</div>`;
+  t.classList.add('active');moveTip(e);
+}
+function moveTip(e){const t=document.getElementById('tooltip');t.style.left=(e.clientX+16)+'px';t.style.top=(e.clientY+16)+'px';}
+function hideTip(){document.getElementById('tooltip').classList.remove('active');}
+function setFilter(val){document.getElementById('priceFilter').value=val;render();}
+document.getElementById('priceFilter').addEventListener('change',render);
+document.getElementById('scaleSlider').addEventListener('input',e=>{
+  document.getElementById('scaleValue').textContent=parseFloat(e.target.value).toFixed(1)+'×';
+  render();
+});
+render();
+</script>
 </body>
 </html>
