@@ -10,7 +10,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.65;color:#404040;background:#edf0f2;}
-/* ── RTD SIDEBAR ── */
+/* RTD SIDEBAR */
 .wy-nav-side{position:fixed;top:0;left:0;width:300px;height:100%;background:#343131;z-index:200;display:flex;flex-direction:column;transition:transform .25s;}
 .wy-side-scroll{overflow-y:auto;height:100%;padding-bottom:3rem;}
 .wy-side-nav-search{background:#2980b9;padding:.809rem;}
@@ -22,18 +22,17 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 .wy-menu-vertical li a{display:flex;align-items:center;color:#d9d9d9;padding:.4045rem 1.618rem;font-size:.875rem;text-decoration:none;transition:background .1s;cursor:pointer;}
 .wy-menu-vertical li a:hover{background:#4e4a4a;color:#fff;text-decoration:none;}
 .wy-menu-vertical li.current>a{background:#2980b9;color:#fff;}
-/* ── RTD CONTENT ── */
+/* RTD CONTENT */
 .wy-nav-content-wrap{margin-left:300px;background:#fcfcfc;min-height:100vh;}
 .wy-nav-top{display:none;background:#2980b9;color:#fff;padding:.5em .809em;align-items:center;gap:.7em;}
 .wy-nav-top a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem;}
 .wy-nav-top-btn{background:none;border:none;color:#fff;font-size:1.4em;cursor:pointer;line-height:1;padding:0;}
 .wy-nav-content{max-width:1080px;margin:0 auto;padding:1.618em 2.5em 4em;}
-/* ── RST TYPOGRAPHY ── */
+/* RST TYPOGRAPHY */
 .rst-content h1{font-size:175%;font-weight:700;color:#404040;border-bottom:1px solid #e1e4e5;padding-bottom:.5rem;margin-bottom:.8rem;}
 .rst-content p{font-size:14px;line-height:1.7;margin-bottom:.7em;color:#404040;}
 .rst-content a{color:#2980b9;text-decoration:none;}
 .rst-content a:hover{text-decoration:underline;}
-/* admonitions */
 .admonition{padding:12px 14px;margin-bottom:14px;border-left:3px solid;}
 .admonition.note{background:#e7f2fa;border-color:#6ab0de;}
 .admonition.tip{background:#dbfaf4;border-color:#1abc9c;}
@@ -41,35 +40,33 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 .admonition.note .admonition-title{color:#2980b9;}
 .admonition.tip .admonition-title{color:#0d8c6c;}
 .admonition p{margin:0;font-size:.88rem;color:#404040;line-height:1.72;}
-/* ── CONTROLS ── */
+/* CONTROLS */
 .controls-bar{display:flex;align-items:center;gap:1.5em;flex-wrap:wrap;margin-bottom:1.2em;padding:.7em 1em;background:#f3f6f6;border:1px solid #e1e4e5;border-radius:3px;}
 .ctrl-label{font-family:'DM Mono',monospace;font-size:.75rem;color:#2980b9;font-weight:700;white-space:nowrap;}
 .ctrl-select{background:#fff;border:1px solid #e1e4e5;color:#404040;border-radius:2px;padding:3px 8px;font-family:'DM Mono',monospace;font-size:.78rem;cursor:pointer;outline:none;}
 .ctrl-select:hover{border-color:#2980b9;}
 .ctrl-range{accent-color:#2980b9;cursor:pointer;width:110px;}
 .ctrl-val{font-family:'DM Mono',monospace;font-size:.78rem;color:#9b9b9b;min-width:2.5em;}
-/* ── LEGEND ── */
+/* LEGEND */
 .legend-row{display:flex;gap:1.5em;flex-wrap:wrap;margin-bottom:1.2em;align-items:center;}
 .legend-item{display:flex;align-items:center;gap:.5em;font-size:.8rem;font-family:'DM Mono',monospace;color:#404040;}
 .legend-dot{border-radius:50%;border:1.5px solid rgba(0,0,0,.2);flex-shrink:0;}
-/* ── PERIODIC TABLE ── */
-.periodic-table{display:grid;grid-template-columns:repeat(18,1fr);gap:3px;margin-bottom:8px;}
+/* PERIODIC TABLE */
+.periodic-table{display:grid;grid-template-columns:repeat(18,1fr);gap:1px;margin-bottom:8px;}
 .element-cell{aspect-ratio:1;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;}
 .element-cell:hover{transform:scale(1.15);z-index:10;}
 .element-circle{width:100%;height:100%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid rgba(0,0,0,.2);transition:all .15s;}
 .element-circle:hover{border-width:2px;box-shadow:0 0 12px rgba(0,0,0,.25);}
 .atomic-number{font-size:.52em;color:rgba(0,0,0,.55);font-weight:700;line-height:1;}
 .symbol{font-size:1.05em;font-weight:700;color:#000;line-height:1.1;}
-.el-name{font-size:.45em;color:rgba(0,0,0,.65);line-height:1;}
 .empty-cell{opacity:0;pointer-events:none;}
-.lanthanides,.actinides{grid-column:3/span 15;display:grid;grid-template-columns:repeat(15,1fr);gap:3px;margin-top:6px;}
-/* ── TOOLTIP ── */
+.lanthanides,.actinides{grid-column:3/span 15;display:grid;grid-template-columns:repeat(15,1fr);gap:1px;margin-top:6px;}
+/* TOOLTIP */
 .el-tooltip{position:fixed;background:rgba(30,30,30,.95);color:#fff;padding:10px 14px;border-radius:3px;font-size:13px;pointer-events:none;z-index:1000;display:none;max-width:240px;box-shadow:0 4px 16px rgba(0,0,0,.3);}
 .el-tooltip.active{display:block;}
 .tooltip-name{font-size:15px;font-weight:700;margin-bottom:5px;}
 .tooltip-row{margin:2px 0;font-family:'DM Mono',monospace;font-size:.8rem;color:rgba(255,255,255,.85);}
 .tooltip-row strong{color:#fff;}
-/* footer */
 .rst-footer{margin-top:3em;padding-top:1em;border-top:1px solid #e1e4e5;color:#9b9b9b;font-size:.75rem;text-align:center;font-family:'DM Mono',monospace;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:2px;}
@@ -79,7 +76,6 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
   .wy-nav-content-wrap{margin-left:0;}
   .wy-nav-top{display:flex;}
   .wy-nav-content{padding:1em 1em;}
-  .el-name{display:none;}
 }
 @media(max-width:900px){.el-name{display:none;}}
 </style>
@@ -93,22 +89,22 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
         <div class="wy-side-nav-ver">Element Price Table</div>
       </div>
       <div class="wy-menu-vertical">
-        <p class="caption">导航</p>
+        <p class="caption">Navigation</p>
         <ul>
-          <li><a href="../index.html">← 首页</a></li>
+          <li><a href="../index.html">&larr; Home</a></li>
         </ul>
-        <p class="caption">本页</p>
+        <p class="caption">On this page</p>
         <ul>
-          <li id="nav-intro"><a href="#intro">说明</a></li>
-          <li id="nav-table"><a href="#table">周期表</a></li>
+          <li><a href="#intro">Notes</a></li>
+          <li><a href="#table">Periodic Table</a></li>
         </ul>
-        <p class="caption">按价格筛选</p>
+        <p class="caption">Filter by price</p>
         <ul>
-          <li><a onclick="setFilter('cheap')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff6b6b;margin-right:7px;flex-shrink:0"></span>&lt; $1 / kg</a></li>
-          <li><a onclick="setFilter('low')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ecdc4;margin-right:7px;flex-shrink:0"></span>$1 – $100 / kg</a></li>
-          <li><a onclick="setFilter('mid')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#95e1d3;margin-right:7px;flex-shrink:0"></span>$100 – $10k / kg</a></li>
-          <li><a onclick="setFilter('expensive')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f38181;margin-right:7px;flex-shrink:0"></span>&gt; $10,000 / kg</a></li>
-          <li><a onclick="setFilter('all')">全部显示</a></li>
+          <li><a onclick="setFilter('cheap')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(200,200,200,0.5);border:1px solid #aaa;margin-right:7px;"></span>&lt; $1 / kg</a></li>
+          <li><a onclick="setFilter('low')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ade80;margin-right:7px;"></span>$1 - $100 / kg</a></li>
+          <li><a onclick="setFilter('mid')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#60a5fa;margin-right:7px;"></span>$100 - $10k / kg</a></li>
+          <li><a onclick="setFilter('expensive')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:7px;"></span>&gt; $10,000 / kg</a></li>
+          <li><a onclick="setFilter('all')">Show all</a></li>
         </ul>
       </div>
     </div>
@@ -116,169 +112,158 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 
   <div class="wy-nav-content-wrap">
     <div class="wy-nav-top">
-      <button class="wy-nav-top-btn" onclick="document.querySelector('.wy-nav-side').classList.toggle('open')">☰</button>
-      <a href="../index.html">元素价格可视化</a>
+      <button class="wy-nav-top-btn" onclick="document.querySelector('.wy-nav-side').classList.toggle('open')">&#9776;</button>
+      <a href="../index.html">Element Price Table</a>
     </div>
     <div class="wy-nav-content">
       <div class="rst-content">
-
-        <h1>元素价格可视化 <small style="font-size:55%;color:#9b9b9b;font-weight:400">Element Price Table</small></h1>
-
+        <h1>Element Price Visualization <small style="font-size:55%;color:#9b9b9b;font-weight:400">April 2026</small></h1>
         <div class="admonition note" id="intro" style="scroll-margin-top:1em;">
-          <span class="admonition-title">说明</span>
-          <p>圆形大小代表元素价格（美元/千克），使用对数缩放。颜色代表价格区间。悬停查看详细信息，可通过控件筛选价格范围或调整圆形大小。价格数据更新于 2026年4月。</p>
+          <span class="admonition-title">Note</span>
+          <p>Circle size represents element price (USD/kg) on a log scale. Color indicates price tier. Hover for details. Use controls to filter by price range or adjust circle size.</p>
         </div>
-
         <div class="admonition tip">
-          <span class="admonition-title">2026年4月行情速览</span>
-          <p>金（Au）≈ $155,000/kg（历史新高）；铑（Rh）≈ $342,000/kg 为常见贵金属最贵；铱（Ir）≈ $257,000/kg；钌（Ru）价格较两年前上涨约 8 倍。镓（Ga）、锗（Ge）受出口管制影响分别涨至 $2,269/kg 和 $8,598/kg。铽（Tb）≈ $4,029/kg 为稀土之最。最便宜：S（硫）≈ $0.09/kg。</p>
+          <span class="admonition-title">April 2026 market highlights</span>
+          <p>Au ~$155,000/kg (all-time high); Rh ~$342,000/kg most expensive common precious metal; Ir ~$257,000/kg; Ru up ~8x from two years ago. Ga and Ge rose to $2,269/kg and $8,598/kg due to export controls. Tb ~$4,029/kg highest rare earth. Cheapest: S ~$0.09/kg.</p>
         </div>
-
         <div class="controls-bar">
-          <span class="ctrl-label">价格筛选</span>
+          <span class="ctrl-label">Price filter</span>
           <select class="ctrl-select" id="priceFilter">
-            <option value="all">全部</option>
-            <option value="cheap">便宜 (&lt; $1/kg)</option>
-            <option value="low">低价 ($1–$100/kg)</option>
-            <option value="mid">中等 ($100–$10k/kg)</option>
-            <option value="expensive">昂贵 (&gt; $10k/kg)</option>
+            <option value="all">All</option>
+            <option value="cheap">Cheap (&lt; $1/kg)</option>
+            <option value="low">Low ($1-$100/kg)</option>
+            <option value="mid">Mid ($100-$10k/kg)</option>
+            <option value="expensive">Expensive (&gt; $10k/kg)</option>
           </select>
-          <span class="ctrl-label" style="margin-left:.5em;">圆形缩放</span>
+          <span class="ctrl-label" style="margin-left:.5em;">Size scale</span>
           <input class="ctrl-range" type="range" id="scaleSlider" min="0.5" max="2" step="0.1" value="1">
-          <span class="ctrl-val" id="scaleValue">1.0×</span>
+          <span class="ctrl-val" id="scaleValue">1.0x</span>
         </div>
-
         <div class="legend-row">
-          <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b;width:10px;height:10px;"></div>&lt; $1/kg</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#4ecdc4;width:16px;height:16px;"></div>$1 – $100/kg</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#95e1d3;width:22px;height:22px;"></div>$100 – $10k/kg</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#f38181;width:28px;height:28px;"></div>&gt; $10k/kg</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(200,200,200,0.5);border:1px solid #aaa;width:10px;height:10px;"></div>&lt; $1/kg</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#4ade80;width:16px;height:16px;"></div>$1 - $100/kg</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#60a5fa;width:22px;height:22px;"></div>$100 - $10k/kg</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ef4444;width:28px;height:28px;"></div>&gt; $10k/kg</div>
         </div>
-
-        <div class="periodic-table" id="periodicTable" id="table" style="scroll-margin-top:1em;"></div>
-
-        <div class="rst-footer">价格数据来源：RSC (Royal Society of Chemistry) · 单位：USD/kg · 放射性稀有元素价格仅供参考</div>
+        <div class="periodic-table" id="periodicTable" style="scroll-margin-top:1em;"></div>
+        <div class="rst-footer">Price data: RSC (Royal Society of Chemistry) · Unit: USD/kg · Radioactive/rare element prices are estimates</div>
       </div>
     </div>
   </div>
 </div>
-
 <div class="el-tooltip" id="tooltip"></div>
-
 <script>
-// Prices updated April 2026
-// Sources: strategicmetalsinvest.com (Apr 15), tradingeconomics.com, fortune.com, farmonaut.com
 const ELEMENTS=[
-  {n:1,s:'H',name:'氢',price:1.39,x:1,y:1},
-  {n:2,s:'He',name:'氦',price:24,x:18,y:1},
-  {n:3,s:'Li',name:'锂',price:70,x:1,y:2},
-  {n:4,s:'Be',name:'铍',price:857,x:2,y:2},
-  {n:5,s:'B',name:'硼',price:3.7,x:13,y:2},
-  {n:6,s:'C',name:'碳',price:0.122,x:14,y:2},
-  {n:7,s:'N',name:'氮',price:0.14,x:15,y:2},
-  {n:8,s:'O',name:'氧',price:0.154,x:16,y:2},
-  {n:9,s:'F',name:'氟',price:1.9,x:17,y:2},
-  {n:10,s:'Ne',name:'氖',price:240,x:18,y:2},
-  {n:11,s:'Na',name:'钠',price:3,x:1,y:3},
-  {n:12,s:'Mg',name:'镁',price:2.32,x:2,y:3},
-  {n:13,s:'Al',name:'铝',price:1.79,x:13,y:3},
-  {n:14,s:'Si',name:'硅',price:1.7,x:14,y:3},
-  {n:15,s:'P',name:'磷',price:2.69,x:15,y:3},
-  {n:16,s:'S',name:'硫',price:0.088,x:16,y:3},
-  {n:17,s:'Cl',name:'氯',price:0.28,x:17,y:3},
-  {n:18,s:'Ar',name:'氩',price:0.931,x:18,y:3},
-  {n:19,s:'K',name:'钾',price:13.6,x:1,y:4},
-  {n:20,s:'Ca',name:'钙',price:2.7,x:2,y:4},
-  {n:21,s:'Sc',name:'钪',price:3700,x:3,y:4},
-  {n:22,s:'Ti',name:'钛',price:11.1,x:4,y:4},
-  {n:23,s:'V',name:'钒',price:27.3,x:5,y:4},
-  {n:24,s:'Cr',name:'铬',price:9,x:6,y:4},
-  {n:25,s:'Mn',name:'锰',price:1.82,x:7,y:4},
-  {n:26,s:'Fe',name:'铁',price:0.424,x:8,y:4},
-  {n:27,s:'Co',name:'钴',price:56.29,x:9,y:4},
-  {n:28,s:'Ni',name:'镍',price:17.2,x:10,y:4},
-  {n:29,s:'Cu',name:'铜',price:13.43,x:11,y:4},
-  {n:30,s:'Zn',name:'锌',price:2.55,x:12,y:4},
-  {n:31,s:'Ga',name:'镓',price:2269,x:13,y:4},
-  {n:32,s:'Ge',name:'锗',price:8598,x:14,y:4},
-  {n:33,s:'As',name:'砷',price:1.4,x:15,y:4},
-  {n:34,s:'Se',name:'硒',price:21.4,x:16,y:4},
-  {n:35,s:'Br',name:'溴',price:4.39,x:17,y:4},
-  {n:36,s:'Kr',name:'氪',price:290,x:18,y:4},
-  {n:37,s:'Rb',name:'铷',price:15500,x:1,y:5},
-  {n:38,s:'Sr',name:'锶',price:6.5,x:2,y:5},
-  {n:39,s:'Y',name:'钇',price:35,x:3,y:5},
-  {n:40,s:'Zr',name:'锆',price:34.9,x:4,y:5},
-  {n:41,s:'Nb',name:'铌',price:41.1,x:5,y:5},
-  {n:42,s:'Mo',name:'钼',price:17.7,x:6,y:5},
-  {n:43,s:'Tc',name:'锝',price:100000,x:7,y:5},
-  {n:44,s:'Ru',name:'钌',price:56262,x:8,y:5},
-  {n:45,s:'Rh',name:'铑',price:342000,x:9,y:5},
-  {n:46,s:'Pd',name:'钯',price:50943,x:10,y:5},
-  {n:47,s:'Ag',name:'银',price:2555,x:11,y:5},
-  {n:48,s:'Cd',name:'镉',price:2.76,x:12,y:5},
-  {n:49,s:'In',name:'铟',price:972,x:13,y:5},
-  {n:50,s:'Sn',name:'锡',price:18.7,x:14,y:5},
-  {n:51,s:'Sb',name:'锑',price:51.8,x:15,y:5},
-  {n:52,s:'Te',name:'碲',price:243.3,x:16,y:5},
-  {n:53,s:'I',name:'碘',price:35,x:17,y:5},
-  {n:54,s:'Xe',name:'氙',price:1800,x:18,y:5},
-  {n:55,s:'Cs',name:'铯',price:61800,x:1,y:6},
-  {n:56,s:'Ba',name:'钡',price:0.27,x:2,y:6},
-  {n:57,s:'La',name:'镧',price:6,x:3,y:9},
-  {n:58,s:'Ce',name:'铈',price:7,x:4,y:9},
-  {n:59,s:'Pr',name:'镨',price:212.6,x:5,y:9},
-  {n:60,s:'Nd',name:'钕',price:218.8,x:6,y:9},
-  {n:61,s:'Pm',name:'钷',price:500000,x:7,y:9},
-  {n:62,s:'Sm',name:'钐',price:120,x:8,y:9},
-  {n:63,s:'Eu',name:'铕',price:250,x:9,y:9},
-  {n:64,s:'Gd',name:'钆',price:45,x:10,y:9},
-  {n:65,s:'Tb',name:'铽',price:4029,x:11,y:9},
-  {n:66,s:'Dy',name:'镝',price:930.7,x:12,y:9},
-  {n:67,s:'Ho',name:'钬',price:80,x:13,y:9},
-  {n:68,s:'Er',name:'铒',price:65,x:14,y:9},
-  {n:69,s:'Tm',name:'铥',price:2700,x:15,y:9},
-  {n:70,s:'Yb',name:'镱',price:120,x:16,y:9},
-  {n:71,s:'Lu',name:'镥',price:6000,x:17,y:9},
-  {n:72,s:'Hf',name:'铪',price:12508,x:4,y:6},
-  {n:73,s:'Ta',name:'钽',price:160,x:5,y:6},
-  {n:74,s:'W',name:'钨',price:30,x:6,y:6},
-  {n:75,s:'Re',name:'铼',price:6389,x:7,y:6},
-  {n:76,s:'Os',name:'锇',price:400,x:8,y:6},
-  {n:77,s:'Ir',name:'铱',price:257000,x:9,y:6},
-  {n:78,s:'Pt',name:'铂',price:66400,x:10,y:6},
-  {n:79,s:'Au',name:'金',price:155000,x:11,y:6},
-  {n:80,s:'Hg',name:'汞',price:24.7,x:12,y:6},
-  {n:81,s:'Tl',name:'铊',price:4400,x:13,y:6},
-  {n:82,s:'Pb',name:'铅',price:2,x:14,y:6},
-  {n:83,s:'Bi',name:'铋',price:67,x:15,y:6},
-  {n:84,s:'Po',name:'钋',price:49200000000000,x:16,y:6},
-  {n:85,s:'At',name:'砹',price:100000000,x:17,y:6},
-  {n:86,s:'Rn',name:'氡',price:100000,x:18,y:6},
-  {n:87,s:'Fr',name:'钫',price:1000000000000,x:1,y:7},
-  {n:88,s:'Ra',name:'镭',price:100000000,x:2,y:7},
-  {n:89,s:'Ac',name:'锕',price:29000000,x:3,y:10},
-  {n:90,s:'Th',name:'钍',price:300,x:4,y:10},
-  {n:91,s:'Pa',name:'镤',price:280000,x:5,y:10},
-  {n:92,s:'U',name:'铀',price:101,x:6,y:10},
-  {n:93,s:'Np',name:'镎',price:660000,x:7,y:10},
-  {n:94,s:'Pu',name:'钚',price:6490000,x:8,y:10},
-  {n:95,s:'Am',name:'镅',price:728000,x:9,y:10},
-  {n:96,s:'Cm',name:'锔',price:185000000,x:10,y:10},
-  {n:97,s:'Bk',name:'锫',price:185000000000,x:11,y:10},
-  {n:98,s:'Cf',name:'锎',price:27000000,x:12,y:10},
-  {n:99,s:'Es',name:'锿',price:1000000000,x:13,y:10},
+  {n:1,s:'H',name:'Hydrogen',price:1.39,x:1,y:1},
+  {n:2,s:'He',name:'Helium',price:24,x:18,y:1},
+  {n:3,s:'Li',name:'Lithium',price:70,x:1,y:2},
+  {n:4,s:'Be',name:'Beryllium',price:857,x:2,y:2},
+  {n:5,s:'B',name:'Boron',price:3.7,x:13,y:2},
+  {n:6,s:'C',name:'Carbon',price:0.122,x:14,y:2},
+  {n:7,s:'N',name:'Nitrogen',price:0.14,x:15,y:2},
+  {n:8,s:'O',name:'Oxygen',price:0.154,x:16,y:2},
+  {n:9,s:'F',name:'Fluorine',price:1.9,x:17,y:2},
+  {n:10,s:'Ne',name:'Neon',price:240,x:18,y:2},
+  {n:11,s:'Na',name:'Sodium',price:3,x:1,y:3},
+  {n:12,s:'Mg',name:'Magnesium',price:2.32,x:2,y:3},
+  {n:13,s:'Al',name:'Aluminium',price:1.79,x:13,y:3},
+  {n:14,s:'Si',name:'Silicon',price:1.7,x:14,y:3},
+  {n:15,s:'P',name:'Phosphorus',price:2.69,x:15,y:3},
+  {n:16,s:'S',name:'Sulfur',price:0.088,x:16,y:3},
+  {n:17,s:'Cl',name:'Chlorine',price:0.28,x:17,y:3},
+  {n:18,s:'Ar',name:'Argon',price:0.931,x:18,y:3},
+  {n:19,s:'K',name:'Potassium',price:13.6,x:1,y:4},
+  {n:20,s:'Ca',name:'Calcium',price:2.7,x:2,y:4},
+  {n:21,s:'Sc',name:'Scandium',price:3700,x:3,y:4},
+  {n:22,s:'Ti',name:'Titanium',price:11.1,x:4,y:4},
+  {n:23,s:'V',name:'Vanadium',price:27.3,x:5,y:4},
+  {n:24,s:'Cr',name:'Chromium',price:9,x:6,y:4},
+  {n:25,s:'Mn',name:'Manganese',price:1.82,x:7,y:4},
+  {n:26,s:'Fe',name:'Iron',price:0.424,x:8,y:4},
+  {n:27,s:'Co',name:'Cobalt',price:56.29,x:9,y:4},
+  {n:28,s:'Ni',name:'Nickel',price:17.2,x:10,y:4},
+  {n:29,s:'Cu',name:'Copper',price:13.43,x:11,y:4},
+  {n:30,s:'Zn',name:'Zinc',price:2.55,x:12,y:4},
+  {n:31,s:'Ga',name:'Gallium',price:2269,x:13,y:4},
+  {n:32,s:'Ge',name:'Germanium',price:8598,x:14,y:4},
+  {n:33,s:'As',name:'Arsenic',price:1.4,x:15,y:4},
+  {n:34,s:'Se',name:'Selenium',price:21.4,x:16,y:4},
+  {n:35,s:'Br',name:'Bromine',price:4.39,x:17,y:4},
+  {n:36,s:'Kr',name:'Krypton',price:290,x:18,y:4},
+  {n:37,s:'Rb',name:'Rubidium',price:15500,x:1,y:5},
+  {n:38,s:'Sr',name:'Strontium',price:6.5,x:2,y:5},
+  {n:39,s:'Y',name:'Yttrium',price:35,x:3,y:5},
+  {n:40,s:'Zr',name:'Zirconium',price:34.9,x:4,y:5},
+  {n:41,s:'Nb',name:'Niobium',price:41.1,x:5,y:5},
+  {n:42,s:'Mo',name:'Molybdenum',price:17.7,x:6,y:5},
+  {n:43,s:'Tc',name:'Technetium',price:100000,x:7,y:5},
+  {n:44,s:'Ru',name:'Ruthenium',price:56262,x:8,y:5},
+  {n:45,s:'Rh',name:'Rhodium',price:342000,x:9,y:5},
+  {n:46,s:'Pd',name:'Palladium',price:50943,x:10,y:5},
+  {n:47,s:'Ag',name:'Silver',price:2555,x:11,y:5},
+  {n:48,s:'Cd',name:'Cadmium',price:2.76,x:12,y:5},
+  {n:49,s:'In',name:'Indium',price:972,x:13,y:5},
+  {n:50,s:'Sn',name:'Tin',price:18.7,x:14,y:5},
+  {n:51,s:'Sb',name:'Antimony',price:51.8,x:15,y:5},
+  {n:52,s:'Te',name:'Tellurium',price:243.3,x:16,y:5},
+  {n:53,s:'I',name:'Iodine',price:35,x:17,y:5},
+  {n:54,s:'Xe',name:'Xenon',price:1800,x:18,y:5},
+  {n:55,s:'Cs',name:'Caesium',price:61800,x:1,y:6},
+  {n:56,s:'Ba',name:'Barium',price:0.27,x:2,y:6},
+  {n:57,s:'La',name:'Lanthanum',price:6,x:3,y:9},
+  {n:58,s:'Ce',name:'Cerium',price:7,x:4,y:9},
+  {n:59,s:'Pr',name:'Praseodymium',price:212.6,x:5,y:9},
+  {n:60,s:'Nd',name:'Neodymium',price:218.8,x:6,y:9},
+  {n:61,s:'Pm',name:'Promethium',price:500000,x:7,y:9},
+  {n:62,s:'Sm',name:'Samarium',price:120,x:8,y:9},
+  {n:63,s:'Eu',name:'Europium',price:250,x:9,y:9},
+  {n:64,s:'Gd',name:'Gadolinium',price:45,x:10,y:9},
+  {n:65,s:'Tb',name:'Terbium',price:4029,x:11,y:9},
+  {n:66,s:'Dy',name:'Dysprosium',price:930.7,x:12,y:9},
+  {n:67,s:'Ho',name:'Holmium',price:80,x:13,y:9},
+  {n:68,s:'Er',name:'Erbium',price:65,x:14,y:9},
+  {n:69,s:'Tm',name:'Thulium',price:2700,x:15,y:9},
+  {n:70,s:'Yb',name:'Ytterbium',price:120,x:16,y:9},
+  {n:71,s:'Lu',name:'Lutetium',price:6000,x:17,y:9},
+  {n:72,s:'Hf',name:'Hafnium',price:12508,x:4,y:6},
+  {n:73,s:'Ta',name:'Tantalum',price:160,x:5,y:6},
+  {n:74,s:'W',name:'Tungsten',price:30,x:6,y:6},
+  {n:75,s:'Re',name:'Rhenium',price:6389,x:7,y:6},
+  {n:76,s:'Os',name:'Osmium',price:400,x:8,y:6},
+  {n:77,s:'Ir',name:'Iridium',price:257000,x:9,y:6},
+  {n:78,s:'Pt',name:'Platinum',price:66400,x:10,y:6},
+  {n:79,s:'Au',name:'Gold',price:155000,x:11,y:6},
+  {n:80,s:'Hg',name:'Mercury',price:24.7,x:12,y:6},
+  {n:81,s:'Tl',name:'Thallium',price:4400,x:13,y:6},
+  {n:82,s:'Pb',name:'Lead',price:2,x:14,y:6},
+  {n:83,s:'Bi',name:'Bismuth',price:67,x:15,y:6},
+  {n:84,s:'Po',name:'Polonium',price:49200000000000,x:16,y:6},
+  {n:85,s:'At',name:'Astatine',price:100000000,x:17,y:6},
+  {n:86,s:'Rn',name:'Radon',price:100000,x:18,y:6},
+  {n:87,s:'Fr',name:'Francium',price:1000000000000,x:1,y:7},
+  {n:88,s:'Ra',name:'Radium',price:100000000,x:2,y:7},
+  {n:89,s:'Ac',name:'Actinium',price:29000000,x:3,y:10},
+  {n:90,s:'Th',name:'Thorium',price:300,x:4,y:10},
+  {n:91,s:'Pa',name:'Protactinium',price:280000,x:5,y:10},
+  {n:92,s:'U',name:'Uranium',price:101,x:6,y:10},
+  {n:93,s:'Np',name:'Neptunium',price:660000,x:7,y:10},
+  {n:94,s:'Pu',name:'Plutonium',price:6490000,x:8,y:10},
+  {n:95,s:'Am',name:'Americium',price:728000,x:9,y:10},
+  {n:96,s:'Cm',name:'Curium',price:185000000,x:10,y:10},
+  {n:97,s:'Bk',name:'Berkelium',price:185000000000,x:11,y:10},
+  {n:98,s:'Cf',name:'Californium',price:27000000,x:12,y:10},
+  {n:99,s:'Es',name:'Einsteinium',price:1000000000,x:13,y:10}
 ];
 function getColor(p){
-  if(p<1)return'#ff6b6b';
-  if(p<100)return'#4ecdc4';
-  if(p<10000)return'#95e1d3';
-  return'#f38181';
+  if(p<1)return'rgba(200,200,200,0.5)';
+  if(p<100)return'#4ade80';
+  if(p<10000)return'#60a5fa';
+  return'#ef4444';
 }
 function getSize(p,scale){
   const log=Math.log10(Math.max(p,0.01));
-  const norm=(log+2)/15;
-  return(30+norm*70)*scale;
+  const base=Math.max(14,Math.min(92,-3.49+16.53*log));
+  return base*scale;
 }
 function fmtPrice(p){
   if(p>=1e12)return'$'+(p/1e12).toFixed(1)+'T';
@@ -301,12 +286,8 @@ function makeCell(el,scale,filter){
   if(!passFilter(el.price,filter))cell.style.opacity='0.15';
   const sz=getSize(el.price,scale);
   const col=getColor(el.price);
-  cell.innerHTML=`<div class="element-circle" style="width:${sz}%;height:${sz}%;background:${col}">
-    <div class="atomic-number">${el.n}</div>
-    <div class="symbol">${el.s}</div>
-    <div class="el-name">${el.name}</div>
-  </div>`;
-  cell.addEventListener('mouseenter',e=>showTip(e,el));
+  cell.innerHTML='<div class="element-circle" style="width:'+sz+'%;height:'+sz+'%;background:'+col+'"><div class="atomic-number">'+el.n+'</div><div class="symbol">'+el.s+'</div></div>';
+  cell.addEventListener('mouseenter',function(e){showTip(e,el);});
   cell.addEventListener('mousemove',moveTip);
   cell.addEventListener('mouseleave',hideTip);
   return cell;
@@ -319,14 +300,14 @@ function render(){
   const filter=document.getElementById('priceFilter').value;
   for(let row=1;row<=7;row++)
     for(let col=1;col<=18;col++){
-      const el=ELEMENTS.find(e=>e.x===col&&e.y===row);
+      const el=ELEMENTS.find(function(e){return e.x===col&&e.y===row;});
       table.appendChild(el?makeCell(el,scale,filter):emptyCell());
     }
   const lRow=document.createElement('div');lRow.className='lanthanides';
   const aRow=document.createElement('div');aRow.className='actinides';
   for(let i=0;i<15;i++){
-    const la=ELEMENTS.filter(e=>e.y===9)[i];
-    const ac=ELEMENTS.filter(e=>e.y===10)[i];
+    const la=ELEMENTS.filter(function(e){return e.y===9;})[i];
+    const ac=ELEMENTS.filter(function(e){return e.y===10;})[i];
     lRow.appendChild(la?makeCell(la,scale,filter):emptyCell());
     aRow.appendChild(ac?makeCell(ac,scale,filter):emptyCell());
   }
@@ -335,18 +316,16 @@ function render(){
 }
 function showTip(e,el){
   const t=document.getElementById('tooltip');
-  const tier=el.price<1?'便宜 (<$1)':el.price<100?'低价 ($1–$100)':el.price<10000?'中等 ($100–$10k)':'昂贵 (>$10k)';
-  t.innerHTML=`<div class="tooltip-name">${el.n}. ${el.name}（${el.s}）</div>
-    <div class="tooltip-row"><strong>价格：</strong>${fmtPrice(el.price)} / kg</div>
-    <div class="tooltip-row"><strong>区间：</strong>${tier}</div>`;
+  const tier=el.price<1?'<$1':el.price<100?'$1-$100':el.price<10000?'$100-$10k':'>$10k';
+  t.innerHTML='<div class="tooltip-name">'+el.n+'. '+el.name+' ('+el.s+')</div><div class="tooltip-row"><strong>Price: </strong>'+fmtPrice(el.price)+' / kg</div><div class="tooltip-row"><strong>Tier: </strong>'+tier+'</div>';
   t.classList.add('active');moveTip(e);
 }
 function moveTip(e){const t=document.getElementById('tooltip');t.style.left=(e.clientX+16)+'px';t.style.top=(e.clientY+16)+'px';}
 function hideTip(){document.getElementById('tooltip').classList.remove('active');}
 function setFilter(val){document.getElementById('priceFilter').value=val;render();}
 document.getElementById('priceFilter').addEventListener('change',render);
-document.getElementById('scaleSlider').addEventListener('input',e=>{
-  document.getElementById('scaleValue').textContent=parseFloat(e.target.value).toFixed(1)+'×';
+document.getElementById('scaleSlider').addEventListener('input',function(e){
+  document.getElementById('scaleValue').textContent=parseFloat(e.target.value).toFixed(1)+'x';
   render();
 });
 render();
