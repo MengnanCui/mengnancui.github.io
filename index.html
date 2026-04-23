@@ -65,8 +65,6 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 /* price bars thumbnail */
 .price-bars-thumb{display:flex;align-items:flex-end;gap:6px;padding:.9rem 1rem .6rem;height:140px;}
 .price-bar-thumb{flex:1;border-radius:2px 2px 0 0;background:linear-gradient(180deg,#2980b9,#1abc9c);opacity:.8;min-height:12px;}
-/* symmetry canvas thumbnail */
-.sym-thumb{display:flex;align-items:center;justify-content:center;height:140px;}
 /* about section */
 .about-links{margin-top:1em;display:flex;gap:.7em;flex-wrap:wrap;}
 .about-link-btn{display:inline-block;padding:4px 14px;border:1px solid #2980b9;color:#2980b9;border-radius:2px;font-size:.8rem;text-decoration:none;font-family:'DM Mono',monospace;transition:background .1s,color .1s;}
@@ -112,9 +110,9 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
               <span class="wy-nav-dot" style="background:#34d399"></span>Price Visualization
             </a>
           </li>
-          <li id="nav-symmetry">
-            <a href="projects/symmetry.html">
-              <span class="wy-nav-dot" style="background:#a78bfa"></span>Classic Symmetry
+          <li id="nav-atomic">
+            <a href="projects/atomic-radius.html">
+              <span class="wy-nav-dot" style="background:#a78bfa"></span>Atomic &amp; Ionic Radii
             </a>
           </li>
         </ul>
@@ -190,17 +188,33 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
         <!-- Project 03 -->
         <div class="project-entry clearfix">
           <div class="project-preview-wrap">
-            <div class="project-preview-inner sym-thumb">
-              <canvas id="sym-canvas" width="180" height="130"></canvas>
+            <div class="project-preview-inner" style="padding:8px;">
+              <svg viewBox="0 0 210 120" style="width:100%;height:100%;">
+                <g transform="translate(40,60)">
+                  <circle r="34" fill="none" stroke="#d12b2b" stroke-width="2"/>
+                  <circle r="18" fill="#d12b2b" fill-opacity="0.3" stroke="#d12b2b" stroke-width="1"/>
+                  <text y="4" text-anchor="middle" font-family="'DM Mono',monospace" font-size="12" font-weight="700" fill="#1a1a2e">Li</text>
+                </g>
+                <g transform="translate(105,60)">
+                  <circle r="42" fill="none" stroke="#c96b10" stroke-width="2"/>
+                  <circle r="23" fill="#c96b10" fill-opacity="0.3" stroke="#c96b10" stroke-width="1"/>
+                  <text y="4" text-anchor="middle" font-family="'DM Mono',monospace" font-size="12" font-weight="700" fill="#1a1a2e">Ca</text>
+                </g>
+                <g transform="translate(170,60)">
+                  <circle r="33" fill="none" stroke="#1a4fc4" stroke-width="2"/>
+                  <circle r="18" fill="#1a4fc4" fill-opacity="0.3" stroke="#1a4fc4" stroke-width="1"/>
+                  <text y="4" text-anchor="middle" font-family="'DM Mono',monospace" font-size="12" font-weight="700" fill="#1a1a2e">Fe</text>
+                </g>
+              </svg>
             </div>
           </div>
-          <h3><a href="projects/symmetry.html">03. Classic Symmetry</a></h3>
-          <p>Geometric patterns generated from mathematical symmetry groups. All 17 crystallographic wallpaper groups brought to life through interactive controls — change the group, colors, and density in real time.</p>
+          <h3><a href="projects/atomic-radius.html">03. Atomic &amp; Ionic Radii</a></h3>
+          <p>Interactive periodic table where each element is drawn as nested circles — an outline for the atomic radius and filled concentric circles for each ionic radius (one per oxidation state). Scale, opacity, stroke width, symbol size, and cell size are all adjustable in real time.</p>
           <table class="field-list">
-            <tr><th>Tags</th><td>Mathematics · Generative Art · Symmetry</td></tr>
-            <tr><th>Groups</th><td>17 wallpaper groups</td></tr>
+            <tr><th>Tags</th><td>Chemistry · Periodic Table · Interactive</td></tr>
+            <tr><th>Data</th><td>118 elements · 10 categories · ionic radii per oxidation state</td></tr>
           </table>
-          <a href="projects/symmetry.html" class="project-link-btn">Open Project →</a>
+          <a href="projects/atomic-radius.html" class="project-link-btn">Open Project →</a>
         </div>
 
         <h2 id="about">About</h2>
@@ -217,41 +231,6 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 </div>
 
 <script>
-// Draw symmetry thumbnail
-const canvas = document.getElementById('sym-canvas');
-if(canvas){
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-  ctx.fillStyle = '#f3f6f6';
-  ctx.fillRect(0, 0, w, h);
-  const colors = ['#2980b9','#8e44ad','#27ae60','#e67e22'];
-  for(let i=0;i<6;i++){
-    const angle=(i/6)*Math.PI*2;
-    const x=w/2+Math.cos(angle)*48;
-    const y=h/2+Math.sin(angle)*38;
-    ctx.beginPath();ctx.arc(x,y,15,0,Math.PI*2);
-    ctx.fillStyle=colors[i%colors.length]+'28';
-    ctx.strokeStyle=colors[i%colors.length];
-    ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
-    ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);
-    ctx.fillStyle=colors[i%colors.length];ctx.fill();
-  }
-  ctx.beginPath();ctx.arc(w/2,h/2,9,0,Math.PI*2);
-  ctx.fillStyle='rgba(41,128,185,0.12)';
-  ctx.strokeStyle='rgba(41,128,185,0.4)';
-  ctx.lineWidth=1;ctx.fill();ctx.stroke();
-  ctx.strokeStyle='rgba(0,0,0,0.07)';ctx.lineWidth=1;
-  for(let i=0;i<6;i++){
-    const a1=(i/6)*Math.PI*2;
-    const x1=w/2+Math.cos(a1)*48, y1=h/2+Math.sin(a1)*38;
-    for(let j=i+1;j<6;j++){
-      const a2=(j/6)*Math.PI*2;
-      const x2=w/2+Math.cos(a2)*48, y2=h/2+Math.sin(a2)*38;
-      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-    }
-  }
-}
-
 // Highlight current nav item on scroll
 const sections = [{id:'about',nav:'nav-about'}];
 window.addEventListener('scroll',()=>{
