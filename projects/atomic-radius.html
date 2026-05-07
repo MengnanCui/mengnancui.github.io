@@ -475,16 +475,27 @@ function createCell(el) {
       svg.appendChild(circ);
     });
 
-    const angles = [-Math.PI/4, Math.PI/4, -3*Math.PI/4, 3*Math.PI/4];
-    sorted.slice(0, 4).forEach((ion, i) => {
+    const labeled = sorted.slice(0, 4);
+    const nL = labeled.length;
+    const lblHalf = ionLabelSize * 0.75;
+    const symRadius = symFontSize * 0.55;
+    const haloW = Math.max(1.2, ionLabelSize * 0.35);
+    labeled.forEach((ion, i) => {
       const r = Math.max(2, Math.min((ion[1] / maxAtomicR) * maxR * scale, maxR));
-      const ang = angles[i % angles.length];
-      const lx  = (r * 0.6 * Math.cos(ang)).toFixed(1);
-      const ly  = (r * 0.6 * Math.sin(ang)).toFixed(1);
+      const ang = -Math.PI / 2 + (2 * Math.PI * i / nL);
+      const posR = r >= symRadius + lblHalf * 2 + 1.5
+                 ? r - lblHalf - 1
+                 : r + lblHalf + 1;
+      const lx = (posR * Math.cos(ang)).toFixed(1);
+      const ly = (posR * Math.sin(ang)).toFixed(1);
       const t = document.createElementNS(svgNS, "text");
       t.setAttribute("x", lx); t.setAttribute("y", ly);
       t.setAttribute("text-anchor","middle"); t.setAttribute("dominant-baseline","central");
       t.setAttribute("fill","#000000");
+      t.setAttribute("stroke","#ffffff");
+      t.setAttribute("stroke-width", haloW.toFixed(2));
+      t.setAttribute("stroke-linejoin","round");
+      t.setAttribute("paint-order","stroke");
       t.setAttribute("font-size", ionLabelSize);
       t.setAttribute("font-family","JetBrains Mono, monospace");
       t.setAttribute("font-weight","700");
@@ -537,16 +548,25 @@ function showTooltip(e, el) {
     const mx  = Math.max(...all);
     const tR  = 52;
     html += `<div class="tp-vis"><svg width="200" height="120" viewBox="-100 -60 200 120">`;
-    [...vi].sort((a,b) => b[1]-a[1]).forEach((ion, i) => {
+    const ionsSorted = [...vi].sort((a,b) => b[1]-a[1]);
+    const nT = ionsSorted.length;
+    ionsSorted.forEach((ion, i) => {
       const r = (ion[1]/mx)*tR;
       const op = (0.45 - i*0.1).toFixed(2);
       html += `<circle cx="0" cy="0" r="${r.toFixed(1)}" fill="${color}" fill-opacity="${op}" stroke="${color}" stroke-width="1"/>`;
-      html += `<text x="${(-r+3).toFixed(1)}" y="${(-r+8).toFixed(1)}" fill="#000" font-size="8" font-family="JetBrains Mono" font-weight="700">${ion[0]}:${ion[1]}pm</text>`;
+    });
+    ionsSorted.forEach((ion, i) => {
+      const r = (ion[1]/mx)*tR;
+      const ang = -Math.PI/2 + (2 * Math.PI * i / nT);
+      const labelR = r + 8;
+      const lx = (labelR * Math.cos(ang)).toFixed(1);
+      const ly = (labelR * Math.sin(ang)).toFixed(1);
+      html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" fill="#000" stroke="#fff" stroke-width="2.2" paint-order="stroke" font-size="9" font-family="JetBrains Mono" font-weight="700">${ion[0]}:${ion[1]}</text>`;
     });
     if (atomicR) {
       const r = (atomicR/mx)*tR;
       html += `<circle cx="0" cy="0" r="${r.toFixed(1)}" fill="none" stroke="${color}" stroke-width="2.5"/>`;
-      html += `<text x="${(r+3).toFixed(1)}" y="-3" fill="${color}" font-size="9" font-family="JetBrains Mono" font-weight="700">${atomicR}pm</text>`;
+      html += `<text x="${(r+5).toFixed(1)}" y="-3" fill="${color}" stroke="#fff" stroke-width="2.2" paint-order="stroke" font-size="9" font-family="JetBrains Mono" font-weight="700">${atomicR}pm</text>`;
     }
     html += `</svg></div>`;
   }
