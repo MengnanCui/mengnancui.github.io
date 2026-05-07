@@ -123,7 +123,21 @@ input[type="color"] {
 .tooltip .tp-row { display: flex; justify-content: space-between; font-size: 10px; padding: 2px 0; border-bottom: 1px solid #f2f2f2; }
 .tooltip .tp-row span:first-child { color: #999; }
 .tooltip .tp-row span:last-child { font-weight: 700; color: #1a1a2e; }
-.tooltip .tp-vis { display: flex; align-items: center; justify-content: center; margin-top: 8px; }
+.tooltip .tp-ion { margin-top: 7px; padding-top: 5px; border-top: 1px solid #eee; }
+.tooltip .tp-ion-head { font-size: 11px; font-weight: 700; color: #1a1a2e; margin-bottom: 3px; letter-spacing: 0.3px; }
+.tooltip .tp-cn-row {
+  display: grid; grid-template-columns: 38px 56px 1fr;
+  align-items: center; gap: 6px;
+  font-size: 10px; color: #555;
+  padding: 1px 0;
+}
+.tooltip .tp-cn-row.active { color: #1a1a2e; font-weight: 700; }
+.tooltip .tp-cn-row.active .tp-cn-tag { color: #1a4fc4; }
+.tooltip .tp-cn-tag { font-size: 9px; color: #999; letter-spacing: 0.2px; }
+.tooltip .tp-cn-val { text-align: right; font-variant-numeric: tabular-nums; }
+.tooltip .tp-bar { display: inline-block; height: 6px; border-radius: 2px; opacity: 0.55; }
+.tooltip .tp-cn-row.active .tp-bar { opacity: 0.9; }
+.tooltip .tp-cn-miss { font-size: 9px; color: #aaa; padding-top: 2px; font-style: italic; }
 </style>
 </head>
 <body>
@@ -377,7 +391,7 @@ const shannonByCN = {
     "F-1": 131,  "O-2": 138,
   },
   8: {
-    "Na+1": 118, "K+1": 151,  "Rb+1": 161, "Cs+1": 174,
+    "Li+1": 92,  "Na+1": 118, "K+1": 151,  "Rb+1": 161, "Cs+1": 174,
     "Mg+2": 89,  "Ca+2": 112, "Sr+2": 126, "Ba+2": 142,
     "Mn+2": 96,  "Fe+2": 92,  "Fe+3": 78,  "Co+2": 90,
     "Ni+2": 70,
@@ -409,12 +423,15 @@ const shannonByCN = {
   }
 };
 
-// Returns { r: pm, native: bool }. native=true means Shannon gives this ion
-// at the requested CN; false means we fell back to CN=6 (already in elements).
-function ionRadius(sym, charge, cn, fallback) {
-  if (cn === 6 || !shannonByCN[cn]) return { r: fallback, native: true };
-  const v = shannonByCN[cn][sym + charge];
-  return v != null ? { r: v, native: true } : { r: fallback, native: false };
+// Returns { r: pm } when Shannon publishes a value at the requested CN.
+// Returns null when no Shannon entry exists for this ion at that CN — the
+// caller should draw a beacon marker instead of substituting CN=6.
+function ionRadius(sym, charge, cn, baseR6) {
+  if (cn === 6) return baseR6 != null ? { r: baseR6 } : null;
+  const tbl = shannonByCN[cn];
+  if (!tbl) return null;
+  const v = tbl[sym + charge];
+  return v != null ? { r: v } : null;
 }
 
 let scale        = 0.85;
@@ -451,7 +468,7 @@ function buildLegend() {
       const c = document.createElement("div");
       c.className = "legend-item";
       c.style.color = "#888";
-      c.innerHTML = `<svg width="12" height="12"><circle cx="6" cy="6" r="4.5" fill="#1a4fc4" fill-opacity="0.22" stroke="#1a4fc4" stroke-width="1" stroke-dasharray="2 1.5"/></svg>CN=6 fallback`;
+      c.innerHTML = `<svg width="12" height="12"><circle cx="6" cy="6" r="1.5" fill="#888"/></svg>no Shannon CN=${cnMode} (hover for details)`;
       legend.appendChild(c);
     }
   }
@@ -546,15 +563,16 @@ function createCell(el) {
   svg.setAttribute("viewBox", `${-H} ${-H} ${S} ${S}`);
   const maxR = H * 0.88;
 
-  const validIons = ions
-    .filter(ion => ion[1] != null)
-    .map(ion => {
-      const res = ionRadius(sym, ion[0], cnMode, ion[1]);
-      return { charge: ion[0], r: res.r, native: res.native };
-    });
+  const knownIons = ions.filter(ion => ion[1] != null);
+  const resolved = knownIons.map(ion => {
+    const res = ionRadius(sym, ion[0], cnMode, ion[1]);
+    return { charge: ion[0], r: res ? res.r : null };
+  });
+  const drawableIons = resolved.filter(x => x.r != null);
+  const beaconIons   = resolved.filter(x => x.r == null);
 
-  if (validIons.length > 0 && (displayMode === "both" || displayMode === "ionic")) {
-    const sorted = [...validIons].sort((a, b) => b.r - a.r);
+  if (resolved.length > 0 && (displayMode === "both" || displayMode === "ionic")) {
+    const sorted = [...drawableIons].sort((a, b) => b.r - a.r);
     sorted.forEach((ion, i) => {
       const r = Math.max(2, Math.min((ion.r / maxAtomicR) * maxR * scale, maxR));
       const fillOp  = Math.max(0.06, ionOpacity * (1 - i * 0.15));
@@ -562,11 +580,10 @@ function createCell(el) {
       const circ = document.createElementNS(svgNS, "circle");
       circ.setAttribute("cx","0"); circ.setAttribute("cy","0"); circ.setAttribute("r", r);
       circ.setAttribute("fill", color);
-      circ.setAttribute("fill-opacity",   (ion.native ? fillOp : fillOp * 0.45).toFixed(2));
+      circ.setAttribute("fill-opacity",   fillOp.toFixed(2));
       circ.setAttribute("stroke", color);
       circ.setAttribute("stroke-width",   "1.0");
       circ.setAttribute("stroke-opacity", strokeOp.toFixed(2));
-      if (!ion.native) circ.setAttribute("stroke-dasharray", "3 2");
       svg.appendChild(circ);
     });
 
@@ -586,7 +603,7 @@ function createCell(el) {
       const t = document.createElementNS(svgNS, "text");
       t.setAttribute("x", lx); t.setAttribute("y", ly);
       t.setAttribute("text-anchor","middle"); t.setAttribute("dominant-baseline","central");
-      t.setAttribute("fill", ion.native ? "#000000" : "#666666");
+      t.setAttribute("fill","#000000");
       t.setAttribute("stroke","#ffffff");
       t.setAttribute("stroke-width", haloW.toFixed(2));
       t.setAttribute("stroke-linejoin","round");
@@ -597,6 +614,21 @@ function createCell(el) {
       t.textContent = ion.charge;
       svg.appendChild(t);
     });
+
+    if (beaconIons.length > 0) {
+      const beaconR = H * 0.78;
+      const nB = beaconIons.length;
+      beaconIons.forEach((ion, i) => {
+        const ang = -Math.PI / 2 + (2 * Math.PI * i / nB);
+        const bx = (beaconR * Math.cos(ang)).toFixed(1);
+        const by = (beaconR * Math.sin(ang)).toFixed(1);
+        const dot = document.createElementNS(svgNS, "circle");
+        dot.setAttribute("cx", bx); dot.setAttribute("cy", by);
+        dot.setAttribute("r", "1.5");
+        dot.setAttribute("fill", "#888");
+        svg.appendChild(dot);
+      });
+    }
   }
 
   if (atomicR && (displayMode === "both" || displayMode === "atomic")) {
@@ -610,7 +642,7 @@ function createCell(el) {
     svg.appendChild(c);
   }
 
-  if (!atomicR && validIons.length === 0) {
+  if (!atomicR && knownIons.length === 0) {
     const c = document.createElementNS(svgNS, "circle");
     c.setAttribute("cx","0"); c.setAttribute("cy","0"); c.setAttribute("r","3");
     c.setAttribute("fill", color); c.setAttribute("fill-opacity","0.15");
@@ -633,49 +665,36 @@ function showTooltip(e, el) {
   let html = `<h3 style="color:${color}">${name} ${sym}</h3>`;
   html += `<div class="tp-sub">Z=${Z} · ${catNames[cat]}</div>`;
   if (atomicR) html += `<div class="tp-row"><span>Atomic radius</span><span>${atomicR} pm</span></div>`;
-  const resolved = ions
-    .filter(ion => ion[1] != null)
-    .map(ion => {
-      const res = ionRadius(sym, ion[0], cnMode, ion[1]);
-      return { charge: ion[0], r: res.r, native: res.native };
-    });
-  resolved.forEach(ion => {
-    const tag = ion.native
-      ? `CN=${cnMode}`
-      : `CN=6 (no Shannon CN=${cnMode})`;
-    html += `<div class="tp-row"><span>${sym}<sup>${ion.charge}</sup> · ${tag}</span><span>${ion.r} pm</span></div>`;
-  });
 
-  if (atomicR || resolved.length > 0) {
-    const all = [atomicR, ...resolved.map(i => i.r)].filter(Boolean);
-    const mx  = Math.max(...all);
-    const tR  = 52;
-    html += `<div class="tp-vis"><svg width="200" height="120" viewBox="-100 -60 200 120">`;
-    const ionsSorted = [...resolved].sort((a,b) => b.r - a.r);
-    const nT = ionsSorted.length;
-    ionsSorted.forEach((ion, i) => {
-      const r = (ion.r/mx)*tR;
-      const op = (0.45 - i*0.1).toFixed(2);
-      const dash = ion.native ? "" : ` stroke-dasharray="3 2"`;
-      const fillOp = ion.native ? op : (parseFloat(op) * 0.45).toFixed(2);
-      html += `<circle cx="0" cy="0" r="${r.toFixed(1)}" fill="${color}" fill-opacity="${fillOp}" stroke="${color}" stroke-width="1"${dash}/>`;
+  const knownIons = ions.filter(ion => ion[1] != null);
+  const cnList = [4, 6, 8];
+  knownIons.forEach(ion => {
+    const charge = ion[0];
+    const cnRows = cnList
+      .map(cn => {
+        const res = ionRadius(sym, charge, cn, ion[1]);
+        return res ? { cn, r: res.r } : null;
+      })
+      .filter(x => x !== null);
+    if (cnRows.length === 0) return;
+    const maxR = Math.max(...cnRows.map(x => x.r));
+    html += `<div class="tp-ion">`;
+    html += `<div class="tp-ion-head">${sym}<sup>${charge}</sup></div>`;
+    cnRows.forEach(row => {
+      const active = row.cn === cnMode ? " active" : "";
+      const w = Math.max(8, (row.r / maxR) * 80).toFixed(1);
+      html += `<div class="tp-cn-row${active}">`
+           +    `<span class="tp-cn-tag">CN=${row.cn}</span>`
+           +    `<span class="tp-cn-val">${row.r} pm</span>`
+           +    `<span class="tp-bar" style="width:${w}px;background:${color}"></span>`
+           +  `</div>`;
     });
-    ionsSorted.forEach((ion, i) => {
-      const r = (ion.r/mx)*tR;
-      const ang = -Math.PI/2 + (2 * Math.PI * i / nT);
-      const labelR = r + 8;
-      const lx = (labelR * Math.cos(ang)).toFixed(1);
-      const ly = (labelR * Math.sin(ang)).toFixed(1);
-      const txtFill = ion.native ? "#000" : "#666";
-      html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" fill="${txtFill}" stroke="#fff" stroke-width="2.2" paint-order="stroke" font-size="9" font-family="JetBrains Mono" font-weight="700">${ion.charge}:${ion.r}</text>`;
-    });
-    if (atomicR) {
-      const r = (atomicR/mx)*tR;
-      html += `<circle cx="0" cy="0" r="${r.toFixed(1)}" fill="none" stroke="${color}" stroke-width="2.5"/>`;
-      html += `<text x="${(r+5).toFixed(1)}" y="-3" fill="${color}" stroke="#fff" stroke-width="2.2" paint-order="stroke" font-size="9" font-family="JetBrains Mono" font-weight="700">${atomicR}pm</text>`;
+    const missing = cnList.filter(cn => !cnRows.find(x => x.cn === cn));
+    if (missing.length) {
+      html += `<div class="tp-cn-miss">no Shannon entry at CN=${missing.join("/")}</div>`;
     }
-    html += `</svg></div>`;
-  }
+    html += `</div>`;
+  });
 
   tt.innerHTML = html;
   tt.classList.add("show");
