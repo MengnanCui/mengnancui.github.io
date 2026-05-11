@@ -65,6 +65,9 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 /* price bars thumbnail */
 .price-bars-thumb{display:flex;align-items:flex-end;gap:6px;padding:.9rem 1rem .6rem;height:140px;}
 .price-bar-thumb{flex:1;border-radius:2px 2px 0 0;background:linear-gradient(180deg,#2980b9,#1abc9c);opacity:.8;min-height:12px;}
+/* electronegativity heatmap thumbnail */
+.en-thumb{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:.7rem;}
+.en-thumb .c{height:24px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.6rem;font-weight:700;color:#fff;}
 /* about section */
 .about-links{margin-top:1em;display:flex;gap:.7em;flex-wrap:wrap;}
 .about-link-btn{display:inline-block;padding:4px 14px;border:1px solid #2980b9;color:#2980b9;border-radius:2px;font-size:.8rem;text-decoration:none;font-family:'DM Mono',monospace;transition:background .1s,color .1s;}
@@ -113,6 +116,11 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
           <li id="nav-atomic">
             <a href="projects/atomic-radius.html">
               <span class="wy-nav-dot" style="background:#a78bfa"></span>Atomic &amp; Ionic Radii
+            </a>
+          </li>
+          <li id="nav-electroneg">
+            <a href="projects/electronegativity.html">
+              <span class="wy-nav-dot" style="background:#dc2626"></span>Electronegativity
             </a>
           </li>
         </ul>
@@ -223,6 +231,35 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
             <tr><th>Data</th><td>118 elements · 10 categories · ionic radii per oxidation state</td></tr>
           </table>
           <a href="projects/atomic-radius.html" class="project-link-btn">Open Project →</a>
+        </div>
+
+        <!-- Project 04 -->
+        <div class="project-entry clearfix">
+          <div class="project-preview-wrap">
+            <div class="project-preview-inner">
+              <div class="en-thumb">
+                <div class="c" style="background:#2c3e82;">Cs</div>
+                <div class="c" style="background:#1a4fa8;color:#fff;">Ca</div>
+                <div class="c" style="background:#3f8db0;">Mn</div>
+                <div class="c" style="background:#78be64;color:#1a1a2e;">Si</div>
+                <div class="c" style="background:#1a4fa8;">Na</div>
+                <div class="c" style="background:#5fa985;">Fe</div>
+                <div class="c" style="background:#cfba5e;color:#1a1a2e;">C</div>
+                <div class="c" style="background:#e88a32;">N</div>
+                <div class="c" style="background:#3f8db0;">Mg</div>
+                <div class="c" style="background:#cfba5e;color:#1a1a2e;">P</div>
+                <div class="c" style="background:#e88a32;">Cl</div>
+                <div class="c" style="background:#b41c1c;">F</div>
+              </div>
+            </div>
+          </div>
+          <h3><a href="projects/electronegativity.html">04. Electronegativity</a></h3>
+          <p>Pauling-scale electronegativity laid out across the periodic table as a continuous color heatmap. Each cell is tinted from indigo (very electropositive, e.g. Cs, Fr) through teal and pale yellow up to deep red (F, the most electronegative element). Hover any cell for the Pauling EN value, group/period, and element category.</p>
+          <table class="field-list">
+            <tr><th>Tags</th><td>Chemistry · Periodic Table · Heatmap</td></tr>
+            <tr><th>Data</th><td>103 elements with published Pauling EN values</td></tr>
+          </table>
+          <a href="projects/electronegativity.html" class="project-link-btn">Open Project →</a>
         </div>
 
         <h2 id="about">About</h2>
