@@ -193,19 +193,16 @@ input[type="text"].ref-input:focus { outline: none; border-color: #b91c1c; box-s
   z-index: 3;
   letter-spacing: 0;
 }
-.cell .ref-corner {
+.cell .cat-dot {
   position: absolute;
-  top: 1px;
+  top: 3px;
   right: 3px;
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #1a1a2e;
-  background: rgba(255,255,255,.85);
-  padding: 0 3px;
-  border-radius: 2px;
-  z-index: 4;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  z-index: 3;
   pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.55), 0 0 0 2px rgba(0,0,0,.15);
 }
 
 .lanthanide-label, .actinide-label {
@@ -629,6 +626,8 @@ function makeCell(el){
   const isRef = (refSym === sym);
   const { rgb, text: enText } = cellValue(en);
   const txt = textOn(rgb);
+  const ringColor = txt;                           // dark on light bg, white on dark bg
+  const ringIsDark = (ringColor === '#1a1a2e');
   const catColor = catColors[cat] || '#1a4fc4';
 
   cell.className = 'cell' + (en == null ? ' no-data' : '') + (isRef ? ' is-ref' : '');
@@ -652,9 +651,9 @@ function makeCell(el){
         const fillOp = Math.max(0.10, 0.42 * (1 - i * 0.18));
         const c = document.createElementNS(svgNS, 'circle');
         c.setAttribute('cx', 0); c.setAttribute('cy', 0); c.setAttribute('r', r);
-        c.setAttribute('fill', catColor);
+        c.setAttribute('fill', ringColor);
         c.setAttribute('fill-opacity', fillOp.toFixed(2));
-        c.setAttribute('stroke', catColor);
+        c.setAttribute('stroke', ringColor);
         c.setAttribute('stroke-width', '0.9');
         c.setAttribute('stroke-opacity', Math.min(fillOp + 0.4, 1).toFixed(2));
         svg.appendChild(c);
@@ -696,9 +695,9 @@ function makeCell(el){
       const c = document.createElementNS(svgNS, 'circle');
       c.setAttribute('cx', 0); c.setAttribute('cy', 0); c.setAttribute('r', r);
       c.setAttribute('fill', 'none');
-      c.setAttribute('stroke', catColor);
-      c.setAttribute('stroke-width', '1.6');
-      c.setAttribute('stroke-opacity', '0.85');
+      c.setAttribute('stroke', ringColor);
+      c.setAttribute('stroke-width', '1.8');
+      c.setAttribute('stroke-opacity', ringIsDark ? '0.55' : '0.85');
       svg.appendChild(c);
     }
     cell.appendChild(svg);
@@ -729,11 +728,11 @@ function makeCell(el){
     cell.appendChild(enEl);
   }
 
-  if (isRef){
-    const tag = document.createElement('div');
-    tag.className = 'ref-corner';
-    tag.textContent = 'REF';
-    cell.appendChild(tag);
+  if (en != null){
+    const dot = document.createElement('div');
+    dot.className = 'cat-dot';
+    dot.style.background = catColor;
+    cell.appendChild(dot);
   }
 
   cell.addEventListener('mouseenter', e => showTooltip(e, el));
