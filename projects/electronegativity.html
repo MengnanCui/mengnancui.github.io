@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Periodic Table &mdash; Electronegativity</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #ffffff;
+  color: #1a1a2e;
+  font-family: 'JetBrains Mono', monospace;
+  overflow-x: auto;
+  min-height: 100vh;
+}
+
+.header {
+  position: relative;
+  text-align: center;
+  padding: 14px 20px 4px;
+}
+.header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #1a1a2e;
+  text-transform: uppercase;
+}
+.header p {
+  font-size: 10px;
+  color: #777;
+  margin-top: 3px;
+  letter-spacing: 1px;
+}
+.header p.data-src {
+  font-size: 9px;
+  color: #999;
+  margin-top: 2px;
+  letter-spacing: 0.3px;
+}
+.header p.data-src a { color: #1a4fc4; text-decoration: none; }
+.header p.data-src a:hover { text-decoration: underline; }
+.back-link {
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  font-size: 11px;
+  color: #666;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.back-link:hover { color: #1a4fc4; }
+
+.controls-panel {
+  background: #f5f6f8;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 7px 16px;
+}
+.controls-row {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.ctrl-group { display: flex; align-items: center; gap: 6px; }
+.ctrl-label { font-size: 10px; font-weight: 600; color: #555; white-space: nowrap; }
+.ctrl-sep { font-size: 10px; color: #ccc; }
+input[type="range"] { width: 100px; accent-color: #b91c1c; cursor: pointer; }
+.val-display { font-size: 10px; color: #b91c1c; font-weight: 700; min-width: 32px; }
+.toggle-btn {
+  background: #fff; color: #1a1a2e;
+  border: 1.5px solid #bbb; border-radius: 4px;
+  font-family: inherit; font-size: 10px; font-weight: 600;
+  cursor: pointer; padding: 2px 9px;
+  transition: background .1s, color .1s, border-color .1s;
+}
+.toggle-btn.active { background: #b91c1c; border-color: #b91c1c; color: #fff; }
+.toggle-btn:hover:not(.active) { border-color: #b91c1c; color: #b91c1c; }
+
+.colorbar-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 16px 6px;
+  border-bottom: 1px solid #eee;
+  font-size: 10px;
+  color: #555;
+}
+.colorbar-wrap .cb-label { font-weight: 600; letter-spacing: 1px; }
+.colorbar {
+  position: relative;
+  width: 320px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid #d3d3d3;
+}
+.colorbar .ticks {
+  position: absolute;
+  left: 0; right: 0; top: 14px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #777;
+}
+
+.table-container {
+  display: flex;
+  justify-content: center;
+  padding: 8px 12px 24px;
+  overflow-x: auto;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 1px;
+}
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow .12s;
+  border-radius: 3px;
+  user-select: none;
+}
+.cell:hover {
+  transform: scale(1.12);
+  z-index: 100;
+  box-shadow: 0 4px 14px rgba(0,0,0,.18);
+}
+.cell.empty { pointer-events: none; }
+.cell .symbol {
+  font-weight: 700;
+  letter-spacing: 0;
+  pointer-events: none;
+  line-height: 1;
+  margin-bottom: 1px;
+}
+.cell .zn {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 8px;
+  font-weight: 600;
+  opacity: .55;
+  pointer-events: none;
+}
+.cell .en {
+  font-size: 9px;
+  font-weight: 600;
+  opacity: .85;
+  pointer-events: none;
+  letter-spacing: 0;
+}
+.cell.no-data {
+  background: #f3f3f3 !important;
+  color: #999 !important;
+  border: 1px dashed #d2d2d2;
+}
+.cell.no-data .en::before { content: '—'; }
+.cell.no-data .en { color: inherit; }
+
+.lanthanide-label, .actinide-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.separator { grid-column: 1 / -1; height: 7px; }
+
+.tooltip {
+  display: none;
+  position: fixed;
+  background: #fff;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  z-index: 1000;
+  min-width: 200px;
+  max-width: 280px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  pointer-events: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.tooltip.show { display: block; }
+.tp-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+}
+.tp-sym { font-size: 18px; font-weight: 700; }
+.tp-name { font-size: 11px; color: #555; font-weight: 600; }
+.tp-z { margin-left: auto; font-size: 10px; color: #888; }
+.tp-row { display: flex; justify-content: space-between; padding: 2px 0; }
+.tp-row .k { color: #777; font-weight: 600; }
+.tp-row .v { color: #1a1a2e; font-weight: 700; }
+.tp-en-big {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 3px;
+  font-weight: 700;
+  text-align: center;
+  font-size: 13px;
+}
+.tp-empty { color: #999; font-style: italic; text-align: center; padding: 6px; }
+.tp-cat-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="../index.html" class="back-link">&larr; BACK</a>
+  <h1>Electronegativity</h1>
+  <p>Pauling-scale electronegativity for every element with published data &middot; cells colored by value</p>
+  <p class="data-src">
+    Data: <a href="https://en.wikipedia.org/wiki/Electronegativities_of_the_elements_(data_page)" target="_blank" rel="noopener">Pauling, <em>The Nature of the Chemical Bond</em> (1960)</a>
+    &middot; later revisions / extensions for heavy elements (Allred, Allen)
+  </p>
+</div>
+
+<div class="controls-panel">
+  <div class="controls-row">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Cell Size:</span>
+      <input type="range" id="cellSizeSlider" min="36" max="84" step="2" value="56">
+      <span class="val-display" id="cellSizeVal">56px</span>
+    </div>
+    <span class="ctrl-sep">|</span>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Show:</span>
+      <button class="toggle-btn active" id="showEN">EN value</button>
+      <button class="toggle-btn active" id="showZ">Z number</button>
+    </div>
+  </div>
+</div>
+
+<div class="colorbar-wrap">
+  <span class="cb-label">PAULING EN</span>
+  <div class="colorbar" id="colorbar">
+    <div class="ticks">
+      <span>0.7</span><span>1.5</span><span>2.5</span><span>3.5</span><span>4.0</span>
+    </div>
+  </div>
+  <span class="cb-label" style="color:#999;">low &rarr; high</span>
+</div>
+
+<div class="table-container">
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+/* ─── Element data: [Z, symbol, name, row, col, category, paulingEN] ─── */
+/* row/col follow the IUPAC 18-column layout. Row 9 = La-Yb (cols 4-17), row 10 = Ac-No */
+const elements = [
+  [1,"H","Hydrogen",1,1,"nonmetal",2.20],
+  [2,"He","Helium",1,18,"noble",null],
+  [3,"Li","Lithium",2,1,"alkali",0.98],
+  [4,"Be","Beryllium",2,2,"alkaline",1.57],
+  [5,"B","Boron",2,13,"metalloid",2.04],
+  [6,"C","Carbon",2,14,"nonmetal",2.55],
+  [7,"N","Nitrogen",2,15,"nonmetal",3.04],
+  [8,"O","Oxygen",2,16,"nonmetal",3.44],
+  [9,"F","Fluorine",2,17,"halogen",3.98],
+  [10,"Ne","Neon",2,18,"noble",null],
+  [11,"Na","Sodium",3,1,"alkali",0.93],
+  [12,"Mg","Magnesium",3,2,"alkaline",1.31],
+  [13,"Al","Aluminium",3,13,"post-transition",1.61],
+  [14,"Si","Silicon",3,14,"metalloid",1.90],
+  [15,"P","Phosphorus",3,15,"nonmetal",2.19],
+  [16,"S","Sulfur",3,16,"nonmetal",2.58],
+  [17,"Cl","Chlorine",3,17,"halogen",3.16],
+  [18,"Ar","Argon",3,18,"noble",null],
+  [19,"K","Potassium",4,1,"alkali",0.82],
+  [20,"Ca","Calcium",4,2,"alkaline",1.00],
+  [21,"Sc","Scandium",4,3,"transition",1.36],
+  [22,"Ti","Titanium",4,4,"transition",1.54],
+  [23,"V","Vanadium",4,5,"transition",1.63],
+  [24,"Cr","Chromium",4,6,"transition",1.66],
+  [25,"Mn","Manganese",4,7,"transition",1.55],
+  [26,"Fe","Iron",4,8,"transition",1.83],
+  [27,"Co","Cobalt",4,9,"transition",1.88],
+  [28,"Ni","Nickel",4,10,"transition",1.91],
+  [29,"Cu","Copper",4,11,"transition",1.90],
+  [30,"Zn","Zinc",4,12,"transition",1.65],
+  [31,"Ga","Gallium",4,13,"post-transition",1.81],
+  [32,"Ge","Germanium",4,14,"metalloid",2.01],
+  [33,"As","Arsenic",4,15,"metalloid",2.18],
+  [34,"Se","Selenium",4,16,"nonmetal",2.55],
+  [35,"Br","Bromine",4,17,"halogen",2.96],
+  [36,"Kr","Krypton",4,18,"noble",3.00],
+  [37,"Rb","Rubidium",5,1,"alkali",0.82],
+  [38,"Sr","Strontium",5,2,"alkaline",0.95],
+  [39,"Y","Yttrium",5,3,"transition",1.22],
+  [40,"Zr","Zirconium",5,4,"transition",1.33],
+  [41,"Nb","Niobium",5,5,"transition",1.60],
+  [42,"Mo","Molybdenum",5,6,"transition",2.16],
+  [43,"Tc","Technetium",5,7,"transition",1.90],
+  [44,"Ru","Ruthenium",5,8,"transition",2.20],
+  [45,"Rh","Rhodium",5,9,"transition",2.28],
+  [46,"Pd","Palladium",5,10,"transition",2.20],
+  [47,"Ag","Silver",5,11,"transition",1.93],
+  [48,"Cd","Cadmium",5,12,"transition",1.69],
+  [49,"In","Indium",5,13,"post-transition",1.78],
+  [50,"Sn","Tin",5,14,"post-transition",1.96],
+  [51,"Sb","Antimony",5,15,"metalloid",2.05],
+  [52,"Te","Tellurium",5,16,"metalloid",2.10],
+  [53,"I","Iodine",5,17,"halogen",2.66],
+  [54,"Xe","Xenon",5,18,"noble",2.60],
+  [55,"Cs","Cesium",6,1,"alkali",0.79],
+  [56,"Ba","Barium",6,2,"alkaline",0.89],
+  [57,"La","Lanthanum",9,4,"lanthanide",1.10],
+  [58,"Ce","Cerium",9,5,"lanthanide",1.12],
+  [59,"Pr","Praseodymium",9,6,"lanthanide",1.13],
+  [60,"Nd","Neodymium",9,7,"lanthanide",1.14],
+  [61,"Pm","Promethium",9,8,"lanthanide",1.13],
+  [62,"Sm","Samarium",9,9,"lanthanide",1.17],
+  [63,"Eu","Europium",9,10,"lanthanide",1.20],
+  [64,"Gd","Gadolinium",9,11,"lanthanide",1.20],
+  [65,"Tb","Terbium",9,12,"lanthanide",1.22],
+  [66,"Dy","Dysprosium",9,13,"lanthanide",1.22],
+  [67,"Ho","Holmium",9,14,"lanthanide",1.23],
+  [68,"Er","Erbium",9,15,"lanthanide",1.24],
+  [69,"Tm","Thulium",9,16,"lanthanide",1.25],
+  [70,"Yb","Ytterbium",9,17,"lanthanide",1.10],
+  [71,"Lu","Lutetium",6,3,"lanthanide",1.27],
+  [72,"Hf","Hafnium",6,4,"transition",1.30],
+  [73,"Ta","Tantalum",6,5,"transition",1.50],
+  [74,"W","Tungsten",6,6,"transition",2.36],
+  [75,"Re","Rhenium",6,7,"transition",1.90],
+  [76,"Os","Osmium",6,8,"transition",2.20],
+  [77,"Ir","Iridium",6,9,"transition",2.20],
+  [78,"Pt","Platinum",6,10,"transition",2.28],
+  [79,"Au","Gold",6,11,"transition",2.54],
+  [80,"Hg","Mercury",6,12,"transition",2.00],
+  [81,"Tl","Thallium",6,13,"post-transition",1.62],
+  [82,"Pb","Lead",6,14,"post-transition",2.33],
+  [83,"Bi","Bismuth",6,15,"post-transition",2.02],
+  [84,"Po","Polonium",6,16,"post-transition",2.00],
+  [85,"At","Astatine",6,17,"halogen",2.20],
+  [86,"Rn","Radon",6,18,"noble",2.20],
+  [87,"Fr","Francium",7,1,"alkali",0.70],
+  [88,"Ra","Radium",7,2,"alkaline",0.90],
+  [89,"Ac","Actinium",10,4,"actinide",1.10],
+  [90,"Th","Thorium",10,5,"actinide",1.30],
+  [91,"Pa","Protactinium",10,6,"actinide",1.50],
+  [92,"U","Uranium",10,7,"actinide",1.38],
+  [93,"Np","Neptunium",10,8,"actinide",1.36],
+  [94,"Pu","Plutonium",10,9,"actinide",1.28],
+  [95,"Am","Americium",10,10,"actinide",1.13],
+  [96,"Cm","Curium",10,11,"actinide",1.28],
+  [97,"Bk","Berkelium",10,12,"actinide",1.30],
+  [98,"Cf","Californium",10,13,"actinide",1.30],
+  [99,"Es","Einsteinium",10,14,"actinide",1.30],
+  [100,"Fm","Fermium",10,15,"actinide",1.30],
+  [101,"Md","Mendelevium",10,16,"actinide",1.30],
+  [102,"No","Nobelium",10,17,"actinide",1.30],
+  [103,"Lr","Lawrencium",7,3,"actinide",1.30]
+];
+
+const catColors = {
+  alkali:           "#d12b2b",
+  alkaline:         "#c96b10",
+  transition:       "#1a4fc4",
+  "post-transition":"#0f9090",
+  metalloid:        "#7c3aed",
+  nonmetal:         "#147a50",
+  halogen:          "#a07800",
+  noble:            "#8e44ad",
+  lanthanide:       "#c02474",
+  actinide:         "#b84c00"
+};
+const catNames = {
+  alkali:"Alkali", alkaline:"Alkaline Earth", transition:"Transition Metal",
+  "post-transition":"Post-transition", metalloid:"Metalloid", nonmetal:"Nonmetal",
+  halogen:"Halogen", noble:"Noble Gas", lanthanide:"Lanthanide", actinide:"Actinide"
+};
+
+/* ─── Color scale: Pauling EN [0.7, 4.0] ─── */
+const EN_MIN = 0.7, EN_MAX = 4.0;
+const STOPS = [
+  [0.00, [44, 62, 130]],     // deep indigo  — very low EN (Cs, Fr)
+  [0.25, [6, 130, 184]],     // teal/blue    — alkaline, lanthanide
+  [0.45, [120, 190, 100]],   // green        — mid (transition metals)
+  [0.65, [250, 215, 100]],   // pale yellow  — C, Se range
+  [0.82, [240, 130, 50]],    // orange       — Cl, Br
+  [1.00, [180, 28, 28]]      // dark red     — F, O
+];
+function enColor(en){
+  if (en == null) return '#f3f3f3';
+  const t = Math.max(0, Math.min(1, (en - EN_MIN) / (EN_MAX - EN_MIN)));
+  for (let i = 0; i < STOPS.length - 1; i++){
+    if (t <= STOPS[i+1][0]){
+      const u = (t - STOPS[i][0]) / (STOPS[i+1][0] - STOPS[i][0]);
+      const c0 = STOPS[i][1], c1 = STOPS[i+1][1];
+      const r = Math.round(c0[0] + (c1[0]-c0[0])*u);
+      const g = Math.round(c0[1] + (c1[1]-c0[1])*u);
+      const b = Math.round(c0[2] + (c1[2]-c0[2])*u);
+      return `rgb(${r},${g},${b})`;
+    }
+  }
+  return `rgb(${STOPS[STOPS.length-1][1].join(',')})`;
+}
+function textOn(en){
+  if (en == null) return '#999';
+  const t = (en - EN_MIN) / (EN_MAX - EN_MIN);
+  // light text on dark ends (low and high), dark text on mid (yellow zone)
+  return (t > 0.40 && t < 0.78) ? '#1a1a2e' : '#fff';
+}
+function paintColorbar(){
+  const cb = document.getElementById('colorbar');
+  const stops = STOPS.map(s => `${enColor(EN_MIN + s[0]*(EN_MAX-EN_MIN))} ${(s[0]*100).toFixed(0)}%`).join(', ');
+  cb.style.background = `linear-gradient(90deg, ${stops})`;
+}
+
+/* ─── Grid ─── */
+const grid = document.getElementById('grid');
+let cellSize = 56;
+let showEN = true;
+let showZ  = true;
+
+function buildGrid(){
+  grid.innerHTML = '';
+  const byPos = new Map();
+  elements.forEach(e => byPos.set(e[3] + '-' + e[4], e));
+
+  // Rows 1-7 main table
+  for (let r = 1; r <= 7; r++){
+    for (let c = 1; c <= 18; c++){
+      const el = byPos.get(r + '-' + c);
+      grid.appendChild(makeCell(el));
+    }
+  }
+  // Spacer
+  const sep = document.createElement('div');
+  sep.className = 'separator';
+  grid.appendChild(sep);
+
+  // Lanthanide/actinide rows (rows 9, 10)
+  for (let r = 9; r <= 10; r++){
+    // Slots 1-2: empty, slot 3: label "*" / "**"
+    for (let c = 1; c <= 3; c++){
+      const cell = document.createElement('div');
+      cell.className = 'cell empty';
+      cell.style.width = cellSize + 'px';
+      cell.style.height = cellSize + 'px';
+      if (c === 3){
+        cell.className = r === 9 ? 'lanthanide-label' : 'actinide-label';
+        cell.style.fontSize = Math.max(8, cellSize*0.18) + 'px';
+        cell.textContent = r === 9 ? '57–70 La' : '89–102 Ac';
+      }
+      grid.appendChild(cell);
+    }
+    for (let c = 4; c <= 17; c++){
+      const el = byPos.get(r + '-' + c);
+      grid.appendChild(makeCell(el));
+    }
+    // last slot empty
+    const trailing = document.createElement('div');
+    trailing.className = 'cell empty';
+    trailing.style.width = cellSize + 'px';
+    trailing.style.height = cellSize + 'px';
+    grid.appendChild(trailing);
+  }
+}
+
+function makeCell(el){
+  const cell = document.createElement('div');
+  cell.style.width = cellSize + 'px';
+  cell.style.height = cellSize + 'px';
+  if (!el){
+    cell.className = 'cell empty';
+    return cell;
+  }
+  const [z, sym, name, row, col, cat, en] = el;
+  cell.className = 'cell' + (en == null ? ' no-data' : '');
+  if (en != null){
+    cell.style.background = enColor(en);
+    cell.style.color = textOn(en);
+  }
+
+  if (showZ){
+    const zn = document.createElement('div');
+    zn.className = 'zn';
+    zn.textContent = z;
+    zn.style.fontSize = Math.max(7, cellSize*0.14) + 'px';
+    cell.appendChild(zn);
+  }
+  const symEl = document.createElement('div');
+  symEl.className = 'symbol';
+  symEl.textContent = sym;
+  symEl.style.fontSize = Math.max(11, cellSize*0.34) + 'px';
+  cell.appendChild(symEl);
+
+  if (showEN){
+    const enEl = document.createElement('div');
+    enEl.className = 'en';
+    enEl.textContent = en == null ? '' : en.toFixed(2);
+    enEl.style.fontSize = Math.max(8, cellSize*0.17) + 'px';
+    cell.appendChild(enEl);
+  }
+
+  cell.addEventListener('mouseenter', e => showTooltip(el, e));
+  cell.addEventListener('mousemove', moveTooltip);
+  cell.addEventListener('mouseleave', hideTooltip);
+  return cell;
+}
+
+/* ─── Tooltip ─── */
+const tooltip = document.getElementById('tooltip');
+function showTooltip(el, ev){
+  const [z, sym, name, row, col, cat, en] = el;
+  const catColor = catColors[cat] || '#999';
+  let body = `
+    <div class="tp-head">
+      <div class="tp-sym" style="color:${en != null ? enColor(en) : '#999'};">${sym}</div>
+      <div class="tp-name">${name}</div>
+      <div class="tp-z">Z=${z}</div>
+    </div>
+    <div class="tp-row">
+      <span class="k">Category</span>
+      <span class="v"><span class="tp-cat-dot" style="background:${catColor}"></span>${catNames[cat] || cat}</span>
+    </div>
+    <div class="tp-row">
+      <span class="k">Period / Group</span>
+      <span class="v">${row > 7 ? '—' : row} &middot; ${col > 18 ? '—' : col}</span>
+    </div>`;
+  if (en != null){
+    body += `
+      <div class="tp-en-big" style="background:${enColor(en)};color:${textOn(en)};">
+        Pauling EN = ${en.toFixed(2)}
+      </div>`;
+  } else {
+    body += `<div class="tp-empty">No Pauling EN value published</div>`;
+  }
+  tooltip.innerHTML = body;
+  tooltip.classList.add('show');
+  moveTooltip(ev);
+}
+function moveTooltip(ev){
+  const margin = 14;
+  const tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+  let x = ev.clientX + margin;
+  let y = ev.clientY + margin;
+  if (x + tw > window.innerWidth)  x = ev.clientX - tw - margin;
+  if (y + th > window.innerHeight) y = ev.clientY - th - margin;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+}
+function hideTooltip(){ tooltip.classList.remove('show'); }
+
+/* ─── Controls ─── */
+const $cellSize = document.getElementById('cellSizeSlider');
+const $cellSizeVal = document.getElementById('cellSizeVal');
+const $showEN = document.getElementById('showEN');
+const $showZ  = document.getElementById('showZ');
+$cellSize.addEventListener('input', () => {
+  cellSize = +$cellSize.value;
+  $cellSizeVal.textContent = cellSize + 'px';
+  buildGrid();
+});
+$showEN.addEventListener('click', () => {
+  showEN = !showEN;
+  $showEN.classList.toggle('active', showEN);
+  buildGrid();
+});
+$showZ.addEventListener('click', () => {
+  showZ = !showZ;
+  $showZ.classList.toggle('active', showZ);
+  buildGrid();
+});
+
+paintColorbar();
+buildGrid();
+</script>
+</body>
+</html>
