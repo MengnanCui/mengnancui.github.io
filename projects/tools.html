@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computational Tools &mdash; Data Visualization Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=DM+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.65;color:#404040;background:#edf0f2;}
+/* ── RTD SIDEBAR ── */
+.wy-nav-side{position:fixed;top:0;left:0;width:300px;height:100%;background:#343131;z-index:200;display:flex;flex-direction:column;transition:transform .25s;}
+.wy-side-scroll{overflow-y:auto;height:100%;padding-bottom:3rem;}
+.wy-side-nav-search{background:#2980b9;padding:.809rem;}
+.wy-side-nav-search>a{display:block;color:#fcfcfc;font-size:1rem;font-weight:700;padding:.25em 0 .1em;text-decoration:none;}
+.wy-side-nav-search>a:hover{text-decoration:underline;}
+.wy-side-nav-ver{color:rgba(255,255,255,.6);font-size:.75rem;margin-bottom:.6em;}
+.wy-menu-vertical p.caption{color:#9b9b9b;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.7rem 1.618rem .2rem;margin-top:.5rem;}
+.wy-menu-vertical ul{list-style:none;}
+.wy-menu-vertical li a{display:flex;align-items:center;color:#d9d9d9;padding:.4045rem 1.618rem;font-size:.875rem;text-decoration:none;transition:background .1s;cursor:pointer;}
+.wy-menu-vertical li a:hover{background:#4e4a4a;color:#fff;text-decoration:none;}
+.wy-menu-vertical li.current>a{background:#2980b9;color:#fff;}
+.wy-nav-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px;flex-shrink:0;}
+/* ── RTD CONTENT ── */
+.wy-nav-content-wrap{margin-left:300px;background:#fcfcfc;min-height:100vh;}
+.wy-nav-top{display:none;background:#2980b9;color:#fff;padding:.5em .809em;align-items:center;gap:.7em;}
+.wy-nav-top a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem;}
+.wy-nav-top-btn{background:none;border:none;color:#fff;font-size:1.4em;cursor:pointer;line-height:1;padding:0;}
+.wy-nav-content{max-width:900px;margin:0 auto;padding:1.618em 3.236em 4em;}
+/* ── TYPOGRAPHY ── */
+.rst-content h1{font-size:175%;font-weight:700;color:#404040;border-bottom:1px solid #e1e4e5;padding-bottom:.5rem;margin-bottom:.8rem;}
+.rst-content h2{font-size:140%;font-weight:700;color:#404040;border-bottom:1px solid #e1e4e5;padding-bottom:.3rem;margin:2em 0 .8em;}
+.rst-content h3{font-size:1.05rem;font-weight:700;color:#404040;margin:1.4em 0 .5em;}
+.rst-content p{font-size:14px;line-height:1.7;margin-bottom:.7em;color:#404040;}
+.rst-content a{color:#2980b9;text-decoration:none;}
+.rst-content a:hover{text-decoration:underline;}
+.rst-content code,.mono{font-family:'DM Mono',monospace;}
+.rst-content p code{background:#f3f6f6;border:1px solid #e1e4e5;padding:1px 5px;border-radius:3px;font-size:.85em;}
+/* ── ADMONITION ── */
+.admonition{padding:12px 14px;margin-bottom:14px;border-left:3px solid;}
+.admonition.note{background:#e7f2fa;border-color:#6ab0de;}
+.admonition.tip{background:#dbfaf4;border-color:#1abc9c;}
+.admonition-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block;}
+.admonition.note .admonition-title{color:#2980b9;}
+.admonition.tip .admonition-title{color:#0d8c6c;}
+.admonition p{margin:0;font-size:.88rem;color:#404040;line-height:1.72;}
+/* ── TOOL: formula card ── */
+.formula-card{background:#f7f8fa;border:1px solid #e1e4e5;border-left:3px solid #2980b9;padding:14px 18px;margin:0 0 1.4em;border-radius:3px;}
+.formula-card .formula-row{font-family:'DM Mono',monospace;font-size:.95rem;color:#1a1a2e;margin:.35em 0;}
+.formula-card .formula-row .label{display:inline-block;min-width:140px;color:#2980b9;font-weight:700;}
+.formula-card .formula-note{font-size:.82rem;color:#666;margin-top:.6em;line-height:1.6;}
+/* ── TOOL: converter card ── */
+.converter-card{border:1px solid #e1e4e5;border-radius:4px;background:#fff;margin:0 0 1.4em;overflow:hidden;}
+.converter-card .lattice-row{padding:14px 18px 12px;border-bottom:1px solid #e1e4e5;background:#fafbfc;}
+.converter-card .lattice-row .row-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:8px;}
+.lattice-inputs{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+.lattice-inputs label{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:.88rem;color:#404040;}
+.lattice-inputs label .var{font-weight:700;color:#2980b9;}
+.lattice-inputs input{width:80px;}
+.converter-grid{display:grid;grid-template-columns:1fr 1fr;}
+.conv-panel{padding:16px 18px;}
+.conv-panel + .conv-panel{border-left:1px solid #e1e4e5;}
+.conv-panel .panel-title{font-size:.85rem;font-weight:700;color:#404040;margin-bottom:6px;}
+.conv-panel .panel-sub{font-size:.78rem;color:#888;margin-bottom:10px;}
+.conv-input-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.conv-input-row label{font-family:'DM Mono',monospace;font-size:.88rem;color:#404040;display:flex;align-items:center;gap:6px;}
+.conv-input-row input{width:90px;}
+.mp-inputs{display:flex;align-items:center;gap:6px;}
+.mp-inputs input{width:55px;}
+.mp-inputs .times{color:#999;font-family:'DM Mono',monospace;}
+.result-box{background:#f7f8fa;border-left:3px solid #f59e0b;padding:10px 12px;border-radius:0 3px 3px 0;font-family:'DM Mono',monospace;font-size:.9rem;color:#1a1a2e;min-height:54px;}
+.result-box .result-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#888;font-weight:700;margin-bottom:4px;font-family:Lato,Arial,sans-serif;}
+.result-box .result-main{font-size:1.1rem;font-weight:700;color:#c2410c;margin-bottom:3px;}
+.result-box .result-detail{font-size:.78rem;color:#666;line-height:1.5;}
+.result-box.empty .result-main{color:#bbb;font-weight:400;font-size:.95rem;}
+/* ── INPUTS ── */
+input[type="number"]{font-family:'DM Mono',monospace;font-size:.88rem;padding:5px 7px;border:1px solid #bbb;border-radius:3px;background:#fff;color:#1a1a2e;}
+input[type="number"]:focus{outline:none;border-color:#2980b9;box-shadow:0 0 0 2px rgba(41,128,185,.15);}
+input[type="number"]::-webkit-inner-spin-button{opacity:.3;}
+/* ── BACK LINK ── */
+.back-link{display:inline-block;font-size:.8rem;color:#888;text-decoration:none;font-family:'DM Mono',monospace;margin-bottom:1em;}
+.back-link:hover{color:#2980b9;}
+/* ── FOOTER ── */
+.rst-footer{margin-top:3em;padding-top:1em;border-top:1px solid #e1e4e5;color:#9b9b9b;font-size:.75rem;text-align:center;font-family:'DM Mono',monospace;}
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:2px;}
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .wy-nav-side{transform:translateX(-300px);}
+  .wy-nav-side.open{transform:translateX(0);}
+  .wy-nav-content-wrap{margin-left:0;}
+  .wy-nav-top{display:flex;}
+  .wy-nav-content{padding:1em 1.2em;}
+  .converter-grid{grid-template-columns:1fr;}
+  .conv-panel + .conv-panel{border-left:none;border-top:1px solid #e1e4e5;}
+}
+</style>
+</head>
+<body>
+<div class="wy-grid-for-nav">
+  <nav class="wy-nav-side">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../index.html">Data Visualization Lab</a>
+        <div class="wy-side-nav-ver">Computational Physics Tools</div>
+      </div>
+      <div class="wy-menu-vertical">
+        <p class="caption">Tools</p>
+        <ul>
+          <li id="nav-kspacing" class="current">
+            <a href="#kspacing">
+              <span class="wy-nav-dot" style="background:#f59e0b"></span>KSPACING &harr; MP
+            </a>
+          </li>
+        </ul>
+        <p class="caption">Navigate</p>
+        <ul>
+          <li><a href="../index.html">&larr; Back to Lab</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="wy-nav-content-wrap">
+    <div class="wy-nav-top">
+      <button class="wy-nav-top-btn" onclick="document.querySelector('.wy-nav-side').classList.toggle('open')">&#9776;</button>
+      <a href="../index.html">Data Visualization Lab</a>
+    </div>
+    <div class="wy-nav-content">
+      <div class="rst-content">
+
+        <a href="../index.html" class="back-link">&larr; Back</a>
+        <h1>Computational Tools <small style="font-size:55%;color:#9b9b9b;font-weight:400">DFT helpers</small></h1>
+
+        <div class="admonition note">
+          <span class="admonition-title">About</span>
+          <p>Small browser-side calculators for everyday DFT / first-principles workflows. Everything runs locally &mdash; no data leaves the page. More tools will be added here over time.</p>
+        </div>
+
+        <section id="kspacing">
+          <h2>KSPACING &harr; Monkhorst&ndash;Pack k-mesh</h2>
+          <p>
+            In VASP and similar codes, <code>KSPACING</code> sets the maximum spacing between adjacent k-points in reciprocal space (units of &Aring;<sup>&minus;1</sup>).
+            A Monkhorst&ndash;Pack (MP) mesh is the integer grid <span class="mono">N<sub>a</sub> &times; N<sub>b</sub> &times; N<sub>c</sub></span> sampled along the reciprocal lattice vectors.
+            Given the real-space lattice constants <span class="mono">a, b, c</span>, the two are linked by:
+          </p>
+
+          <div class="formula-card">
+            <div class="formula-row"><span class="label">ks &rarr; MP:</span> N<sub>i</sub> = max(1, &lceil; 2&pi; / (ks &middot; a<sub>i</sub>) &rceil;)</div>
+            <div class="formula-row"><span class="label">MP &rarr; ks:</span> ks<sub>i</sub> = 2&pi; / (N<sub>i</sub> &middot; a<sub>i</sub>),&nbsp;&nbsp; ks = min(ks<sub>a</sub>, ks<sub>b</sub>, ks<sub>c</sub>)</div>
+            <p class="formula-note">
+              The MP&rarr;ks direction reports the per-axis equivalent spacing and the single <code>KSPACING</code> value that, fed back into VASP, reproduces (at minimum) the same mesh. The formula assumes an orthogonal cell where <span class="mono">|b<sub>i</sub>*| = 2&pi;/a<sub>i</sub></span>; for highly oblique cells this is approximate.
+            </p>
+          </div>
+
+          <h3>Calculator</h3>
+          <p>Set the lattice parameters, then edit either side &mdash; the other updates in real time.</p>
+
+          <div class="converter-card">
+            <div class="lattice-row">
+              <div class="row-title">Lattice parameters (&Aring;)</div>
+              <div class="lattice-inputs">
+                <label><span class="var">a</span><input type="number" id="in-a" value="3.000" step="0.001" min="0.001"></label>
+                <label><span class="var">b</span><input type="number" id="in-b" value="3.000" step="0.001" min="0.001"></label>
+                <label><span class="var">c</span><input type="number" id="in-c" value="3.000" step="0.001" min="0.001"></label>
+              </div>
+            </div>
+            <div class="converter-grid">
+
+              <div class="conv-panel">
+                <div class="panel-title">KSPACING &rarr; MP mesh</div>
+                <div class="panel-sub">Type a <code>KSPACING</code> value (&Aring;<sup>&minus;1</sup>).</div>
+                <div class="conv-input-row">
+                  <label>ks<input type="number" id="in-ks" value="0.300" step="0.01" min="0.001"></label>
+                  <span style="color:#888;font-size:.78rem;">&Aring;<sup>&minus;1</sup></span>
+                </div>
+                <div class="result-box" id="out-mp">
+                  <div class="result-label">Resulting MP mesh</div>
+                  <div class="result-main">&mdash;</div>
+                  <div class="result-detail"></div>
+                </div>
+              </div>
+
+              <div class="conv-panel">
+                <div class="panel-title">MP mesh &rarr; KSPACING</div>
+                <div class="panel-sub">Type the mesh dimensions.</div>
+                <div class="conv-input-row">
+                  <div class="mp-inputs">
+                    <input type="number" id="in-na" value="7" step="1" min="1">
+                    <span class="times">&times;</span>
+                    <input type="number" id="in-nb" value="7" step="1" min="1">
+                    <span class="times">&times;</span>
+                    <input type="number" id="in-nc" value="7" step="1" min="1">
+                  </div>
+                </div>
+                <div class="result-box" id="out-ks">
+                  <div class="result-label">Equivalent KSPACING</div>
+                  <div class="result-main">&mdash;</div>
+                  <div class="result-detail"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="admonition tip">
+            <span class="admonition-title">Quick check</span>
+            <p>For a cubic cell with <span class="mono">a = b = c = 3 &Aring;</span> and <code>KSPACING = 0.3</code>, you should get <span class="mono">7 &times; 7 &times; 7</span>. The reverse gives ks &asymp; 0.2992 &Aring;<sup>&minus;1</sup>.</p>
+          </div>
+
+          <p style="font-size:.8rem;color:#888;margin-top:1.4em;">
+            Reference: <a href="https://www.vasp.at/wiki/index.php/KSPACING" target="_blank" rel="noopener">VASP wiki &mdash; KSPACING</a> &middot; Monkhorst &amp; Pack, <em>Phys. Rev. B</em> <strong>13</strong>, 5188 (1976).
+          </p>
+        </section>
+
+        <div class="rst-footer">&copy; 2024 &middot; Built with plain HTML, CSS, JS</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const TWO_PI = 2 * Math.PI;
+
+  const $a  = document.getElementById('in-a');
+  const $b  = document.getElementById('in-b');
+  const $c  = document.getElementById('in-c');
+  const $ks = document.getElementById('in-ks');
+  const $na = document.getElementById('in-na');
+  const $nb = document.getElementById('in-nb');
+  const $nc = document.getElementById('in-nc');
+  const $outMP = document.getElementById('out-mp');
+  const $outKS = document.getElementById('out-ks');
+
+  function num(el){
+    const v = parseFloat(el.value);
+    return (isFinite(v) && v > 0) ? v : null;
+  }
+  function int(el){
+    const v = parseInt(el.value, 10);
+    return (isFinite(v) && v >= 1) ? v : null;
+  }
+  function fmt(x, d){ return x.toFixed(d); }
+
+  function setResult(box, mainText, detailText){
+    box.classList.toggle('empty', mainText === '—');
+    box.querySelector('.result-main').innerHTML = mainText;
+    box.querySelector('.result-detail').innerHTML = detailText || '';
+  }
+
+  function updateMP(){
+    const a = num($a), b = num($b), c = num($c), ks = num($ks);
+    if (a == null || b == null || c == null || ks == null){
+      setResult($outMP, '—', 'Enter valid <span class="mono">a, b, c, ks</span> &gt; 0.');
+      return;
+    }
+    const Na = Math.max(1, Math.ceil(TWO_PI / (ks * a)));
+    const Nb = Math.max(1, Math.ceil(TWO_PI / (ks * b)));
+    const Nc = Math.max(1, Math.ceil(TWO_PI / (ks * c)));
+    setResult(
+      $outMP,
+      `${Na} &times; ${Nb} &times; ${Nc}`,
+      `Per axis: <span class="mono">N<sub>a</sub>=&lceil;${fmt(TWO_PI/(ks*a),3)}&rceil;=${Na}</span>, <span class="mono">N<sub>b</sub>=${Nb}</span>, <span class="mono">N<sub>c</sub>=${Nc}</span> &middot; ${Na*Nb*Nc} k-points total.`
+    );
+  }
+
+  function updateKS(){
+    const a = num($a), b = num($b), c = num($c);
+    const Na = int($na), Nb = int($nb), Nc = int($nc);
+    if (a == null || b == null || c == null || Na == null || Nb == null || Nc == null){
+      setResult($outKS, '—', 'Enter valid <span class="mono">a, b, c</span> and integer mesh dims &ge; 1.');
+      return;
+    }
+    const ka = TWO_PI / (Na * a);
+    const kb = TWO_PI / (Nb * b);
+    const kc = TWO_PI / (Nc * c);
+    const ks = Math.min(ka, kb, kc);
+    setResult(
+      $outKS,
+      `ks = ${fmt(ks, 4)} &Aring;<sup>&minus;1</sup>`,
+      `Per axis: <span class="mono">ks<sub>a</sub>=${fmt(ka,4)}</span>, <span class="mono">ks<sub>b</sub>=${fmt(kb,4)}</span>, <span class="mono">ks<sub>c</sub>=${fmt(kc,4)}</span> &Aring;<sup>&minus;1</sup>. Setting <code>KSPACING</code> &le; this value reproduces at least this mesh.`
+    );
+  }
+
+  function updateAll(){ updateMP(); updateKS(); }
+
+  [$a, $b, $c].forEach(el => el.addEventListener('input', updateAll));
+  $ks.addEventListener('input', updateMP);
+  [$na, $nb, $nc].forEach(el => el.addEventListener('input', updateKS));
+
+  updateAll();
+})();
+</script>
+</body>
+</html>
