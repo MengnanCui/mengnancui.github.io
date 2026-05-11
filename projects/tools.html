@@ -75,6 +75,42 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 .result-box .result-main{font-size:1.1rem;font-weight:700;color:#c2410c;margin-bottom:3px;}
 .result-box .result-detail{font-size:.78rem;color:#666;line-height:1.5;}
 .result-box.empty .result-main{color:#bbb;font-weight:400;font-size:.95rem;}
+/* ── TOOL: POSCAR analyzer ── */
+.poscar-card{border:1px solid #e1e4e5;border-radius:4px;background:#fff;margin:0 0 1.4em;overflow:hidden;}
+.poscar-input-wrap{padding:14px 18px 12px;background:#fafbfc;border-bottom:1px solid #e1e4e5;}
+.poscar-input-wrap .row-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.poscar-input-wrap .row-title .hint{font-weight:400;text-transform:none;letter-spacing:0;color:#999;font-size:.85em;}
+textarea.poscar-text{width:100%;min-height:280px;font-family:'DM Mono',monospace;font-size:.85rem;padding:10px 12px;border:1px solid #bbb;border-radius:3px;background:#fff;color:#1a1a2e;resize:vertical;line-height:1.55;white-space:pre;overflow:auto;}
+textarea.poscar-text:focus{outline:none;border-color:#2980b9;box-shadow:0 0 0 2px rgba(41,128,185,.15);}
+.poscar-actions{margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.poscar-btn{font-family:Lato,Arial,sans-serif;font-size:.82rem;padding:6px 14px;border:1px solid #2980b9;background:#2980b9;color:#fff;border-radius:3px;cursor:pointer;}
+.poscar-btn:hover{background:#206590;border-color:#206590;}
+.poscar-btn.secondary{background:#fff;color:#2980b9;}
+.poscar-btn.secondary:hover{background:#e7f2fa;color:#206590;}
+.poscar-status{font-size:.78rem;color:#888;font-family:'DM Mono',monospace;}
+.poscar-status.error{color:#c2410c;}
+.poscar-results{padding:16px 18px;}
+.poscar-results h4{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#666;margin:0 0 8px;}
+.poscar-results h4:not(:first-child){margin-top:18px;}
+.props-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 18px;font-family:'DM Mono',monospace;font-size:.86rem;}
+.props-grid .prop{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dotted #ececec;}
+.props-grid .prop .k{color:#2980b9;font-weight:700;}
+.props-grid .prop .v{color:#1a1a2e;}
+.props-grid .prop .u{color:#999;font-size:.85em;}
+.sym-row{font-family:'DM Mono',monospace;font-size:.88rem;background:#f7f8fa;border-left:3px solid #2980b9;padding:8px 12px;border-radius:0 3px 3px 0;margin-bottom:4px;}
+.sym-row .k{color:#2980b9;font-weight:700;display:inline-block;min-width:130px;}
+.kspacing-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.88rem;margin-top:4px;}
+.kspacing-table th,.kspacing-table td{padding:6px 10px;text-align:left;border-bottom:1px solid #ececec;}
+.kspacing-table th{background:#f7f8fa;color:#666;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;}
+.kspacing-table td.ks{font-weight:700;}
+.kspacing-table td.mesh{color:#c2410c;font-weight:700;}
+.kspacing-table tr.ks-08 td.ks{color:#dc2626;}
+.kspacing-table tr.ks-10 td.ks{color:#dc2626;}
+.kspacing-table tr.ks-15 td.ks{color:#d97706;}
+.kspacing-table tr.ks-20 td.ks{color:#16a34a;}
+.kspacing-table tr.ks-30 td.ks{color:#0891b2;}
+.kspacing-table tr.ks-50 td.ks{color:#2563eb;}
+.kspacing-table .total{color:#666;font-size:.92em;}
 /* ── INPUTS ── */
 input[type="number"]{font-family:'DM Mono',monospace;font-size:.88rem;padding:5px 7px;border:1px solid #bbb;border-radius:3px;background:#fff;color:#1a1a2e;}
 input[type="number"]:focus{outline:none;border-color:#2980b9;box-shadow:0 0 0 2px rgba(41,128,185,.15);}
@@ -113,6 +149,11 @@ input[type="number"]::-webkit-inner-spin-button{opacity:.3;}
           <li id="nav-kspacing" class="current">
             <a href="#kspacing">
               <span class="wy-nav-dot" style="background:#f59e0b"></span>KSPACING &harr; MP
+            </a>
+          </li>
+          <li id="nav-poscar">
+            <a href="#poscar">
+              <span class="wy-nav-dot" style="background:#10b981"></span>POSCAR analyzer
             </a>
           </li>
         </ul>
@@ -216,6 +257,79 @@ input[type="number"]::-webkit-inner-spin-button{opacity:.3;}
           </p>
         </section>
 
+        <section id="poscar">
+          <h2>POSCAR analyzer <small style="font-size:55%;color:#9b9b9b;font-weight:400">lattice + KSPACING table</small></h2>
+          <p>
+            The simple converter above assumes an orthogonal cell. For real crystals &mdash; hexagonal, monoclinic, triclinic &mdash; the k-mesh depends on the reciprocal-lattice vector magnitudes <span class="mono">|b<sub>i</sub><sup>*</sup>|</span>, which need the full lattice including angles. Paste a POSCAR / CONTCAR below and the lattice constants, angles, reciprocal vectors, crystal system, and a KSPACING&rarr;mesh table are computed in your browser.
+          </p>
+
+          <div class="formula-card">
+            <div class="formula-row"><span class="label">Volume:</span> V = |a<sub>1</sub> &middot; (a<sub>2</sub> &times; a<sub>3</sub>)|</div>
+            <div class="formula-row"><span class="label">Reciprocal:</span> b<sub>i</sub><sup>*</sup> = 2&pi; (a<sub>j</sub> &times; a<sub>k</sub>) / V&nbsp;&nbsp;(cyclic i,j,k)</div>
+            <div class="formula-row"><span class="label">K-mesh:</span> N<sub>i</sub> = max(1, &lceil; |b<sub>i</sub><sup>*</sup>| / ks &rceil;)</div>
+            <p class="formula-note">
+              This matches VASP's KSPACING behaviour: each direction is sampled independently with the spacing limited by <code>KSPACING</code>. The reciprocal-lattice norm already encodes the lattice angles, so it works for any cell shape.
+            </p>
+          </div>
+
+          <div class="poscar-card">
+            <div class="poscar-input-wrap">
+              <div class="row-title">
+                <span>POSCAR lattice section</span>
+                <span class="hint">paste the whole POSCAR &mdash; lines 1&ndash;7 are used</span>
+              </div>
+              <textarea class="poscar-text" id="poscar-in" spellcheck="false" rows="14" placeholder="请输入 POSCAR 的晶格信息：&#10;&#10;Zn Ga O&#10;   1.00000000000000&#10;    12.7507029790675048    0.0000707738950829   -0.0000174188498285&#10;    -6.3752901980104602   11.0424583472184334   -0.0000076591803272&#10;    -0.0000139820389533   -0.0000151721515189   10.2577243111079124&#10;  Zn              Ga              O&#10;    63     1    64"></textarea>
+              <div class="poscar-actions">
+                <button class="poscar-btn" id="poscar-parse">Analyse</button>
+                <button class="poscar-btn secondary" id="poscar-example">Load example</button>
+                <button class="poscar-btn secondary" id="poscar-clear">Clear</button>
+                <span class="poscar-status" id="poscar-status">Paste a POSCAR &mdash; auto-parsed on input.</span>
+              </div>
+            </div>
+
+            <div class="poscar-results" id="poscar-out" style="display:none;">
+              <h4>Composition &amp; symmetry</h4>
+              <div class="sym-row"><span class="k">Title</span><span id="o-title"></span></div>
+              <div class="sym-row"><span class="k">Composition</span><span id="o-comp"></span></div>
+              <div class="sym-row"><span class="k">Crystal system</span><span id="o-sys"></span></div>
+
+              <h4>Real-space lattice</h4>
+              <div class="props-grid">
+                <div class="prop"><span class="k">a</span><span class="v"><span id="o-a"></span> <span class="u">&Aring;</span></span></div>
+                <div class="prop"><span class="k">b</span><span class="v"><span id="o-b"></span> <span class="u">&Aring;</span></span></div>
+                <div class="prop"><span class="k">c</span><span class="v"><span id="o-c"></span> <span class="u">&Aring;</span></span></div>
+                <div class="prop"><span class="k">&alpha;</span><span class="v"><span id="o-al"></span> <span class="u">&deg;</span></span></div>
+                <div class="prop"><span class="k">&beta;</span><span class="v"><span id="o-be"></span> <span class="u">&deg;</span></span></div>
+                <div class="prop"><span class="k">&gamma;</span><span class="v"><span id="o-ga"></span> <span class="u">&deg;</span></span></div>
+                <div class="prop"><span class="k">Volume</span><span class="v"><span id="o-vol"></span> <span class="u">&Aring;&sup3;</span></span></div>
+                <div class="prop"><span class="k">Scale</span><span class="v"><span id="o-scale"></span></span></div>
+              </div>
+
+              <h4>Reciprocal lattice (incl. 2&pi;)</h4>
+              <div class="props-grid">
+                <div class="prop"><span class="k">|b<sub>1</sub><sup>*</sup>|</span><span class="v"><span id="o-b1"></span> <span class="u">&Aring;<sup>&minus;1</sup></span></span></div>
+                <div class="prop"><span class="k">|b<sub>2</sub><sup>*</sup>|</span><span class="v"><span id="o-b2"></span> <span class="u">&Aring;<sup>&minus;1</sup></span></span></div>
+                <div class="prop"><span class="k">|b<sub>3</sub><sup>*</sup>|</span><span class="v"><span id="o-b3"></span> <span class="u">&Aring;<sup>&minus;1</sup></span></span></div>
+              </div>
+
+              <h4>KSPACING &rarr; k-mesh</h4>
+              <table class="kspacing-table" id="o-table">
+                <thead><tr><th>KSPACING (&Aring;<sup>&minus;1</sup>)</th><th>Mesh N<sub>a</sub>&times;N<sub>b</sub>&times;N<sub>c</sub></th><th>Total k-points</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="admonition tip">
+            <span class="admonition-title">Notes</span>
+            <p>Crystal system is inferred from the metric tensor (a/b/c equalities and angles, tolerance 0.5&deg;), not from a full space-group search &mdash; a JS port of <code>spglib</code> would be needed for that. The KSPACING table uses VASP's convention with a 2&pi; factor in the reciprocal lattice.</p>
+          </div>
+
+          <p style="font-size:.8rem;color:#888;margin-top:1.4em;">
+            Reference Python implementation (using <code>pymatgen</code> for full symmetry): <code>get_cons.py POSCAR</code>.
+          </p>
+        </section>
+
         <div class="rst-footer">&copy; 2024 &middot; Built with plain HTML, CSS, JS</div>
       </div>
     </div>
@@ -293,6 +407,214 @@ input[type="number"]::-webkit-inner-spin-button{opacity:.3;}
   [$na, $nb, $nc].forEach(el => el.addEventListener('input', updateKS));
 
   updateAll();
+})();
+
+/* ── POSCAR analyzer ─────────────────────────────────────────── */
+(function(){
+  const TWO_PI = 2 * Math.PI;
+  const KS_VALUES = [0.08, 0.10, 0.15, 0.20, 0.30, 0.50];
+
+  const EXAMPLE = `Zn Ga O
+   1.00000000000000
+    12.7507029790675048    0.0000707738950829   -0.0000174188498285
+    -6.3752901980104602   11.0424583472184334   -0.0000076591803272
+    -0.0000139820389533   -0.0000151721515189   10.2577243111079124
+  Zn              Ga              O
+    63     1    64
+Direct`;
+
+  const $in     = document.getElementById('poscar-in');
+  const $out    = document.getElementById('poscar-out');
+  const $status = document.getElementById('poscar-status');
+  const $parse  = document.getElementById('poscar-parse');
+  const $ex     = document.getElementById('poscar-example');
+  const $clear  = document.getElementById('poscar-clear');
+
+  function dot(u,v){ return u[0]*v[0] + u[1]*v[1] + u[2]*v[2]; }
+  function cross(u,v){ return [u[1]*v[2]-u[2]*v[1], u[2]*v[0]-u[0]*v[2], u[0]*v[1]-u[1]*v[0]]; }
+  function norm(v){ return Math.sqrt(dot(v,v)); }
+  function det3(m){
+    return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+         - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+         + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+  }
+  function isSym(s){ return /^[A-Z][a-z]?$/.test(s); }
+
+  function parsePOSCAR(text){
+    const raw = text.replace(/^\s*\n+/, '').split(/\r?\n/);
+    if (raw.length < 7) throw new Error('At least 7 lines required (comment, scale, 3 lattice vectors, elements, counts).');
+
+    const title = raw[0].trim();
+    const scale = parseFloat(raw[1].trim().split(/\s+/)[0]);
+    if (!isFinite(scale)) throw new Error('Line 2: cannot read scale factor.');
+
+    const rawLat = [];
+    for (let i = 0; i < 3; i++){
+      const parts = raw[2+i].trim().split(/\s+/).map(Number);
+      if (parts.length < 3 || parts.slice(0,3).some(x => !isFinite(x))){
+        throw new Error('Line ' + (3+i) + ': cannot parse 3 lattice components.');
+      }
+      rawLat.push(parts.slice(0,3));
+    }
+
+    // Apply scale (VASP: negative scale = target volume)
+    let finalScale = scale;
+    if (scale < 0){
+      const vRaw = Math.abs(det3(rawLat));
+      if (vRaw === 0) throw new Error('Singular lattice matrix.');
+      finalScale = Math.pow(-scale / vRaw, 1/3);
+    }
+    const lat = rawLat.map(v => v.map(x => x * finalScale));
+
+    // Elements + counts (try VASP5 first, fall back to VASP4)
+    let elements = null, counts = null;
+    const l6 = (raw[5] || '').trim().split(/\s+/).filter(Boolean);
+    const l7 = (raw[6] || '').trim().split(/\s+/).filter(Boolean);
+    if (l6.length && l6.every(isSym)){
+      elements = l6;
+      const cn = l7.map(p => parseInt(p,10));
+      if (cn.length === l6.length && cn.every(x => isFinite(x) && x > 0)) counts = cn;
+    } else {
+      const cn = l6.map(p => parseInt(p,10));
+      if (cn.length && cn.every(x => isFinite(x) && x > 0)){
+        counts = cn;
+        const titleParts = title.split(/\s+/).filter(Boolean);
+        if (titleParts.length === cn.length && titleParts.every(isSym)) elements = titleParts;
+      }
+    }
+
+    return { title, scale, finalScale, lat, elements, counts };
+  }
+
+  function latticeProps(lat){
+    const [a1, a2, a3] = lat;
+    const a = norm(a1), b = norm(a2), c = norm(a3);
+    const alpha = Math.acos(Math.max(-1, Math.min(1, dot(a2,a3)/(b*c)))) * 180/Math.PI;
+    const beta  = Math.acos(Math.max(-1, Math.min(1, dot(a1,a3)/(a*c)))) * 180/Math.PI;
+    const gamma = Math.acos(Math.max(-1, Math.min(1, dot(a1,a2)/(a*b)))) * 180/Math.PI;
+    const vol = Math.abs(det3(lat));
+    const f = TWO_PI / vol;
+    const b1 = cross(a2,a3).map(x => x*f);
+    const b2 = cross(a3,a1).map(x => x*f);
+    const b3 = cross(a1,a2).map(x => x*f);
+    return { a, b, c, alpha, beta, gamma, vol, B: [norm(b1), norm(b2), norm(b3)] };
+  }
+
+  function crystalSystem(p){
+    const eqL = (x,y) => Math.abs(x-y)/Math.max(x,y) < 1e-3;
+    const eqA = (x,y) => Math.abs(x-y) < 0.5;
+    const is90  = x => eqA(x, 90);
+    const is120 = x => eqA(x, 120);
+    const {a,b,c,alpha,beta,gamma} = p;
+    if (eqL(a,b) && eqL(b,c) && is90(alpha) && is90(beta) && is90(gamma)) return 'Cubic';
+    if (eqL(a,b) && is90(alpha) && is90(beta) && is120(gamma)) return 'Hexagonal';
+    if (eqL(a,b) && eqL(b,c) && eqA(alpha,beta) && eqA(beta,gamma) && !is90(alpha)) return 'Rhombohedral (trigonal)';
+    if (eqL(a,b) && is90(alpha) && is90(beta) && is90(gamma)) return 'Tetragonal';
+    if (is90(alpha) && is90(beta) && is90(gamma)) return 'Orthorhombic';
+    if (is90(alpha) && is90(gamma)) return 'Monoclinic';
+    return 'Triclinic';
+  }
+
+  function composition(elements, counts){
+    if (!counts) return '—';
+    if (!elements) return counts.join(' / ') + ' (no element labels in POSCAR)';
+    return elements.map((e,i) => e + ' ' + counts[i]).join(' · ');
+  }
+
+  function setText(id, text){ document.getElementById(id).textContent = text; }
+  function fmt(x, d){ return Number(x).toFixed(d); }
+
+  function render(p, parsed){
+    const sys = crystalSystem(p);
+    setText('o-title', parsed.title || '(empty)');
+    setText('o-comp',  composition(parsed.elements, parsed.counts));
+    setText('o-sys',   sys);
+    setText('o-a', fmt(p.a, 6));
+    setText('o-b', fmt(p.b, 6));
+    setText('o-c', fmt(p.c, 6));
+    setText('o-al', fmt(p.alpha, 4));
+    setText('o-be', fmt(p.beta, 4));
+    setText('o-ga', fmt(p.gamma, 4));
+    setText('o-vol', fmt(p.vol, 4));
+    setText('o-scale', parsed.scale < 0
+      ? fmt(parsed.scale, 5) + ' (volume; effective ' + fmt(parsed.finalScale, 5) + ')'
+      : fmt(parsed.scale, 5));
+    setText('o-b1', fmt(p.B[0], 6));
+    setText('o-b2', fmt(p.B[1], 6));
+    setText('o-b3', fmt(p.B[2], 6));
+
+    const tbody = document.querySelector('#o-table tbody');
+    tbody.innerHTML = '';
+    KS_VALUES.forEach(ks => {
+      const N = p.B.map(bi => Math.max(1, Math.ceil(bi / ks)));
+      const total = N[0] * N[1] * N[2];
+      const tag = String(Math.round(ks*100)).padStart(2,'0');
+      const tr = document.createElement('tr');
+      tr.className = 'ks-' + tag;
+      tr.innerHTML =
+        '<td class="ks">' + fmt(ks,2) + '</td>' +
+        '<td class="mesh">' + N[0] + ' &times; ' + N[1] + ' &times; ' + N[2] + '</td>' +
+        '<td class="total">' + total.toLocaleString() + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    $out.style.display = '';
+    $status.classList.remove('error');
+    $status.textContent = '✓ parsed';
+  }
+
+  function showError(msg){
+    $out.style.display = 'none';
+    $status.classList.add('error');
+    $status.textContent = '✗ ' + msg;
+  }
+
+  function run(){
+    const text = $in.value.trim();
+    if (!text){
+      $out.style.display = 'none';
+      $status.classList.remove('error');
+      $status.textContent = 'Paste a POSCAR — auto-parsed on input.';
+      return;
+    }
+    try {
+      const parsed = parsePOSCAR(text);
+      const props = latticeProps(parsed.lat);
+      if (!isFinite(props.vol) || props.vol === 0) throw new Error('Lattice volume is zero — vectors are coplanar.');
+      render(props, parsed);
+    } catch (e){
+      showError(e.message);
+    }
+  }
+
+  let debounce = null;
+  $in.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(run, 150);
+  });
+  $parse.addEventListener('click', run);
+  $ex.addEventListener('click', () => { $in.value = EXAMPLE; run(); });
+  $clear.addEventListener('click', () => { $in.value = ''; run(); });
+})();
+
+/* ── sidebar scroll-spy ──────────────────────────────────────── */
+(function(){
+  const ids = ['kspacing', 'poscar'];
+  function update(){
+    let active = ids[0];
+    for (const id of ids){
+      const el = document.getElementById(id);
+      if (!el) continue;
+      if (el.getBoundingClientRect().top < 200) active = id;
+    }
+    ids.forEach(id => {
+      const li = document.getElementById('nav-' + id);
+      if (li) li.classList.toggle('current', id === active);
+    });
+  }
+  window.addEventListener('scroll', update, {passive:true});
+  window.addEventListener('hashchange', update);
+  update();
 })();
 </script>
 </body>
