@@ -75,14 +75,15 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 /* crystal card: viewer + info */
 .crystal-card{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start;margin:.9em 0;}
 @media(max-width:900px){.crystal-card{grid-template-columns:1fr;}}
-/* 3D canvas — keep dark */
-.canvas-wrap{position:relative;background:#111827;border:1px solid #374151;border-radius:3px;overflow:hidden;aspect-ratio:1;cursor:grab;}
+/* 3D canvas — light "studio" theme */
+.canvas-wrap{position:relative;background:#eef1f5;border:1px solid #d6dbe1;border-radius:4px;overflow:hidden;aspect-ratio:1;cursor:grab;box-shadow:inset 0 1px 4px rgba(0,0,0,.05);}
 .canvas-wrap:active{cursor:grabbing;}
 canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
 .view-toggle{position:absolute;top:7px;left:7px;display:flex;gap:3px;z-index:10;}
-.vt-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.5);border-radius:2px;padding:2px 8px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;transition:background .1s;}
-.vt-btn.active{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.5);color:#fff;}
-.canvas-badge{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.55);border-radius:2px;padding:2px 6px;font-size:10px;color:rgba(255,255,255,.4);}
+.vt-btn{background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.12);color:#6b7280;border-radius:3px;padding:2px 9px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;transition:all .1s;backdrop-filter:blur(2px);}
+.vt-btn:hover{color:#404040;}
+.vt-btn.active{background:#2980b9;border-color:#2980b9;color:#fff;}
+.canvas-badge{position:absolute;bottom:6px;right:6px;background:rgba(255,255,255,.65);border:1px solid rgba(0,0,0,.06);border-radius:2px;padding:2px 6px;font-size:10px;color:#9b9b9b;backdrop-filter:blur(2px);}
 /* info panel */
 .info-panel{display:flex;flex-direction:column;gap:1em;}
 .info-caption{color:#2980b9;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;font-family:'DM Mono',monospace;}
@@ -165,10 +166,11 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
             </ul>
 
             <h3>3. 渲染引擎 —— Three.js (r128)</h3>
-            <p>每个 canvas 一个独立 viewer，没有用 OrbitControls 而是自写轻量交互以减少依赖：相机用<strong>球坐标</strong> (θ, φ, radius) 表示，鼠标拖动改 θ/φ、滚轮改 radius、双击复位，触屏同逻辑；1 个环境光 + 3 个方向光营造体积感；<code>ResizeObserver</code> 自适应尺寸。</p>
+            <p>每个 canvas 一个独立 viewer，没有用 OrbitControls 而是自写轻量交互以减少依赖：相机用<strong>球坐标</strong> (θ, φ, radius) 表示，鼠标拖动改 θ/φ、滚轮改 radius、双击复位，触屏同逻辑；<code>ResizeObserver</code> 自适应尺寸。</p>
+            <p>观感采用 VESTA/MP 风格的"影棚"方案：<strong>浅色背景</strong> + 半球光（天/地）+ 暖色主光 + 冷色补光；主光开 <code>PCFSoftShadowMap</code> 柔和阴影，配一块只接收阴影的隐形地面（<code>ShadowMaterial</code>）做<strong>接触落影</strong>；渲染器开 sRGB 输出 + ACES 滤色调映射。</p>
 
-            <h3>4. 球棍模型的生成</h3>
-            <p>原子是缩小的球节点（<code>SphereGeometry × ATOM_SCALE</code>）；化学键是一根圆柱，用四元数 <code>setFromUnitVectors</code> 把默认沿 Y 轴的圆柱旋到两原子连线方向。</p>
+            <h3>4. 球棍模型与多面体</h3>
+            <p>原子用 <strong>MeshStandardMaterial 物理材质</strong>的球（金属带金属度反光），配 <strong>VESTA/CPK 标准元素配色</strong>；化学键是一根圆柱，用四元数 <code>setFromUnitVectors</code> 旋到两原子连线方向。配位型结构还会绘制<strong>半透明配位多面体</strong>（<code>ConvexGeometry</code> 凸包 + 棱线，仅在配位壳层完整时画）。</p>
             <p>不存连接表，而是<strong>按距离阈值自动判键</strong>（<code>bondAB</code> 连异种离子，<code>bondSelf</code> 连同种网络）。阈值按已知最近邻距离精确卡定，只连真正的键：</p>
             <table><tbody>
               <tr><th>结构</th><th>最近邻</th><th>cutoff</th></tr>
@@ -208,7 +210,7 @@ const CRYSTALS = [
    insight:'BCC金属存在低温脆性转变温度（DBTT）：低温下12个有效滑移系进一步减少，导致脆断。FCC金属无此现象，这是核反应堆用奥氏体不锈钢而非铁素体钢的原因。',
    props:{'配位数':'8','次近邻':'6','填充效率':'68%','典型代表':'Fe·W·Cr·Mo'},
    related:['FCC面心立方 Cu·Al·Au·Ni','HCP六方密堆 Mg·Ti·Zn','α-Fe铁素体（室温稳定）','γ-Fe奥氏体（912°C+）'],
-   atoms:[{label:'Fe',color:'#94a3b8'}],
+   atoms:[{label:'Fe',color:'#9aa3af'}],
    buildPrim:(sc,v)=>buildBCC(sc,v,false),buildSuper:(sc,v)=>buildBCC(sc,v,true)},
   {id:'fcc',bravais:'cubic',en:'FCC Metal',zh:'面心立方金属',formula:'Cu / Au / Al / Ni',
    system:'立方晶系 Cubic',sg:'Fm3̄m (No.225)',
@@ -219,7 +221,7 @@ const CRYSTALS = [
    insight:'FCC的12个有效滑移系使其在室温下保持优异延展性，金可被锤薄至100nm箔片。这是FCC金属广泛用于导线、薄膜、铸造的根本原因。',
    props:{'配位数':'12','填充效率':'74%','有效滑移系':'12','层序':'ABCABC'},
    related:['HCP六方密堆 Mg·Ti·Zn（同密度）','BCC体心立方 Fe·W','Ag（最高导电率）','Pt·Pd（催化剂）'],
-   atoms:[{label:'Cu',color:'#f59e0b'}],
+   atoms:[{label:'Cu',color:'#c8743a'}],
    buildPrim:(sc,v)=>buildFCC(sc,v,false),buildSuper:(sc,v)=>buildFCC(sc,v,true)},
   {id:'nacl',bravais:'cubic',en:'Rock Salt',zh:'岩盐结构',formula:'NaCl',
    system:'立方晶系 Cubic',sg:'Fm3̄m (No.225)',
@@ -230,7 +232,7 @@ const CRYSTALS = [
    insight:'NaCl的(001)解理面光滑：正是因为{100}面上同号离子构成的排斥将晶体劈开，而{111}面上阴阳离子交替反而不易解理——这直接验证了岩盐结构模型。',
    props:{'配位数':'6–6','晶格参数':'a=5.64 Å','密度':'2.16 g/cm³','熔点':'801°C'},
    related:['KCl·LiF·MgO·FeO·NiO','TiN·ZrN氮化物硬涂层','CaO·BaO碱土氧化物','CO（等电子体，同构）'],
-   atoms:[{label:'Na⁺',color:'#7ba7ff'},{label:'Cl⁻',color:'#4dffb4'}],
+   atoms:[{label:'Na⁺',color:'#9b7ce8'},{label:'Cl⁻',color:'#46c66d'}],
    buildPrim:(sc,v)=>buildNaCl(sc,v,false),buildSuper:(sc,v)=>buildNaCl(sc,v,true)},
   {id:'cscl',bravais:'cubic',en:'Cesium Chloride',zh:'氯化铯结构',formula:'CsCl',
    system:'立方晶系 Cubic',sg:'Pm3̄m (No.221)',
@@ -241,7 +243,7 @@ const CRYSTALS = [
    insight:'CsCl在469°C加热后转变为NaCl型——这直接证明了离子半径比决定结构型别：高温下热膨胀使有效半径比降至NaCl型稳定区间。',
    props:{'配位数':'8–8','a':'4.12 Å','密度':'3.99 g/cm³','熔点':'646°C'},
    related:['CsBr·CsI（同型）','TlCl·TlBr','NH₄Cl高温相','β-AgI'],
-   atoms:[{label:'Cs⁺',color:'#ffb347'},{label:'Cl⁻',color:'#4dffb4'}],
+   atoms:[{label:'Cs⁺',color:'#7a4bb5'},{label:'Cl⁻',color:'#46c66d'}],
    buildPrim:(sc,v)=>buildCsCl(sc,v,false),buildSuper:(sc,v)=>buildCsCl(sc,v,true)},
   {id:'zincblende',bravais:'cubic',en:'Zinc Blende',zh:'闪锌矿结构',formula:'ZnS',
    system:'立方晶系 Cubic',sg:'F4̄3m (No.216)',
@@ -252,7 +254,7 @@ const CRYSTALS = [
    insight:'同为ZnS的闪锌矿（立方）与纤锌矿（六方）仅层序不同，但压电系数有差异——纤锌矿沿c轴有自发极化，闪锌矿无。这是GaN LED中须仔细处理极化场的原因。',
    props:{'配位数':'4–4','a':'5.41 Å','禁带宽度':'3.54 eV','压电性':'有（无反演中心）'},
    related:['GaAs·InP·GaP（III-V半导体）','ZnSe·CdTe（II-VI）','立方BN·SiC（3C）','金刚石C（同拓扑，单元素）'],
-   atoms:[{label:'Zn²⁺',color:'#ff7baf'},{label:'S²⁻',color:'#ffe17b'}],
+   atoms:[{label:'Zn²⁺',color:'#8f8fc7'},{label:'S²⁻',color:'#e6c12f'}],
    buildPrim:(sc,v)=>buildZincBlende(sc,v,false),buildSuper:(sc,v)=>buildZincBlende(sc,v,true),
    compareNote:'⚡ 闪锌矿 vs 方铅矿：Zn²⁺小（r=0.74Å），半径比0.40在四面体配位区间；Pb²⁺大（r=1.19Å），半径比0.65在八面体配位区间，故采用NaCl型。'},
   {id:'galena',bravais:'cubic',en:'Galena',zh:'方铅矿结构',formula:'PbS',
@@ -264,7 +266,7 @@ const CRYSTALS = [
    insight:'PbS带隙极窄（0.37 eV），对红外光敏感，是热成像传感器和红外探测器的早期核心材料。这与ZnS宽带隙（3.54 eV）截然相反，完美体现了结构-性质关联。',
    props:{'配位数':'6–6','a':'5.94 Å','密度':'7.6 g/cm³','带隙':'0.37 eV（近红外）'},
    related:['NaCl（同构型）','PbSe·PbTe（热电材料）','SnS·SnSe（光伏）','MnS岩盐型'],
-   atoms:[{label:'Pb²⁺',color:'#b0bec5'},{label:'S²⁻',color:'#ffe17b'}],
+   atoms:[{label:'Pb²⁺',color:'#5f6470'},{label:'S²⁻',color:'#e6c12f'}],
    buildPrim:(sc,v)=>buildGalena(sc,v,false),buildSuper:(sc,v)=>buildGalena(sc,v,true)},
   {id:'diamond',bravais:'cubic',en:'Diamond',zh:'金刚石结构',formula:'C',
    system:'立方晶系 Cubic',sg:'Fd3̄m (No.227)',
@@ -275,7 +277,7 @@ const CRYSTALS = [
    insight:'金刚石热导率2000 W/m·K远超铜（400 W/m·K），原因是C–C极强共价键使声子平均自由程极长。金刚石散热片正在取代铜散热器用于功率半导体。',
    props:{'配位数':'4','a':'3.57 Å','硬度':'10 莫氏','热导率':'2000 W/m·K'},
    related:['Si·Ge·α-Sn（同构）','立方BN（c-BN，超硬）','SiC立方3C型','CVD金刚石薄膜'],
-   atoms:[{label:'C',color:'#93c5fd'}],
+   atoms:[{label:'C',color:'#6b7280'}],
    buildPrim:(sc,v)=>buildDiamond(sc,v,false),buildSuper:(sc,v)=>buildDiamond(sc,v,true)},
   {id:'spinel',bravais:'cubic',en:'Spinel',zh:'尖晶石结构',formula:'MgAl₂O₄',
    system:'立方晶系 Cubic',sg:'Fd3̄m (No.227)',
@@ -286,7 +288,7 @@ const CRYSTALS = [
    insight:'Fe₃O₄（磁铁矿）是反尖晶石：Fe²⁺和Fe³⁺同在Oh位，电子可在其间跳跃（Verwey机制）→天然矿物中导电率最高，也是最早被人类认知的磁性材料（指南针的原材料）。',
    props:{'配位数A':'4（Td）','配位数B':'6（Oh）','a':'8.08 Å','硬度':'7.5–8 莫氏'},
    related:['Fe₃O₄磁铁矿（反尖晶石）','NiFe₂O₄·CoFe₂O₄铁氧体','ZnFe₂O₄','LiMn₂O₄锂电正极'],
-   atoms:[{label:'Mg²⁺(Td)',color:'#4ade80'},{label:'Al³⁺(Oh)',color:'#60a5fa'},{label:'O²⁻',color:'#f87171'}],
+   atoms:[{label:'Mg²⁺(Td)',color:'#74c948'},{label:'Al³⁺(Oh)',color:'#c79fa0'},{label:'O²⁻',color:'#e0544a'}],
    buildPrim:(sc,v)=>buildSpinel(sc,v,false),buildSuper:(sc,v)=>buildSpinel(sc,v,true)},
   {id:'fluorite',bravais:'cubic',en:'Fluorite',zh:'萤石结构',formula:'CaF₂',
    system:'立方晶系 Cubic',sg:'Fm3̄m (No.225)',
@@ -297,7 +299,7 @@ const CRYSTALS = [
    insight:'掺Y₂O₃的ZrO₂（YSZ）稳定为萤石型：Y³⁺替代Zr⁴⁺产生大量氧空位，900°C下氧离子电导率达0.1 S/cm，是固体氧化物燃料电池（SOFC）核心电解质，也是热障涂层主材。',
    props:{'配位数Ca':'8','配位数F':'4','a':'5.46 Å','应用':'固体电解质·光学·核燃料'},
    related:['UO₂·ThO₂（核燃料）','YSZ氧化锆（SOFC电解质）','CeO₂（三效催化）','Na₂O（反萤石型）'],
-   atoms:[{label:'Ca²⁺',color:'#818cf8'},{label:'F⁻',color:'#34d399'}],
+   atoms:[{label:'Ca²⁺',color:'#4f93c4'},{label:'F⁻',color:'#8bd06a'}],
    buildPrim:(sc,v)=>buildFluorite(sc,v,false),buildSuper:(sc,v)=>buildFluorite(sc,v,true)},
   {id:'perovskite',bravais:'cubic',en:'Perovskite',zh:'钙钛矿结构',formula:'CaTiO₃',
    system:'立方晶系 Cubic（理想）',sg:'Pm3̄m (No.221)（理想）',
@@ -308,7 +310,7 @@ const CRYSTALS = [
    insight:'BaTiO₃在120°C以下从立方（顺电）→四方（铁电）相变：Ti⁴⁺偏离八面体中心产生自发电偶极矩，这是压电传感器、压电马达的工作原理；卤化物钙钛矿MAPbI₃则是钙钛矿太阳能电池的核心。',
    props:{'容忍因子t':'0.8–1.0稳定','A位配位数':'12','B位配位数':'6','代表性质':'铁电·压电·超导'},
    related:['BaTiO₃（铁电）','SrTiO₃（量子顺电）','BiFeO₃（室温多铁）','MAPbI₃（钙钛矿太阳能电池）','YBCO（高温超导）'],
-   atoms:[{label:'Ca(A)',color:'#7ba7ff'},{label:'Ti(B)',color:'#f87171'},{label:'O²⁻',color:'#fca5a5'}],
+   atoms:[{label:'Ca(A)',color:'#4f93c4'},{label:'Ti(B)',color:'#9aa0aa'},{label:'O²⁻',color:'#e0544a'}],
    buildPrim:(sc,v)=>buildPerovskite(sc,v,false),buildSuper:(sc,v)=>buildPerovskite(sc,v,true)},
   {id:'rutile',bravais:'tetragonal',en:'Rutile',zh:'金红石结构',formula:'TiO₂',
    system:'四方晶系 Tetragonal',sg:'P4₂/mnm (No.136)',
@@ -319,7 +321,7 @@ const CRYSTALS = [
    insight:'金红石TiO₂折射率n≈2.7（钛白粉），远高于玻璃（1.5），因此散射可见光极强，是全球消耗量最大的白色颜料。同时金红石型TiO₂光催化活性低于锐钛矿型，工业上两种用途完全不同。',
    props:{'配位数Ti':'6','配位数O':'3','a,c':'4.59, 2.96 Å','折射率':'n≈2.7'},
    related:['VO₂（相变，MIT）','MnO₂（锰矿·超级电容）','SnO₂（透明导电）','MgF₂','CrO₂（磁记录）'],
-   atoms:[{label:'Ti⁴⁺',color:'#c084fc'},{label:'O²⁻',color:'#f87171'}],
+   atoms:[{label:'Ti⁴⁺',color:'#9aa0aa'},{label:'O²⁻',color:'#e0544a'}],
    buildPrim:(sc,v)=>buildRutile(sc,v,false),buildSuper:(sc,v)=>buildRutile(sc,v,true)},
   {id:'wurtzite',bravais:'hexagonal',en:'Wurtzite',zh:'纤锌矿结构',formula:'ZnS (Wurtzite)',
    system:'六方晶系 Hexagonal',sg:'P6₃mc (No.186)',
@@ -330,7 +332,7 @@ const CRYSTALS = [
    insight:'GaN基蓝光LED（2014年诺贝尔物理学奖）的核心正是纤锌矿GaN；其c轴自发极化和压电极化对多量子阱（MQW）发光效率有重大影响，这是GaN LED研究中"极化工程"的来源。',
    props:{'配位数':'4–4','a,c':'3.82, 6.26 Å','极性轴':'c轴（Zn→S）','u参数':'≈0.375'},
    related:['GaN（蓝光LED·功率器件）','AlN（高热导）','ZnO（压电传感）','CdS·CdSe（太阳能电池）'],
-   atoms:[{label:'Zn²⁺',color:'#fb923c'},{label:'S²⁻',color:'#facc15'}],
+   atoms:[{label:'Zn²⁺',color:'#8f8fc7'},{label:'S²⁻',color:'#e6c12f'}],
    buildPrim:(sc,v)=>buildWurtzite(sc,v,false),buildSuper:(sc,v)=>buildWurtzite(sc,v,true)},
   {id:'graphite',bravais:'hexagonal',en:'Graphite',zh:'石墨结构',formula:'C (Graphite)',
    system:'六方晶系 Hexagonal',sg:'P6₃/mmc (No.194)',
@@ -341,7 +343,7 @@ const CRYSTALS = [
    insight:'石墨层间距3.35Å为锂离子提供充足空间，每6个C可嵌入1个Li（LiC₆），理论容量372 mAh/g，这是石墨作为锂离子电池商业负极材料的结构基础。',
    props:{'层内键长':'1.42 Å（sp²）','层间距':'3.35 Å','层内导电率':'~3×10⁴ S/cm','堆积':'ABAB（Bernal）'},
    related:['石墨烯（单层，2010诺奖）','富勒烯C₆₀','碳纳米管CNT','六方BN h-BN（等构、绝缘）'],
-   atoms:[{label:'C',color:'#94a3b8'}],
+   atoms:[{label:'C',color:'#6b7280'}],
    buildPrim:(sc,v)=>buildGraphite(sc,v,false),buildSuper:(sc,v)=>buildGraphite(sc,v,true)},
   {id:'corundum',bravais:'trigonal',en:'Corundum',zh:'刚玉结构',formula:'α-Al₂O₃',
    system:'三方晶系 Trigonal',sg:'R3̄c (No.167)',
@@ -352,7 +354,7 @@ const CRYSTALS = [
    insight:'刚玉宝石颜色来自微量过渡金属的晶场劈裂：Cr³⁺在八面体场中d轨道劈裂→吸收绿光→呈红色（红宝石）；Fe²⁺/Ti⁴⁺电荷转移吸收→呈蓝色（蓝宝石）。',
    props:{'配位数Al':'6（Oh）','配位数O':'4','a,c（六方）':'4.76, 12.99 Å','硬度':'9 莫氏'},
    related:['α-Fe₂O₃赤铁矿（同构）','Cr₂O₃·V₂O₃（同构系列）','红宝石（Cr³⁺:Al₂O₃）','蓝宝石（Fe/Ti:Al₂O₃）'],
-   atoms:[{label:'Al³⁺',color:'#fbbf24'},{label:'O²⁻',color:'#f87171'}],
+   atoms:[{label:'Al³⁺',color:'#c79fa0'},{label:'O²⁻',color:'#e0544a'}],
    buildPrim:(sc,v)=>buildCorundum(sc,v,false),buildSuper:(sc,v)=>buildCorundum(sc,v,true)},
 ];
 const BRAVAIS=[
@@ -367,17 +369,24 @@ function createViewer(canvas){
   const W=canvas.offsetWidth||420,H=canvas.offsetHeight||420;
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.setSize(W,H);renderer.setClearColor(0x0d1018,1);
+  renderer.setSize(W,H);renderer.setClearColor(0xeef1f5,1);
   // physically-based output: sRGB + filmic tone mapping for richer colour & contrast
   if('sRGBEncoding' in THREE) renderer.outputEncoding=THREE.sRGBEncoding;
-  if('ACESFilmicToneMapping' in THREE){renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;}
+  if('ACESFilmicToneMapping' in THREE){renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;}
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(42,W/H,0.01,300);
-  // soft sky/ground hemisphere fill + warm key + cool rim → clean studio look for PBR spheres
-  scene.add(new THREE.HemisphereLight(0xdfe9ff,0x20242e,0.95));
-  const d1=new THREE.DirectionalLight(0xfff4e6,1.15);d1.position.set(6,11,8);scene.add(d1);
-  const d2=new THREE.DirectionalLight(0x9fb6ff,0.45);d2.position.set(-7,-3,-6);scene.add(d2);
-  const d3=new THREE.DirectionalLight(0xffffff,0.3);d3.position.set(0,-9,2);scene.add(d3);
+  // soft sky/ground hemisphere fill + warm key (casts shadow) + cool rim → clean VESTA/MP studio look
+  scene.add(new THREE.HemisphereLight(0xffffff,0xc4ccd6,0.78));
+  const d1=new THREE.DirectionalLight(0xfff6ec,0.95);d1.position.set(8,16,10);
+  d1.castShadow=true;d1.shadow.mapSize.set(1024,1024);
+  const sc=d1.shadow.camera;sc.left=-26;sc.right=26;sc.top=26;sc.bottom=-26;sc.near=0.5;sc.far=80;
+  d1.shadow.bias=-0.0006;d1.shadow.radius=4;scene.add(d1);
+  const d2=new THREE.DirectionalLight(0xc9d6ff,0.34);d2.position.set(-8,3,-7);scene.add(d2);
+  const d3=new THREE.DirectionalLight(0xffffff,0.18);d3.position.set(0,-9,3);scene.add(d3);
+  // invisible ground plane that only catches a soft contact shadow
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.ShadowMaterial({opacity:0.16}));
+  ground.rotation.x=-Math.PI/2;ground.position.y=-12;ground.receiveShadow=true;ground.__keep=true;scene.add(ground);
   let theta=0.6,phi=0.75,radius=12,dragging=false,prev={x:0,y:0};
   const target=new THREE.Vector3(0,0,0);
   function updateCam(){
@@ -418,20 +427,21 @@ function createViewer(canvas){
   ro.observe(canvas);
   return{
     scene,camera,renderer,
-    clearScene(){const t=[];scene.traverse(o=>{if(o.isMesh||o.isLine||o.isLineSegments)t.push(o);});t.forEach(o=>scene.remove(o));},
+    clearScene(){const t=[];scene.traverse(o=>{if((o.isMesh||o.isLine||o.isLineSegments)&&!o.__keep)t.push(o);});t.forEach(o=>scene.remove(o));},
     setRadius(r){radius=r;updateCam();},
     reset(){theta=0.6;phi=0.75;radius=12;target.set(0,0,0);updateCam();},
+    placeGround(){let minY=Infinity;scene.traverse(o=>{if(o.__atom)minY=Math.min(minY,o.position.y);});if(isFinite(minY))ground.position.y=minY-0.5;},
     destroy(){cancelAnimationFrame(raf);ro.disconnect();renderer.dispose();}
   };
 }
 // PRIMITIVES
 // ── dot-line (ball-and-stick) rendering: small bright "dot" atoms + clear "line" bonds ──
-const ATOM_SCALE=0.55;          // shrink spheres into dots so the lattice framework stays legible
-const BOND_HEX=0x9fb1cc;        // bond line colour (light slate)
+const ATOM_SCALE=0.6;           // ball-and-stick: prominent atoms, slim bonds
+const BOND_HEX=0x7a8696;        // bond colour (medium slate, reads on light bg)
 function mkAtom(pos,hex,r,metal=0){
   const geo=new THREE.SphereGeometry(r*ATOM_SCALE,28,28);
-  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:metal>0?0.3:0.42,metalness:metal});
-  const m=new THREE.Mesh(geo,mat);m.position.set(...pos);return m;
+  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:metal>0?0.35:0.5,metalness:metal});
+  const m=new THREE.Mesh(geo,mat);m.position.set(...pos);m.castShadow=true;m.__atom=true;return m;
 }
 function mkBond(p1,p2,hex=BOND_HEX,r=0.05){
   const v1=new THREE.Vector3(...p1),v2=new THREE.Vector3(...p2);
@@ -439,7 +449,7 @@ function mkBond(p1,p2,hex=BOND_HEX,r=0.05){
   if(len<0.001)return null;
   const geo=new THREE.CylinderGeometry(r,r,len,10,1);
   const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:0.5,metalness:0.1,transparent:true,opacity:0.82});
-  const m=new THREE.Mesh(geo,mat);
+  const m=new THREE.Mesh(geo,mat);m.castShadow=true;
   const mid=new THREE.Vector3().addVectors(v1,v2).multiplyScalar(0.5);
   m.position.copy(mid);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
   return m;
@@ -494,8 +504,8 @@ function recenter(groups){
 // hexagonal (γ=120°) fractional → cartesian: a1=(a,0), a2=(-a/2, a√3/2)
 function hex120(fx,fy,fz,a,c){return[fx*a-fy*a/2,fy*a*Math.sqrt(3)/2,fz*c];}
 // CELL BOXES
-function orthoBox(a,b,c,col=0x3355cc){
-  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.38});
+function orthoBox(a,b,c,col=0x3a3f47){
+  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.55});
   const h=[a/2,b/2,c/2];
   const v=[[-h[0],-h[1],-h[2]],[h[0],-h[1],-h[2]],[h[0],h[1],-h[2]],[-h[0],h[1],-h[2]],
            [-h[0],-h[1],h[2]],[h[0],-h[1],h[2]],[h[0],h[1],h[2]],[-h[0],h[1],h[2]]];
@@ -503,9 +513,9 @@ function orthoBox(a,b,c,col=0x3355cc){
   const pts=[];idx.forEach(([i,j])=>{pts.push(new THREE.Vector3(...v[i]));pts.push(new THREE.Vector3(...v[j]));});
   return new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),mat);
 }
-function cubicBox(a,col=0x3355cc){return orthoBox(a,a,a,col);}
-function hexPrimBox(a,c,col=0x3355cc){
-  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.38});
+function cubicBox(a,col=0x3a3f47){return orthoBox(a,a,a,col);}
+function hexPrimBox(a,c,col=0x3a3f47){
+  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.55});
   const s3=Math.sqrt(3);
   const cx=3*a/4,cy=a*s3/4,cz=c/2;
   const b0=[[0,0,0],[a,0,0],[a+a/2,a*s3/2,0],[a/2,a*s3/2,0]];
@@ -516,8 +526,8 @@ function hexPrimBox(a,c,col=0x3355cc){
   pairs.forEach(([i,j])=>{pts.push(new THREE.Vector3(...all[i]));pts.push(new THREE.Vector3(...all[j]));});
   return new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),mat);
 }
-function hexConvBox(a,c,col=0x3355cc){
-  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.36});
+function hexConvBox(a,c,col=0x3a3f47){
+  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.5});
   const s3=Math.sqrt(3)/2;
   const base=[[a,0],[a/2,a*s3],[- a/2,a*s3],[-a,0],[-a/2,-a*s3],[a/2,-a*s3]];
   const pts=[];
@@ -543,10 +553,10 @@ function buildBCC(scene,viewers,sup){
     centers.push([ox+a/2-n*a/2,oy+a/2-n*a/2,oz+a/2-n*a/2]);
   }
   bondAB(scene,centers,corners,a*0.93);            // 8 body-diagonal bonds (a√3/2≈0.87a)
-  placeDots(scene,corners,'#94a3b8',r,0.7);
-  placeDots(scene,centers,'#c4d4e8',r*1.05,0.7);
+  placeDots(scene,corners,'#9aa3af',r,0.7);
+  placeDots(scene,centers,'#c3ccd8',r*1.05,0.7);
   const s=sup?a*2:a;
-  scene.add(orthoBox(s,s,s,0x5577cc));
+  scene.add(orthoBox(s,s,s,0x3a3f47));
   viewers.setRadius(sup?18:11);
 }
 function buildFCC(scene,viewers,sup){
@@ -559,8 +569,8 @@ function buildFCC(scene,viewers,sup){
     frac.forEach(([fx,fy,fz])=>P.push([ox+fx*a-n*a/2,oy+fy*a-n*a/2,oz+fz*a-n*a/2]));
   }
   bondSelf(scene,P,a*0.74);                          // nearest neighbour a/√2≈0.71a
-  placeDots(scene,P,'#f59e0b',r,0.7);
-  scene.add(orthoBox(n*a,n*a,n*a,0x5577cc));
+  placeDots(scene,P,'#c8743a',r,0.7);
+  scene.add(orthoBox(n*a,n*a,n*a,0x3a3f47));
   viewers.setRadius(sup?18:11);
 }
 function buildNaCl(scene,viewers,sup){
@@ -575,9 +585,9 @@ function buildNaCl(scene,viewers,sup){
     clFrac.forEach(([fx,fy,fz])=>Cl.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondAB(scene,Na,Cl,a*0.62);                        // octahedral Na–Cl at a/2
-  placeDots(scene,Na,'#7ba7ff',r1);
-  placeDots(scene,Cl,'#4dffb4',r2);
-  scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
+  placeDots(scene,Na,'#9b7ce8',r1);
+  placeDots(scene,Cl,'#46c66d',r2);
+  scene.add(orthoBox(n*a,n*a,n*a,0x3a3f47));
   viewers.setRadius(sup?19:12);
 }
 function buildCsCl(scene,viewers,sup){
@@ -590,9 +600,9 @@ function buildCsCl(scene,viewers,sup){
     Cs.push([ox+a/2,oy+a/2,oz+a/2]);
   }
   bondAB(scene,Cs,Cl,a*0.93);                        // 8-coordinate Cs–Cl at a√3/2
-  placeDots(scene,Cl,'#4dffb4',r2);
-  placeDots(scene,Cs,'#ffb347',r1);
-  scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
+  placeDots(scene,Cl,'#46c66d',r2);
+  placeDots(scene,Cs,'#7a4bb5',r1);
+  scene.add(orthoBox(n*a,n*a,n*a,0x3a3f47));
   viewers.setRadius(sup?15:9);
 }
 function buildZincBlende(scene,viewers,sup){
@@ -607,10 +617,10 @@ function buildZincBlende(scene,viewers,sup){
     tetFrac.forEach(([fx,fy,fz])=>Zn.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondAB(scene,Zn,S,a*0.46);                         // tetrahedral Zn–S at a√3/4
-  polyhedra(scene,Zn,S,a*0.46,'#ff7baf',4);          // ZnS₄ tetrahedra
-  placeDots(scene,S,'#ffe17b',r2);
-  placeDots(scene,Zn,'#ff7baf',r1);
-  scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
+  polyhedra(scene,Zn,S,a*0.46,'#8f8fc7',4);          // ZnS₄ tetrahedra
+  placeDots(scene,S,'#e6c12f',r2);
+  placeDots(scene,Zn,'#8f8fc7',r1);
+  scene.add(orthoBox(n*a,n*a,n*a,0x3a3f47));
   viewers.setRadius(sup?18:11);
 }
 function buildGalena(scene,viewers,sup){
@@ -625,9 +635,9 @@ function buildGalena(scene,viewers,sup){
     sFrac.forEach(([fx,fy,fz])=>S.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondAB(scene,Pb,S,a*0.62);                         // octahedral Pb–S at a/2
-  placeDots(scene,Pb,'#b0bec5',r1);
-  placeDots(scene,S,'#ffe17b',r2);
-  scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
+  placeDots(scene,Pb,'#5f6470',r1);
+  placeDots(scene,S,'#e6c12f',r2);
+  scene.add(orthoBox(n*a,n*a,n*a,0x3a3f47));
   viewers.setRadius(sup?20:12);
 }
 function buildDiamond(scene,viewers,sup){
@@ -641,9 +651,9 @@ function buildDiamond(scene,viewers,sup){
     frac.forEach(([fx,fy,fz])=>P.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondSelf(scene,P,a*0.46);                           // sp³ C–C at a√3/4
-  polyhedra(scene,P,P,a*0.46,'#93c5fd',4);            // sp³ C tetrahedra
-  placeDots(scene,P,'#93c5fd',r);
-  scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
+  polyhedra(scene,P,P,a*0.46,'#6b7280',4);            // sp³ C tetrahedra
+  placeDots(scene,P,'#6b7280',r);
+  scene.add(orthoBox(n*a,n*a,n*a,0x3a3f47));
   viewers.setRadius(sup?14:9);
 }
 
@@ -664,12 +674,12 @@ function buildSpinel(scene,viewers,sup){
   const B=Bpos.map(([fx,fy,fz])=>[ox+fx*a,oy+fy*a,oz+fz*a]);
   bondAB(scene,A,O,a*0.26);                          // tetrahedral A–O
   bondAB(scene,B,O,a*0.30);                          // octahedral B–O
-  polyhedra(scene,A,O,a*0.26,'#4ade80',4);           // AO₄ tetrahedra (Td)
-  polyhedra(scene,B,O,a*0.30,'#60a5fa',6);           // BO₆ octahedra (Oh)
-  placeDots(scene,O,'#f87171',rO);
-  placeDots(scene,A,'#4ade80',rA);
-  placeDots(scene,B,'#60a5fa',rB);
-  scene.add(cubicBox(a,0x3355cc));
+  polyhedra(scene,A,O,a*0.26,'#74c948',4);           // AO₄ tetrahedra (Td)
+  polyhedra(scene,B,O,a*0.30,'#c79fa0',6);           // BO₆ octahedra (Oh)
+  placeDots(scene,O,'#e0544a',rO);
+  placeDots(scene,A,'#74c948',rA);
+  placeDots(scene,B,'#c79fa0',rB);
+  scene.add(cubicBox(a,0x3a3f47));
   viewers.setRadius(18);
 }
 function buildFluorite(scene,viewers,sup){
@@ -686,10 +696,10 @@ function buildFluorite(scene,viewers,sup){
     tetF.forEach(([fx,fy,fz])=>F.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondAB(scene,Ca,F,a*0.48);                          // Ca–F at a√3/4 (8:4 coordination)
-  polyhedra(scene,Ca,F,a*0.48,'#818cf8',8);           // CaF₈ cube
-  placeDots(scene,Ca,'#818cf8',rCa);
-  placeDots(scene,F,'#34d399',rF);
-  scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
+  polyhedra(scene,Ca,F,a*0.48,'#4f93c4',8);           // CaF₈ cube
+  placeDots(scene,Ca,'#4f93c4',rCa);
+  placeDots(scene,F,'#8bd06a',rF);
+  scene.add(orthoBox(n*a,n*a,n*a,0x3a3f47));
   viewers.setRadius(sup?19:11);
 }
 function buildPerovskite(scene,viewers,sup){
@@ -705,11 +715,11 @@ function buildPerovskite(scene,viewers,sup){
       O.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondAB(scene,Ti,O,a*0.56);                          // TiO₆ octahedron, Ti–O at a/2
-  polyhedra(scene,Ti,O,a*0.56,'#f87171',6);           // TiO₆ octahedron
-  placeDots(scene,Ca,'#7ba7ff',rCa);
-  placeDots(scene,Ti,'#f87171',rTi);
-  placeDots(scene,O,'#fca5a5',rO);
-  scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
+  polyhedra(scene,Ti,O,a*0.56,'#9aa0aa',6);           // TiO₆ octahedron
+  placeDots(scene,Ca,'#4f93c4',rCa);
+  placeDots(scene,Ti,'#9aa0aa',rTi);
+  placeDots(scene,O,'#e0544a',rO);
+  scene.add(orthoBox(n*a,n*a,n*a,0x3a3f47));
   viewers.setRadius(sup?16:9);
 }
 function buildRutile(scene,viewers,sup){
@@ -727,10 +737,10 @@ function buildRutile(scene,viewers,sup){
     }
   }
   bondAB(scene,Ti,O,2.2);                              // TiO₆ octahedron, Ti–O≈1.98 Å
-  polyhedra(scene,Ti,O,2.2,'#c084fc',6);               // edge-sharing TiO₆ chains along c
-  placeDots(scene,Ti,'#c084fc',rTi);
-  placeDots(scene,O,'#f87171',rO);
-  scene.add(orthoBox(n*a,n*a,n*c,0x5577cc));
+  polyhedra(scene,Ti,O,2.2,'#9aa0aa',6);               // edge-sharing TiO₆ chains along c
+  placeDots(scene,Ti,'#9aa0aa',rTi);
+  placeDots(scene,O,'#e0544a',rO);
+  scene.add(orthoBox(n*a,n*a,n*c,0x3a3f47));
   viewers.setRadius(sup?16:10);
 }
 function buildWurtzite(scene,viewers,sup){
@@ -746,11 +756,11 @@ function buildWurtzite(scene,viewers,sup){
     });
   }
   recenter([Zn,S]);
-  bondAB(scene,Zn,S,2.7,0x6f86b0,0.055);              // tetrahedral Zn–S (apical u·c≈2.35 Å)
-  polyhedra(scene,Zn,S,2.7,'#fb923c',4);              // ZnS₄ tetrahedra
-  placeDots(scene,Zn,'#fb923c',rZn);
-  placeDots(scene,S,'#facc15',rS);
-  scene.add(hexConvBox(a*(sup?2.0:1.25),c*(sup?1.4:1.0),0x5577cc));
+  bondAB(scene,Zn,S,2.7,0x7a8696,0.055);              // tetrahedral Zn–S (apical u·c≈2.35 Å)
+  polyhedra(scene,Zn,S,2.7,'#8f8fc7',4);              // ZnS₄ tetrahedra
+  placeDots(scene,Zn,'#8f8fc7',rZn);
+  placeDots(scene,S,'#e6c12f',rS);
+  scene.add(hexConvBox(a*(sup?2.0:1.25),c*(sup?1.4:1.0),0x3a3f47));
   viewers.setRadius(sup?18:12);
 }
 function buildGraphite(scene,viewers,sup){
@@ -772,9 +782,9 @@ function buildGraphite(scene,viewers,sup){
     }
   }
   recenter([C]);
-  bondSelf(scene,C,1.7,0x6f86b0,0.06);                // in-plane bonds only (1.42 < 1.7 < 3.35)
-  placeDots(scene,C,'#cbd5e1',rC);
-  scene.add(hexConvBox(a*1.6,(layers-1)*c/2+1.2,0x5577cc));
+  bondSelf(scene,C,1.7,0x7a8696,0.06);                // in-plane bonds only (1.42 < 1.7 < 3.35)
+  placeDots(scene,C,'#6b7280',rC);
+  scene.add(hexConvBox(a*1.6,(layers-1)*c/2+1.2,0x3a3f47));
   viewers.setRadius(sup?16:11);
 }
 function buildCorundum(scene,viewers,sup){
@@ -794,11 +804,11 @@ function buildCorundum(scene,viewers,sup){
   const rmax=a*(sup?2.0:1.15),zmax=c*(sup?0.62:0.56);
   const keep=p=>Math.hypot(p[0],p[1])<rmax&&Math.abs(p[2])<zmax;
   const Al=rawAl.filter(keep),O=rawO.filter(keep);
-  bondAB(scene,Al,O,2.2,0x6f86b0,0.05);               // AlO₆ octahedra (Al–O 1.86–1.97 Å)
-  polyhedra(scene,Al,O,2.2,'#fbbf24',6);              // face/edge-sharing AlO₆ octahedra
-  placeDots(scene,Al,'#fbbf24',0.22);
-  placeDots(scene,O,'#f87171',0.22);
-  scene.add(hexConvBox(a*1.05,zmax*2,0x5577cc));
+  bondAB(scene,Al,O,2.2,0x7a8696,0.05);               // AlO₆ octahedra (Al–O 1.86–1.97 Å)
+  polyhedra(scene,Al,O,2.2,'#c79fa0',6);              // face/edge-sharing AlO₆ octahedra
+  placeDots(scene,Al,'#c79fa0',0.22);
+  placeDots(scene,O,'#e0544a',0.22);
+  scene.add(hexConvBox(a*1.05,zmax*2,0x3a3f47));
   viewers.setRadius(sup?20:16);
 }
 
@@ -881,7 +891,7 @@ function buildPage(){
       if(wrap){const s=Math.min(wrap.offsetWidth,480);canvas.style.height=s+'px';}
       const v=createViewer(canvas);
       viewers[cr.id]={viewer:v,mode:'prim'};
-      try{cr.buildPrim(v.scene,v);}catch(e){console.warn(cr.id,e);}
+      try{cr.buildPrim(v.scene,v);v.placeGround();}catch(e){console.warn(cr.id,e);}
       const btnP=document.getElementById('btn_prim_'+cr.id);
       const btnS=document.getElementById('btn_super_'+cr.id);
       if(btnP&&btnS){
@@ -889,13 +899,13 @@ function buildPage(){
           const s=viewers[cr.id];if(s.mode==='prim')return;
           s.mode='prim';btnP.classList.add('active');btnS.classList.remove('active');
           s.viewer.clearScene();s.viewer.reset();
-          try{cr.buildPrim(s.viewer.scene,s.viewer);}catch(e){}
+          try{cr.buildPrim(s.viewer.scene,s.viewer);s.viewer.placeGround();}catch(e){}
         };
         btnS.onclick=()=>{
           const s=viewers[cr.id];if(s.mode==='super')return;
           s.mode='super';btnS.classList.add('active');btnP.classList.remove('active');
           s.viewer.clearScene();s.viewer.reset();
-          try{cr.buildSuper(s.viewer.scene,s.viewer);}catch(e){}
+          try{cr.buildSuper(s.viewer.scene,s.viewer);s.viewer.placeGround();}catch(e){}
         };
       }
     });
