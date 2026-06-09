@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>晶体结构博物馆 · Crystal Structure Museum</title>
+<title>常用晶体结构对照表 · Common Crystal Structures</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=DM+Mono:wght@400&family=Noto+Serif+SC:wght@300;400&display=swap');
@@ -110,8 +110,8 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
   <nav class="wy-nav-side">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="#">晶体结构博物馆</a>
-        <div class="wy-side-nav-ver">Crystal Structure Museum</div>
+        <a href="#">常用晶体结构对照表</a>
+        <div class="wy-side-nav-ver">Common Crystal Structures</div>
         <input type="text" id="sideSearch" placeholder="搜索结构…" oninput="filterNav(this.value)">
       </div>
       <div class="wy-menu-vertical" id="sideNav"></div>
@@ -120,14 +120,14 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
   <div class="wy-nav-content-wrap">
     <div class="wy-nav-top">
       <button class="wy-nav-top-btn" onclick="document.querySelector('.wy-nav-side').classList.toggle('open')">☰</button>
-      <a href="#">晶体结构博物馆</a>
+      <a href="#">常用晶体结构对照表</a>
     </div>
     <div class="wy-nav-content">
       <div class="rst-content">
-        <h1>晶体结构博物馆 <small style="font-size:55%;color:#9b9b9b;font-weight:400">Crystal Structure Museum</small></h1>
+        <h1>常用晶体结构对照表 <small style="font-size:55%;color:#9b9b9b;font-weight:400">Common Crystal Structures</small></h1>
         <div class="admonition note" style="margin-bottom:1.5em;">
           <span class="admonition-title">关于本页面</span>
-          <p>共收录 13 种经典无机晶体结构，涵盖 7 大晶系。每个结构配有可交互三维模型（拖动旋转 · 滚轮缩放 · 双击重置），支持原胞/超胞视图切换。</p>
+          <p>共收录 13 种经典无机晶体结构，涵盖立方 · 四方 · 六方 · 三方 4 大晶系。采用点线（球棍）结构呈现，原子为节点、化学键为连线，框架清晰。每个结构配有可交互三维模型（拖动旋转 · 滚轮缩放 · 双击重置），支持原胞/超胞视图切换。</p>
         </div>
         <div id="mainContent"></div>
         <div class="rst-footer">晶体结构基于标准无机晶体结构数据 · 数据来源：ICSD 标准晶胞参数</div>
@@ -359,17 +359,20 @@ function createViewer(canvas){
   };
 }
 // PRIMITIVES
+// ── dot-line (ball-and-stick) rendering: small bright "dot" atoms + clear "line" bonds ──
+const ATOM_SCALE=0.55;          // shrink spheres into dots so the lattice framework stays legible
+const BOND_HEX=0x9fb1cc;        // bond line colour (light slate)
 function mkAtom(pos,hex,r){
-  const geo=new THREE.SphereGeometry(r,24,24);
-  const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(hex),shininess:90,specular:new THREE.Color(0x444466),transparent:true,opacity:0.93});
+  const geo=new THREE.SphereGeometry(r*ATOM_SCALE,20,20);
+  const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(hex),shininess:70,specular:new THREE.Color(0x333344)});
   const m=new THREE.Mesh(geo,mat);m.position.set(...pos);return m;
 }
-function mkBond(p1,p2,hex=0x556677,r=0.045){
+function mkBond(p1,p2,hex=BOND_HEX,r=0.05){
   const v1=new THREE.Vector3(...p1),v2=new THREE.Vector3(...p2);
   const dir=new THREE.Vector3().subVectors(v2,v1),len=dir.length();
   if(len<0.001)return null;
-  const geo=new THREE.CylinderGeometry(r,r,len,8,1);
-  const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(hex),transparent:true,opacity:0.42,shininess:20});
+  const geo=new THREE.CylinderGeometry(r,r,len,7,1);
+  const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(hex),transparent:true,opacity:0.78,shininess:10});
   const m=new THREE.Mesh(geo,mat);
   const mid=new THREE.Vector3().addVectors(v1,v2).multiplyScalar(0.5);
   m.position.copy(mid);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
@@ -377,11 +380,30 @@ function mkBond(p1,p2,hex=0x556677,r=0.045){
 }
 function addObj(scene,obj){if(obj)scene.add(obj);}
 function dist(a,b){return Math.sqrt(a.map((v,i)=>(v-b[i])**2).reduce((s,x)=>s+x,0));}
-function autoBonds(scene,posArr,cutoff,hex=0x556677,r=0.045){
-  for(let i=0;i<posArr.length;i++)for(let j=i+1;j<posArr.length;j++){
-    if(dist(posArr[i],posArr[j])<cutoff)addObj(scene,mkBond(posArr[i],posArr[j],hex,r));
+// place a list of dot atoms of one species
+function placeDots(scene,arr,hex,r){arr.forEach(p=>scene.add(mkAtom(p,hex,r)));}
+// bonds between two species (cation–anion): A[i]–B[j] within cutoff
+function bondAB(scene,A,B,cutoff,hex=BOND_HEX,r=0.05){
+  for(let i=0;i<A.length;i++)for(let j=0;j<B.length;j++){
+    const d=dist(A[i],B[j]);if(d>0.05&&d<cutoff)addObj(scene,mkBond(A[i],B[j],hex,r));
   }
 }
+// bonds within one species (metals / covalent networks)
+function bondSelf(scene,A,cutoff,hex=BOND_HEX,r=0.05){
+  for(let i=0;i<A.length;i++)for(let j=i+1;j<A.length;j++){
+    const d=dist(A[i],A[j]);if(d>0.05&&d<cutoff)addObj(scene,mkBond(A[i],A[j],hex,r));
+  }
+}
+function autoBonds(scene,posArr,cutoff,hex=BOND_HEX,r=0.05){bondSelf(scene,posArr,cutoff,hex,r);}
+// translate a set of position groups so their common centroid sits at the origin
+function recenter(groups){
+  let cx=0,cy=0,cz=0,k=0;
+  groups.forEach(g=>g.forEach(p=>{cx+=p[0];cy+=p[1];cz+=p[2];k++;}));
+  if(!k)return;cx/=k;cy/=k;cz/=k;
+  groups.forEach(g=>g.forEach(p=>{p[0]-=cx;p[1]-=cy;p[2]-=cz;}));
+}
+// hexagonal (γ=120°) fractional → cartesian: a1=(a,0), a2=(-a/2, a√3/2)
+function hex120(fx,fy,fz,a,c){return[fx*a-fy*a/2,fy*a*Math.sqrt(3)/2,fz*c];}
 // CELL BOXES
 function orthoBox(a,b,c,col=0x3355cc){
   const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.38});
@@ -423,115 +445,113 @@ function h2c(fx,fy,fz,a,c){return[fx*a+fy*a/2,fy*a*Math.sqrt(3)/2,fz*c];}
 // ═══════════════ BUILD FUNCTIONS ═══════════════
 function buildBCC(scene,viewers,sup){
   const a=5.6,r=0.32;
-  const color='#94a3b8';
-  const pos=[];
+  const corners=[],centers=[];
   const n=sup?2:1;
   for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++)for(let iz=0;iz<n;iz++){
     const ox=ix*a,oy=iy*a,oz=iz*a;
-    const corners=[[0,0,0],[a,0,0],[0,a,0],[0,0,a],[a,a,0],[a,0,a],[0,a,a],[a,a,a]];
-    corners.forEach(([x,y,z])=>{
-      const p=[ox+x-n*a/2,oy+y-n*a/2,oz+z-n*a/2];
-      pos.push(p);scene.add(mkAtom(p,color,r));
-    });
-    const bc=[ox+a/2-n*a/2,oy+a/2-n*a/2,oz+a/2-n*a/2];
-    pos.push(bc);scene.add(mkAtom(bc,'#c4d4e8',r*1.05));
+    [[0,0,0],[a,0,0],[0,a,0],[0,0,a],[a,a,0],[a,0,a],[0,a,a],[a,a,a]].forEach(([x,y,z])=>
+      corners.push([ox+x-n*a/2,oy+y-n*a/2,oz+z-n*a/2]));
+    centers.push([ox+a/2-n*a/2,oy+a/2-n*a/2,oz+a/2-n*a/2]);
   }
+  bondAB(scene,centers,corners,a*0.93);            // 8 body-diagonal bonds (a√3/2≈0.87a)
+  placeDots(scene,corners,'#94a3b8',r);
+  placeDots(scene,centers,'#c4d4e8',r*1.05);
   const s=sup?a*2:a;
   scene.add(orthoBox(s,s,s,0x5577cc));
-  if(sup){viewers.setRadius(18);}else{viewers.setRadius(11);}
+  viewers.setRadius(sup?18:11);
 }
 function buildFCC(scene,viewers,sup){
   const a=5.6,r=0.30;
-  const color='#f59e0b';
-  const n=sup?2:1;
+  const n=sup?2:1,P=[];
+  const frac=[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1],
+              [.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1]];
   for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++)for(let iz=0;iz<n;iz++){
     const ox=ix*a,oy=iy*a,oz=iz*a;
-    const frac=[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1],
-                [.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1]];
-    frac.forEach(([fx,fy,fz])=>{
-      const p=[ox+fx*a-n*a/2,oy+fy*a-n*a/2,oz+fz*a-n*a/2];
-      scene.add(mkAtom(p,color,r));
-    });
+    frac.forEach(([fx,fy,fz])=>P.push([ox+fx*a-n*a/2,oy+fy*a-n*a/2,oz+fz*a-n*a/2]));
   }
+  bondSelf(scene,P,a*0.74);                          // nearest neighbour a/√2≈0.71a
+  placeDots(scene,P,'#f59e0b',r);
   scene.add(orthoBox(n*a,n*a,n*a,0x5577cc));
   viewers.setRadius(sup?18:11);
 }
 function buildNaCl(scene,viewers,sup){
   const a=5.64,r1=0.28,r2=0.22;
-  const n=sup?2:1;
+  const n=sup?2:1,Na=[],Cl=[];
+  const naFrac=[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1],[.5,.5,.5]];
+  const clFrac=[[.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1],
+                [.5,0,0],[0,.5,0],[0,0,.5],[1,.5,0],[1,0,.5],[.5,1,0],[0,1,.5],[.5,0,1],[0,.5,1],[1,1,.5],[1,.5,1],[.5,1,1]];
   for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++)for(let iz=0;iz<n;iz++){
-    const ox=ix*a,oy=iy*a,oz=iz*a;
-    for(let fx=0;fx<=1;fx++)for(let fy=0;fy<=1;fy++)for(let fz=0;fz<=1;fz++){
-      const px=ox+fx*a-n*a/2,py=oy+fy*a-n*a/2,pz=oz+fz*a-n*a/2;
-      scene.add(mkAtom([px,py,pz],'#7ba7ff',r1));
-    }
-    const faces=[[.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1]];
-    faces.forEach(([fx,fy,fz])=>{
-      const p=[ox+fx*a-n*a/2,oy+fy*a-n*a/2,oz+fz*a-n*a/2];
-      scene.add(mkAtom(p,'#4dffb4',r2));
-    });
-    const edgeCl=[[.5,0,0],[0,.5,0],[0,0,.5],[1,.5,0],[1,0,.5],[.5,1,0],[0,1,.5],[.5,0,1],[0,.5,1],[1,1,.5],[1,.5,1],[.5,1,1]];
-    edgeCl.forEach(([fx,fy,fz])=>{
-      const p=[ox+fx*a-n*a/2,oy+fy*a-n*a/2,oz+fz*a-n*a/2];
-      scene.add(mkAtom(p,'#4dffb4',r2));
-    });
-    scene.add(mkAtom([ox+.5*a-n*a/2,oy+.5*a-n*a/2,oz+.5*a-n*a/2],'#7ba7ff',r1));
+    const ox=ix*a-n*a/2,oy=iy*a-n*a/2,oz=iz*a-n*a/2;
+    naFrac.forEach(([fx,fy,fz])=>Na.push([ox+fx*a,oy+fy*a,oz+fz*a]));
+    clFrac.forEach(([fx,fy,fz])=>Cl.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
+  bondAB(scene,Na,Cl,a*0.62);                        // octahedral Na–Cl at a/2
+  placeDots(scene,Na,'#7ba7ff',r1);
+  placeDots(scene,Cl,'#4dffb4',r2);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
   viewers.setRadius(sup?19:12);
 }
 function buildCsCl(scene,viewers,sup){
   const a=4.12,r1=0.38,r2=0.24;
-  const n=sup?2:1;
+  const n=sup?2:1,Cs=[],Cl=[];
   for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++)for(let iz=0;iz<n;iz++){
     const ox=ix*a-n*a/2,oy=iy*a-n*a/2,oz=iz*a-n*a/2;
     for(let fx=0;fx<=1;fx++)for(let fy=0;fy<=1;fy++)for(let fz=0;fz<=1;fz++)
-      scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#4dffb4',r2));
-    scene.add(mkAtom([ox+a/2,oy+a/2,oz+a/2],'#ffb347',r1));
+      Cl.push([ox+fx*a,oy+fy*a,oz+fz*a]);
+    Cs.push([ox+a/2,oy+a/2,oz+a/2]);
   }
+  bondAB(scene,Cs,Cl,a*0.93);                        // 8-coordinate Cs–Cl at a√3/2
+  placeDots(scene,Cl,'#4dffb4',r2);
+  placeDots(scene,Cs,'#ffb347',r1);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
   viewers.setRadius(sup?15:9);
 }
 function buildZincBlende(scene,viewers,sup){
   const a=5.41,r1=0.26,r2=0.32;
-  const n=sup?2:1;
+  const n=sup?2:1,S=[],Zn=[];
   const fccFrac=[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1],
                   [.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1]];
   const tetFrac=[[.25,.25,.25],[.75,.75,.25],[.75,.25,.75],[.25,.75,.75]];
   for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++)for(let iz=0;iz<n;iz++){
     const ox=ix*a-n*a/2,oy=iy*a-n*a/2,oz=iz*a-n*a/2;
-    fccFrac.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#ffe17b',r2)));
-    tetFrac.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#ff7baf',r1)));
+    fccFrac.forEach(([fx,fy,fz])=>S.push([ox+fx*a,oy+fy*a,oz+fz*a]));
+    tetFrac.forEach(([fx,fy,fz])=>Zn.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
+  bondAB(scene,Zn,S,a*0.46);                         // tetrahedral Zn–S at a√3/4
+  placeDots(scene,S,'#ffe17b',r2);
+  placeDots(scene,Zn,'#ff7baf',r1);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
   viewers.setRadius(sup?18:11);
 }
 function buildGalena(scene,viewers,sup){
   const a=5.94,r1=0.38,r2=0.30;
-  const n=sup?2:1;
+  const n=sup?2:1,Pb=[],S=[];
+  const pbFrac=[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1],
+                [.5,0,0],[0,.5,0],[0,0,.5],[1,.5,0],[1,0,.5],[.5,1,0],[0,1,.5],[.5,0,1],[0,.5,1],[1,1,.5],[1,.5,1],[.5,1,1]];
+  const sFrac=[[.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1],[.5,.5,.5]];
   for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++)for(let iz=0;iz<n;iz++){
     const ox=ix*a-n*a/2,oy=iy*a-n*a/2,oz=iz*a-n*a/2;
-    [[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1]].forEach(([fx,fy,fz])=>
-      scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#b0bec5',r1)));
-    [[.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1]].forEach(([fx,fy,fz])=>
-      scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#ffe17b',r2)));
-    [[.5,0,0],[0,.5,0],[0,0,.5],[1,.5,0],[1,0,.5],[.5,1,0],[0,1,.5],[.5,0,1],[0,.5,1],[1,1,.5],[1,.5,1],[.5,1,1]].forEach(([fx,fy,fz])=>
-      scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#b0bec5',r1)));
-    scene.add(mkAtom([ox+.5*a,oy+.5*a,oz+.5*a],'#ffe17b',r2));
+    pbFrac.forEach(([fx,fy,fz])=>Pb.push([ox+fx*a,oy+fy*a,oz+fz*a]));
+    sFrac.forEach(([fx,fy,fz])=>S.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
+  bondAB(scene,Pb,S,a*0.62);                         // octahedral Pb–S at a/2
+  placeDots(scene,Pb,'#b0bec5',r1);
+  placeDots(scene,S,'#ffe17b',r2);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
   viewers.setRadius(sup?20:12);
 }
 function buildDiamond(scene,viewers,sup){
   const a=3.57,r=0.28;
-  const n=sup?2:1;
+  const n=sup?2:1,P=[];
   const frac=[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1],
                [.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1],
                [.25,.25,.25],[.75,.75,.25],[.75,.25,.75],[.25,.75,.75]];
   for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++)for(let iz=0;iz<n;iz++){
     const ox=ix*a-n*a/2,oy=iy*a-n*a/2,oz=iz*a-n*a/2;
-    frac.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#93c5fd',r)));
+    frac.forEach(([fx,fy,fz])=>P.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
+  bondSelf(scene,P,a*0.46);                           // sp³ C–C at a√3/4
+  placeDots(scene,P,'#93c5fd',r);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
   viewers.setRadius(sup?14:9);
 }
@@ -548,9 +568,14 @@ function buildSpinel(scene,viewers,sup){
   const Apos=[[.125,.125,.125],[.875,.125,.125],[.125,.875,.125],[.125,.125,.875],
               [.625,.625,.125],[.375,.375,.125],[.625,.125,.625],[.375,.875,.625]];
   const Bpos=[[.5,0,0],[0,.5,0],[0,0,.5],[.5,.5,.5],[.5,0,.5],[0,.5,.5],[.5,.5,0],[1,.5,0],[.5,1,0],[1,0,.5],[0,1,.5],[.5,0,1],[0,.5,1],[1,.5,.5],[.5,1,.5],[.5,.5,1]];
-  Opos.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#f87171',rO)));
-  Apos.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#4ade80',rA)));
-  Bpos.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#60a5fa',rB)));
+  const O=Opos.map(([fx,fy,fz])=>[ox+fx*a,oy+fy*a,oz+fz*a]);
+  const A=Apos.map(([fx,fy,fz])=>[ox+fx*a,oy+fy*a,oz+fz*a]);
+  const B=Bpos.map(([fx,fy,fz])=>[ox+fx*a,oy+fy*a,oz+fz*a]);
+  bondAB(scene,A,O,a*0.26);                          // tetrahedral A–O
+  bondAB(scene,B,O,a*0.30);                          // octahedral B–O
+  placeDots(scene,O,'#f87171',rO);
+  placeDots(scene,A,'#4ade80',rA);
+  placeDots(scene,B,'#60a5fa',rB);
   scene.add(cubicBox(a,0x3355cc));
   viewers.setRadius(18);
 }
@@ -561,25 +586,34 @@ function buildFluorite(scene,viewers,sup){
                 [.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1]];
   const tetF=[[.25,.25,.25],[.75,.75,.25],[.75,.25,.75],[.25,.75,.75],
                [.25,.25,.75],[.75,.25,.25],[.25,.75,.25],[.75,.75,.75]];
+  const Ca=[],F=[];
   for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++)for(let iz=0;iz<n;iz++){
     const ox=ix*a-n*a/2,oy=iy*a-n*a/2,oz=iz*a-n*a/2;
-    fccCa.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#818cf8',rCa)));
-    tetF.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#34d399',rF)));
+    fccCa.forEach(([fx,fy,fz])=>Ca.push([ox+fx*a,oy+fy*a,oz+fz*a]));
+    tetF.forEach(([fx,fy,fz])=>F.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
+  bondAB(scene,Ca,F,a*0.48);                          // Ca–F at a√3/4 (8:4 coordination)
+  placeDots(scene,Ca,'#818cf8',rCa);
+  placeDots(scene,F,'#34d399',rF);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
   viewers.setRadius(sup?19:11);
 }
 function buildPerovskite(scene,viewers,sup){
   const a=3.91,rCa=0.36,rTi=0.20,rO=0.22;
   const n=sup?2:1;
+  const Ca=[],Ti=[],O=[];
   for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++)for(let iz=0;iz<n;iz++){
     const ox=ix*a-n*a/2,oy=iy*a-n*a/2,oz=iz*a-n*a/2;
     [[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1]].forEach(([fx,fy,fz])=>
-      scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#7ba7ff',rCa)));
-    scene.add(mkAtom([ox+.5*a,oy+.5*a,oz+.5*a],'#f87171',rTi));
+      Ca.push([ox+fx*a,oy+fy*a,oz+fz*a]));
+    Ti.push([ox+.5*a,oy+.5*a,oz+.5*a]);
     [[.5,.5,0],[.5,0,.5],[0,.5,.5],[1,.5,.5],[.5,1,.5],[.5,.5,1]].forEach(([fx,fy,fz])=>
-      scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*a],'#fca5a5',rO)));
+      O.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
+  bondAB(scene,Ti,O,a*0.56);                          // TiO₆ octahedron, Ti–O at a/2
+  placeDots(scene,Ca,'#7ba7ff',rCa);
+  placeDots(scene,Ti,'#f87171',rTi);
+  placeDots(scene,O,'#fca5a5',rO);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
   viewers.setRadius(sup?16:9);
 }
@@ -589,69 +623,85 @@ function buildRutile(scene,viewers,sup){
   const Tipos=[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[.5,.5,.5]];
   const Opos=[[u,u,0],[1-u,1-u,0],[.5+u,.5-u,.5],[.5-u,.5+u,.5],
               [u,u,1],[1-u,1-u,1]];
+  const Ti=[],O=[];
   for(let iz=0;iz<n;iz++){
     for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++){
       const ox=ix*a-n*a/2,oy=iy*a-n*a/2,oz=iz*c-n*c/2;
-      Tipos.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*c],'#c084fc',rTi)));
-      Opos.forEach(([fx,fy,fz])=>scene.add(mkAtom([ox+fx*a,oy+fy*a,oz+fz*c],'#f87171',rO)));
+      Tipos.forEach(([fx,fy,fz])=>Ti.push([ox+fx*a,oy+fy*a,oz+fz*c]));
+      Opos.forEach(([fx,fy,fz])=>O.push([ox+fx*a,oy+fy*a,oz+fz*c]));
     }
   }
+  bondAB(scene,Ti,O,2.2);                              // TiO₆ octahedron, Ti–O≈1.98 Å
+  placeDots(scene,Ti,'#c084fc',rTi);
+  placeDots(scene,O,'#f87171',rO);
   scene.add(orthoBox(n*a,n*a,n*c,0x5577cc));
   viewers.setRadius(sup?16:10);
 }
 function buildWurtzite(scene,viewers,sup){
-  const aw=3.82,cw=6.26,u=0.375,rZn=0.26,rS=0.34;
-  const n=sup?2:1;
-  function hex2c(fx,fy,fz){return h2c(fx,fy,fz,aw,cw);}
-  for(let ix=-n;ix<=n;ix++)for(let iy=-n;iy<=n;iy++)for(let iz=0;iz<n;iz++){
-    const bfrac=[[0,0,0],[1,0,0],[0,1,0],[1,1,0]];
-    bfrac.forEach(([bx,by])=>{
-      const Zn=hex2c(ix+bx,iy+by,iz);
-      const S=hex2c(ix+bx,iy+by,iz+u);
-      const Zn2=hex2c(ix+bx,iy+by,iz+0.5);
-      const S2=hex2c(ix+bx,iy+by,iz+0.5+u);
-      [[Zn,rZn,'#fb923c'],[S,rS,'#facc15'],[Zn2,rZn,'#fb923c'],[S2,rS,'#facc15']].forEach(([p,r,c])=>{
-        if(Math.abs(p[0])<n*aw*1.6&&Math.abs(p[1])<n*aw*1.6&&Math.abs(p[2])<n*cw*1.2)
-          scene.add(mkAtom(p,c,r));
-      });
+  // P6₃mc: Zn & S both on Wyckoff 2b — (1/3,2/3,z) & (2/3,1/3,z+1/2). u≈0.375.
+  const a=3.82,c=6.26,u=0.375,rZn=0.30,rS=0.34;
+  const basis=[['Zn',1/3,2/3,0],['Zn',2/3,1/3,0.5],['S',1/3,2/3,u],['S',2/3,1/3,0.5+u]];
+  const nx=sup?3:2,nz=sup?2:1;
+  const Zn=[],S=[];
+  for(let ix=0;ix<nx;ix++)for(let iy=0;iy<nx;iy++)for(let iz=-1;iz<nz;iz++){
+    basis.forEach(([t,fx,fy,fz])=>{
+      const p=hex120(ix+fx,iy+fy,iz+fz,a,c);
+      (t==='Zn'?Zn:S).push(p);
     });
   }
-  scene.add(hexConvBox(aw*0.95,cw*n,0x5577cc));
-  viewers.setRadius(sup?18:11);
+  recenter([Zn,S]);
+  bondAB(scene,Zn,S,2.7,0x6f86b0,0.055);              // tetrahedral Zn–S (apical u·c≈2.35 Å)
+  placeDots(scene,Zn,'#fb923c',rZn);
+  placeDots(scene,S,'#facc15',rS);
+  scene.add(hexConvBox(a*(sup?2.0:1.25),c*(sup?1.4:1.0),0x5577cc));
+  viewers.setRadius(sup?18:12);
 }
 function buildGraphite(scene,viewers,sup){
-  const ag=2.46,cg=6.70,rC=0.22;
-  const n=sup?3:2;
-  const s3=Math.sqrt(3);
-  for(let iz=0;iz<n;iz++){
-    const zc=iz*cg/2-n*cg/4;
-    const off=(iz%2===0)?[0,0]:[ag/2,ag*s3/6];
-    for(let ix=-n;ix<=n;ix++)for(let iy=-n;iy<=n;iy++){
-      const bx=ix*ag+iy*ag/2,by=iy*ag*s3/2;
-      [[0,0],[ag/2,ag*s3/6]].forEach(([dx,dy])=>{
-        const px=bx+dx+off[0],py=by+dy+off[1];
-        if(Math.abs(px)<n*ag*0.9&&Math.abs(py)<n*ag*0.9)
-          scene.add(mkAtom([px,py,zc],'#94a3b8',rC));
+  // honeycomb layers, Bernal ABAB stacking. In-plane C–C = a/√3 = 1.42 Å, interlayer = c/2 = 3.35 Å.
+  const a=2.46,c=6.70,rC=0.20,s3=Math.sqrt(3);
+  const layers=sup?4:2;
+  const delta=[0,a/s3];                               // honeycomb 2nd site (γ=120 basis)
+  const ext=sup?3:2;
+  const C=[];
+  for(let iz=0;iz<layers;iz++){
+    const zc=iz*c/2;
+    const sh=(iz%2)?delta:[0,0];                       // odd layers shift → ABAB
+    for(let ix=-ext;ix<=ext;ix++)for(let iy=-ext;iy<=ext;iy++){
+      const bx=ix*a-iy*a/2,by=iy*a*s3/2;
+      [[0,0],delta].forEach(([dx,dy])=>{
+        const px=bx+dx+sh[0],py=by+dy+sh[1];
+        if(Math.abs(px)<a*ext*0.95&&Math.abs(py)<a*ext*0.95) C.push([px,py,zc]);
       });
     }
   }
-  scene.add(hexConvBox(ag*1.5,cg*(n>2?1.5:1),0x5577cc));
-  viewers.setRadius(sup?18:11);
+  recenter([C]);
+  bondSelf(scene,C,1.7,0x6f86b0,0.06);                // in-plane bonds only (1.42 < 1.7 < 3.35)
+  placeDots(scene,C,'#cbd5e1',rC);
+  scene.add(hexConvBox(a*1.6,(layers-1)*c/2+1.2,0x5577cc));
+  viewers.setRadius(sup?16:11);
 }
 function buildCorundum(scene,viewers,sup){
-  const ac=4.76,cc=12.99,rAl=0.22,rO=0.20;
-  const n=sup?1:1;
-  const AlFrac=[[0,0,.1458],[0,0,.3542],[0,0,.6458],[0,0,.8542],
-                [1/3,2/3,.4792],[1/3,2/3,.6875],[2/3,1/3,.0208],[2/3,1/3,.8125],
-                [1/3,2/3,.1458],[2/3,1/3,.3542]];
-  const OFrac=[[.3064,0,.25],[0,.3064,.25],[.6936,.6936,.25],[.3064,.6936,.0833],[.6936,.3064,.4167],[0,.6936,.0833],
-               [.6936,0,.75],[0,.6936,.75],[.3064,.3064,.75],[.6936,.3064,.9167],[.3064,.6936,.5833],[0,.3064,.9167]];
-  const cx=-ac/2,cy=-ac/2*Math.sqrt(3)/3,cz=-cc/2;
-  function hx(fx,fy,fz){return[cx+h2c(fx,fy,0,ac,cc)[0],cy+h2c(fx,fy,0,ac,cc)[1],cz+fz*cc];}
-  AlFrac.forEach(([fx,fy,fz])=>scene.add(mkAtom(hx(fx,fy,fz),'#fbbf24',rAl)));
-  OFrac.forEach(([fx,fy,fz])=>scene.add(mkAtom(hx(fx,fy,fz),'#f87171',rO)));
-  scene.add(hexConvBox(ac*1.1,cc,0x5577cc));
-  viewers.setRadius(16);
+  // R-3c hexagonal setting: Al 12c (0,0,z) z≈0.352, O 18e (x,0,¼) x≈0.306, + rhombohedral centering.
+  const a=4.76,c=12.99,zAl=0.3522,xO=0.3064;
+  const cent=[[0,0,0],[2/3,1/3,1/3],[1/3,2/3,2/3]];
+  const alBase=[[0,0,zAl],[0,0,-zAl],[0,0,0.5+zAl],[0,0,0.5-zAl]];
+  const oBase=[[xO,0,0.25],[0,xO,0.25],[-xO,-xO,0.25],[-xO,0,0.75],[0,-xO,0.75],[xO,xO,0.75]];
+  const rawAl=[],rawO=[];
+  for(let ix=-1;ix<=1;ix++)for(let iy=-1;iy<=1;iy++)for(let iz=-1;iz<=1;iz++){
+    cent.forEach(([cx,cy,cz])=>{
+      alBase.forEach(([fx,fy,fz])=>rawAl.push(hex120(ix+fx+cx,iy+fy+cy,iz+fz+cz,a,c)));
+      oBase.forEach(([fx,fy,fz])=>rawO.push(hex120(ix+fx+cx,iy+fy+cy,iz+fz+cz,a,c)));
+    });
+  }
+  recenter([rawAl,rawO]);
+  const rmax=a*(sup?2.0:1.15),zmax=c*(sup?0.62:0.56);
+  const keep=p=>Math.hypot(p[0],p[1])<rmax&&Math.abs(p[2])<zmax;
+  const Al=rawAl.filter(keep),O=rawO.filter(keep);
+  bondAB(scene,Al,O,2.2,0x6f86b0,0.05);               // AlO₆ octahedra (Al–O 1.86–1.97 Å)
+  placeDots(scene,Al,'#fbbf24',0.22);
+  placeDots(scene,O,'#f87171',0.22);
+  scene.add(hexConvBox(a*1.05,zmax*2,0x5577cc));
+  viewers.setRadius(sup?20:16);
 }
 
 // ═══════════════ RENDER PAGE ═══════════════
