@@ -166,7 +166,7 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
         <details class="tech-notes">
           <summary>技术说明 · 这个页面是怎么做出来的</summary>
           <div class="tn-body">
-            <p>本页是<strong>单文件、零构建、零外部数据</strong>的静态页面——所有晶体都在浏览器里用晶格参数<strong>程序化生成</strong>，不读取任何 CIF / 模型文件。</p>
+            <p>本页是<strong>单文件、零构建、零外部请求</strong>的静态页面——晶体在浏览器里实时生成：高对称结构按对称性程序化写出，低对称结构内嵌 <strong>Materials Project POSCAR 文本</strong>就地解析，全程不发起任何网络数据请求。</p>
 
             <h3>1. 数据模型与结构选择</h3>
             <p>核心是一个 <code>CRYSTALS</code> 数组，每个结构是一个对象，含 id、晶系（<code>bravais</code>）、化学式、空间群、文字解说（起源/特征/洞见）、物理性质表、相关结构、图例配色，以及两个渲染函数 <code>buildPrim</code> / <code>buildSuper</code>（原胞 / 超胞）。另一个 <code>BRAVAIS</code> 数组按晶系分组，驱动侧边栏分节。</p>
@@ -194,16 +194,17 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
               <tr><td>闪锌矿/金刚石</td><td>a√3/4</td><td>a×0.46</td></tr>
               <tr><td>钙钛矿 Ti–O</td><td>a/2</td><td>a×0.56（出 TiO₆ 八面体）</td></tr>
             </tbody></table>
-            <p>坐标系：立方直接"分数 × a"；六方/三方用 γ=120° 变换 <code>hex120()</code>（修正了旧版用 γ=60° 基矢导致刚玉被剪切变形的问题），并用 <code>recenter()</code> 把多晶胞平铺后的原子团按质心居中。晶胞框用半透明 <code>LineSegments</code> 线框作参照。</p>
+            <p>坐标系：高对称结构用"分数 × a"直接展开；POSCAR 结构则用 <code>fromCell()</code> 以晶格矩阵（行向量为基矢）把分数坐标转笛卡尔，统一按晶胞中心居中，<code>cellBox()</code> 据同一矩阵画出真实的平行六面体晶胞框（立方/四方/六方-菱形通用），<code>fitRadius()</code> 自动按原子云尺寸定相机距离。</p>
 
             <h3>5. 页面框架</h3>
             <p>外观仿 Read-the-Docs / Sphinx（左深色导航 + 右文档区），纯手写 CSS。<code>buildPage()</code> 遍历晶系动态拼出全部 DOM；<code>IntersectionObserver</code> 滚动时高亮当前结构；顶部搜索框按名过滤；原胞/超胞按钮 <code>clearScene()</code> 后重建（超胞即把平铺范围 n 从 1 改成 2）。</p>
 
             <h3>6. 工程取舍与已知局限</h3>
             <ul>
-              <li><strong>为何程序化生成而非读 CIF</strong>：保持单文件、可离线、秒开，并能精确控制教学化的视觉；代价是每加一个结构要手写一个 build 函数。</li>
-              <li><strong>距离判键的副作用</strong>：尖晶石 MgAl₂O₄ 用的是理想化坐标，八面体 B–O 距离偏大，键画得偏少（四面体 A–O 正常）。</li>
-              <li><strong>性能</strong>：超胞下可达数百个独立 Mesh，r128 + 简单几何体可扛；若再扩规模应改用 <code>InstancedMesh</code> 批量渲染。</li>
+              <li><strong>坐标来源</strong>：高对称结构（NaCl、CsCl、闪锌矿、金刚石、萤石、钙钛矿等）用对称性直接写出的理想分数坐标；低对称结构（<strong>尖晶石、刚玉、金红石</strong>）改为内嵌 <strong>Materials Project 真实 POSCAR</strong>，经 <code>parsePoscar</code>+晶格矩阵转笛卡尔坐标，因此 MgO₄/AlO₆、TiO₆、AlO₆ 等多面体距离精确。</li>
+              <li><strong>纤锌矿</strong>：MP 给的是 c≈62 Å 的长周期多型，故用其晶格常数（a=3.81, c=6.23, u=0.375）重建标准 2H 单胞。</li>
+              <li><strong>多面体补全</strong>：单胞边缘阳离子的配位壳可能跨晶胞，<code>fromCell</code> 额外生成一圈周期镜像（halo）专供判键/多面体，保证每个多面体都完整闭合。</li>
+              <li><strong>性能</strong>：超胞下可达数百个独立 Mesh（尖晶石超胞约 450 原子），r128 可扛；卡顿时可在「渲染选项」里调低球面精度，或后续改用 <code>InstancedMesh</code>。</li>
             </ul>
           </div>
         </details>
@@ -235,7 +236,7 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
           </div>
         </details>
         <div id="mainContent"></div>
-        <div class="rst-footer">晶体结构为标准原型的理想化分数坐标（程序化生成）· 晶格参数取自常见教科书/ICSD 量级 · 低对称结构为近似</div>
+        <div class="rst-footer">高对称结构为对称性理想坐标 · 尖晶石/刚玉/金红石/石墨等低对称结构采用 Materials Project 真实结构（POSCAR）</div>
       </div>
     </div>
   </div>
@@ -360,7 +361,7 @@ const CRYSTALS = [
    origin:'"Rutile"来自拉丁语"红色"。是TiO₂三种同质异形体（锐钛矿、板钛矿、金红石）中热力学最稳定者，是众多AB₂型化合物（VO₂、MnO₂、SnO₂等）的结构原型。',
    features:'Ti⁴⁺在四方晶胞顶点（0,0,0）和体心（1/2,1/2,1/2），各被6个O²⁻八面体配位；O²⁻在(u,u,0)等位置，被3个Ti三角配位（u≈0.305）。沿c轴共棱，沿ab共顶点。',
    insight:'金红石TiO₂折射率n≈2.7（钛白粉），远高于玻璃（1.5），因此散射可见光极强，是全球消耗量最大的白色颜料。同时金红石型TiO₂光催化活性低于锐钛矿型，工业上两种用途完全不同。',
-   props:{'配位数Ti':'6','配位数O':'3','a,c':'4.59, 2.96 Å','折射率':'n≈2.7'},
+   props:{'配位数Ti':'6','配位数O':'3','a,c':'4.60, 2.96 Å','折射率':'n≈2.7'},
    related:['VO₂（相变，MIT）','MnO₂（锰矿·超级电容）','SnO₂（透明导电）','MgF₂','CrO₂（磁记录）'],
    atoms:[{label:'Ti⁴⁺',color:'#9aa0aa'},{label:'O²⁻',color:'#e0544a'}],
    buildPrim:(sc,v)=>buildRutile(sc,v,false),buildSuper:(sc,v)=>buildRutile(sc,v,true)},
@@ -371,7 +372,7 @@ const CRYSTALS = [
    origin:'以法国化学家武尔茨（1817–1884）命名。是ZnS的六方多型，与闪锌矿（ABCABC）互为同质多象体。GaN、AlN、ZnO均采用此结构，是LED和压电传感产业基石。',
    features:'原胞含2 ZnS（4原子）。六方坐标转笛卡尔：x=fx·a+fy·a/2，y=fy·a·√3/2，z=fz·c。沿c轴无旋转反演→自发极化。u参数≈3/8。',
    insight:'GaN基蓝光LED（2014年诺贝尔物理学奖）的核心正是纤锌矿GaN；其c轴自发极化和压电极化对多量子阱（MQW）发光效率有重大影响，这是GaN LED研究中"极化工程"的来源。',
-   props:{'配位数':'4–4','a,c':'3.82, 6.26 Å','极性轴':'c轴（Zn→S）','u参数':'≈0.375'},
+   props:{'配位数':'4–4','a,c':'3.81, 6.23 Å','极性轴':'c轴（Zn→S）','u参数':'≈0.375'},
    related:['GaN（蓝光LED·功率器件）','AlN（高热导）','ZnO（压电传感）','CdS·CdSe（太阳能电池）'],
    atoms:[{label:'Zn²⁺',color:'#8f8fc7'},{label:'S²⁻',color:'#e6c12f'}],
    buildPrim:(sc,v)=>buildWurtzite(sc,v,false),buildSuper:(sc,v)=>buildWurtzite(sc,v,true)},
@@ -393,7 +394,7 @@ const CRYSTALS = [
    origin:'"Corundum"来自梵文"红宝石"。含Cr³⁺→红宝石（Ruby），含Fe²⁺/Ti⁴⁺→蓝宝石（Sapphire）。莫氏硬度9，仅次于金刚石。赤铁矿α-Fe₂O₃完全同构。',
    features:'六方设定：a=4.76Å，c=12.99Å。O²⁻近似六方密堆积（HCP），Al³⁺占据2/3八面体空隙（1/3规律性空缺）。每个AlO₆八面体通过共面（沿c）和共棱（ab面）连接，产生轻微畸变。',
    insight:'刚玉宝石颜色来自微量过渡金属的晶场劈裂：Cr³⁺在八面体场中d轨道劈裂→吸收绿光→呈红色（红宝石）；Fe²⁺/Ti⁴⁺电荷转移吸收→呈蓝色（蓝宝石）。',
-   props:{'配位数Al':'6（Oh）','配位数O':'4','a,c（六方）':'4.76, 12.99 Å','硬度':'9 莫氏'},
+   props:{'配位数Al':'6（Oh）','配位数O':'4','a,c（六方）':'4.81, 13.12 Å','硬度':'9 莫氏'},
    related:['α-Fe₂O₃赤铁矿（同构）','Cr₂O₃·V₂O₃（同构系列）','红宝石（Cr³⁺:Al₂O₃）','蓝宝石（Fe/Ti:Al₂O₃）'],
    atoms:[{label:'Al³⁺',color:'#c79fa0'},{label:'O²⁻',color:'#e0544a'}],
    buildPrim:(sc,v)=>buildCorundum(sc,v,false),buildSuper:(sc,v)=>buildCorundum(sc,v,true)},
@@ -562,15 +563,6 @@ function bondSelf(scene,A,cutoff,hex=BOND_HEX,r=0.05){
   }
 }
 function autoBonds(scene,posArr,cutoff,hex=BOND_HEX,r=0.05){bondSelf(scene,posArr,cutoff,hex,r);}
-// translate a set of position groups so their common centroid sits at the origin
-function recenter(groups){
-  let cx=0,cy=0,cz=0,k=0;
-  groups.forEach(g=>g.forEach(p=>{cx+=p[0];cy+=p[1];cz+=p[2];k++;}));
-  if(!k)return;cx/=k;cy/=k;cz/=k;
-  groups.forEach(g=>g.forEach(p=>{p[0]-=cx;p[1]-=cy;p[2]-=cz;}));
-}
-// hexagonal (γ=120°) fractional → cartesian: a1=(a,0), a2=(-a/2, a√3/2)
-function hex120(fx,fy,fz,a,c){return[fx*a-fy*a/2,fy*a*Math.sqrt(3)/2,fz*c];}
 // CELL BOXES
 function orthoBox(a,b,c,col=0x3a3f47){
   const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.55});
@@ -582,32 +574,181 @@ function orthoBox(a,b,c,col=0x3a3f47){
   return new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),mat);
 }
 function cubicBox(a,col=0x3a3f47){return orthoBox(a,a,a,col);}
-function hexPrimBox(a,c,col=0x3a3f47){
-  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.55});
-  const s3=Math.sqrt(3);
-  const cx=3*a/4,cy=a*s3/4,cz=c/2;
-  const b0=[[0,0,0],[a,0,0],[a+a/2,a*s3/2,0],[a/2,a*s3/2,0]];
-  const b1=b0.map(([x,y])=>[x-cx,y-cy,-cz]);
-  const b2=b0.map(([x,y])=>[x-cx,y-cy,+cz]);
-  const pairs=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
-  const all=[...b1,...b2];const pts=[];
-  pairs.forEach(([i,j])=>{pts.push(new THREE.Vector3(...all[i]));pts.push(new THREE.Vector3(...all[j]));});
-  return new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),mat);
+
+// ── POSCAR-based builders: parse VASP POSCAR text → cartesian atoms per element ──
+function parsePoscar(txt){
+  const L=txt.trim().split(/\n/);
+  const s=parseFloat(L[1].trim());
+  const lat=[2,3,4].map(i=>L[i].trim().split(/\s+/).slice(0,3).map(x=>parseFloat(x)*s));
+  const els=L[5].trim().split(/\s+/), cnt=L[6].trim().split(/\s+/).map(Number);
+  let r=8; const sites=[];   // line 7 is "direct"
+  els.forEach((el,ei)=>{for(let k=0;k<cnt[ei];k++){const f=L[r++].trim().split(/\s+/).slice(0,3).map(Number);sites.push([el,f[0],f[1],f[2]]);}});
+  return {lat,sites};
 }
-function hexConvBox(a,c,col=0x3a3f47){
-  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.5});
-  const s3=Math.sqrt(3)/2;
-  const base=[[a,0],[a/2,a*s3],[- a/2,a*s3],[-a,0],[-a/2,-a*s3],[a/2,-a*s3]];
-  const pts=[];
-  for(let i=0;i<6;i++){
-    const n=(i+1)%6;
-    pts.push(new THREE.Vector3(base[i][0],base[i][1],-c/2));pts.push(new THREE.Vector3(base[n][0],base[n][1],-c/2));
-    pts.push(new THREE.Vector3(base[i][0],base[i][1],c/2));pts.push(new THREE.Vector3(base[n][0],base[n][1],c/2));
-    pts.push(new THREE.Vector3(base[i][0],base[i][1],-c/2));pts.push(new THREE.Vector3(base[i][0],base[i][1],c/2));
-  }
-  return new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),mat);
+// fractional → cartesian via lattice matrix (rows = lattice vectors); tile nx·ny·nz cells, centred on cell middle.
+// Returns atoms = the cell's own atoms (for display/bonds) and full = atoms + a one-cell halo of periodic
+// images (so coordination shells of edge cations are complete → polyhedra render everywhere).
+function fromCell(lat,sites,nx,ny,nz){
+  const cart=(fx,fy,fz)=>[fx*lat[0][0]+fy*lat[1][0]+fz*lat[2][0],
+                          fx*lat[0][1]+fy*lat[1][1]+fz*lat[2][1],
+                          fx*lat[0][2]+fy*lat[1][2]+fz*lat[2][2]];
+  const ctr=cart(nx/2,ny/2,nz/2);
+  const atoms={},full={};
+  for(let ix=-1;ix<=nx;ix++)for(let iy=-1;iy<=ny;iy++)for(let iz=-1;iz<=nz;iz++)
+    sites.forEach(([el,fx,fy,fz])=>{
+      const p=cart(ix+fx,iy+fy,iz+fz),q=[p[0]-ctr[0],p[1]-ctr[1],p[2]-ctr[2]];
+      (full[el]=full[el]||[]).push(q);
+      if(ix>=0&&ix<nx&&iy>=0&&iy<ny&&iz>=0&&iz<nz)(atoms[el]=atoms[el]||[]).push(q);
+    });
+  return {atoms,full,ctr};
 }
-function h2c(fx,fy,fz,a,c){return[fx*a+fy*a/2,fy*a*Math.sqrt(3)/2,fz*c];}
+// parallelepiped cell outline for any lattice (cubic / tetragonal / hexagonal-rhombic)
+function cellBox(lat,nx,ny,nz,ctr,col=0x3a3f47){
+  const C=(i,j,k)=>new THREE.Vector3(
+    i*lat[0][0]+j*lat[1][0]+k*lat[2][0]-ctr[0],
+    i*lat[0][1]+j*lat[1][1]+k*lat[2][1]-ctr[1],
+    i*lat[0][2]+j*lat[1][2]+k*lat[2][2]-ctr[2]);
+  const crn=[C(0,0,0),C(nx,0,0),C(nx,ny,0),C(0,ny,0),C(0,0,nz),C(nx,0,nz),C(nx,ny,nz),C(0,ny,nz)];
+  const idx=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  const pts=[];idx.forEach(([i,j])=>{pts.push(crn[i]);pts.push(crn[j]);});
+  return new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.55}));
+}
+// camera distance that frames the whole atom cloud (FOV 42°)
+function fitRadius(groups){let m=0;groups.forEach(g=>g.forEach(p=>{const d=Math.hypot(p[0],p[1],p[2]);if(d>m)m=d;}));return m*2.4+2;}
+
+// Real Materials Project structures (conventional standard cells, VASP POSCAR direct coords)
+const POSCAR={
+spinel:`MgAl2O4
+1.0
+8.08039119 0 0
+0 8.08039119 0
+0 0 8.08039119
+Mg Al O
+8 16 32
+direct
+0.25 0.75 0.75
+0.0 0.5 0.5
+0.25 0.25 0.25
+0.0 0.0 0.0
+0.75 0.75 0.25
+0.5 0.5 0.0
+0.75 0.25 0.75
+0.5 0.0 0.5
+0.625 0.375 0.375
+0.625 0.125 0.125
+0.375 0.125 0.875
+0.375 0.875 0.125
+0.625 0.875 0.875
+0.625 0.625 0.625
+0.375 0.625 0.375
+0.375 0.375 0.625
+0.125 0.375 0.875
+0.125 0.125 0.625
+0.875 0.125 0.375
+0.875 0.875 0.625
+0.125 0.875 0.375
+0.125 0.625 0.125
+0.875 0.625 0.875
+0.875 0.375 0.125
+0.86127934 0.36127934 0.36127934
+0.38872066 0.11127934 0.11127934
+0.61127934 0.11127934 0.88872066
+0.61127934 0.88872066 0.11127934
+0.63872066 0.13872066 0.36127934
+0.63872066 0.36127934 0.13872066
+0.38872066 0.88872066 0.88872066
+0.86127934 0.13872066 0.13872066
+0.86127934 0.86127934 0.86127934
+0.38872066 0.61127934 0.61127934
+0.61127934 0.61127934 0.38872066
+0.61127934 0.38872066 0.61127934
+0.63872066 0.63872066 0.86127934
+0.63872066 0.86127934 0.63872066
+0.38872066 0.38872066 0.38872066
+0.86127934 0.63872066 0.63872066
+0.36127934 0.36127934 0.86127934
+0.88872066 0.11127934 0.61127934
+0.11127934 0.11127934 0.38872066
+0.11127934 0.88872066 0.61127934
+0.13872066 0.13872066 0.86127934
+0.13872066 0.36127934 0.63872066
+0.88872066 0.88872066 0.38872066
+0.36127934 0.13872066 0.63872066
+0.36127934 0.86127934 0.36127934
+0.88872066 0.61127934 0.11127934
+0.11127934 0.61127934 0.88872066
+0.11127934 0.38872066 0.11127934
+0.13872066 0.63872066 0.36127934
+0.13872066 0.86127934 0.13872066
+0.88872066 0.38872066 0.88872066
+0.36127934 0.63872066 0.13872066`,
+rutile:`TiO2
+1.0
+4.59983732 0 0
+0 4.59983732 0
+0 0 2.95921356
+Ti O
+2 4
+direct
+0.5 0.5 0.0
+0.0 0.0 0.5
+0.695678685 0.695678685 0.5
+0.195678685 0.804321315 0.0
+0.804321315 0.195678685 0.0
+0.304321315 0.304321315 0.5`,
+corundum:`Al2O3
+1.0
+2.40251361 -4.16127564 0
+2.40251361 4.16127564 0
+0 0 13.11625325
+Al O
+12 18
+direct
+0.33333333 0.66666667 0.81457067
+0.66666667 0.33333333 0.68542933
+0.0 0.0 0.64790400
+0.33333333 0.66666667 0.51876267
+0.0 0.0 0.14790400
+0.33333333 0.66666667 0.01876267
+0.66666667 0.33333333 0.98123733
+0.0 0.0 0.85209600
+0.66666667 0.33333333 0.48123733
+0.0 0.0 0.35209600
+0.33333333 0.66666667 0.31457067
+0.66666667 0.33333333 0.18542933
+0.36052117 0.33333333 0.58333333
+0.69385450 0.69385450 0.75000000
+0.97281217 0.63947883 0.58333333
+0.66666667 0.02718783 0.58333333
+0.0 0.30614550 0.75000000
+0.30614550 0.0 0.75000000
+0.02718783 0.66666667 0.91666667
+0.36052117 0.02718783 0.08333333
+0.63947883 0.97281217 0.91666667
+0.33333333 0.36052117 0.91666667
+0.66666667 0.63947883 0.08333333
+0.97281217 0.33333333 0.08333333
+0.69385450 0.0 0.25000000
+0.02718783 0.36052117 0.41666667
+0.30614550 0.30614550 0.25000000
+0.0 0.69385450 0.25000000
+0.33333333 0.97281217 0.41666667
+0.63947883 0.66666667 0.41666667`,
+graphite:`C
+1.0
+1.23364563 -2.13673691 0
+1.23364563 2.13673691 0
+0 0 7.80307300
+C
+4
+direct
+0.0 0.0 0.25
+0.0 0.0 0.75
+0.33333333 0.66666667 0.25
+0.66666667 0.33333333 0.75`,
+};
+
 
 // ═══════════════ BUILD FUNCTIONS ═══════════════
 function buildBCC(scene,viewers,sup){
@@ -726,29 +867,20 @@ function buildDiamond(scene,viewers,sup){
 }
 
 function buildSpinel(scene,viewers,sup){
-  const a=8.08,rA=0.22,rB=0.28,rO=0.20;
-  const n=sup?1:1;
-  const ox=-n*a/2,oy=-n*a/2,oz=-n*a/2;
-  const Opos=[[.25,.25,.25],[.75,.75,.25],[.75,.25,.75],[.25,.75,.75],
-              [.25,.25,.75],[.25,.75,.25],[.75,.25,.25],[.75,.75,.75],
-              [0,0,0],[.5,.5,0],[.5,0,.5],[0,.5,.5],
-              [1,0,0],[0,1,0],[0,0,1],[1,1,0],[1,0,1],[0,1,1],[1,1,1],
-              [1,.5,.5],[.5,1,.5],[.5,.5,1]];
-  const Apos=[[.125,.125,.125],[.875,.125,.125],[.125,.875,.125],[.125,.125,.875],
-              [.625,.625,.125],[.375,.375,.125],[.625,.125,.625],[.375,.875,.625]];
-  const Bpos=[[.5,0,0],[0,.5,0],[0,0,.5],[.5,.5,.5],[.5,0,.5],[0,.5,.5],[.5,.5,0],[1,.5,0],[.5,1,0],[1,0,.5],[0,1,.5],[.5,0,1],[0,.5,1],[1,.5,.5],[.5,1,.5],[.5,.5,1]];
-  const O=Opos.map(([fx,fy,fz])=>[ox+fx*a,oy+fy*a,oz+fz*a]);
-  const A=Apos.map(([fx,fy,fz])=>[ox+fx*a,oy+fy*a,oz+fz*a]);
-  const B=Bpos.map(([fx,fy,fz])=>[ox+fx*a,oy+fy*a,oz+fz*a]);
-  bondAB(scene,A,O,a*0.26);                          // tetrahedral A–O
-  bondAB(scene,B,O,a*0.30);                          // octahedral B–O
-  polyhedra(scene,A,O,a*0.26,'#74c948',4);           // AO₄ tetrahedra (Td)
-  polyhedra(scene,B,O,a*0.30,'#c79fa0',6);           // BO₆ octahedra (Oh)
-  placeDots(scene,O,'#e0544a',rO);
-  placeDots(scene,A,'#74c948',rA);
-  placeDots(scene,B,'#c79fa0',rB);
-  scene.add(cubicBox(a,0x3a3f47));
-  viewers.setRadius(18);
+  // MgAl2O4, Fd-3m (MP conventional cell). Mg tetrahedral (8a), Al octahedral (16d), O 32e.
+  const {lat,sites}=parsePoscar(POSCAR.spinel);
+  const n=sup?2:1;
+  const {atoms,full,ctr}=fromCell(lat,sites,n,n,n);
+  const Mg=atoms.Mg,Al=atoms.Al,O=atoms.O;
+  bondAB(scene,Mg,O,2.5);                              // MgO₄ tetrahedra (Mg–O 1.94 Å)
+  bondAB(scene,Al,O,2.5);                              // AlO₆ octahedra (Al–O 1.92 Å)
+  polyhedra(scene,Mg,full.O,2.5,'#74c948',4);         // MgO₄ tetrahedra (Td)
+  polyhedra(scene,Al,full.O,2.5,'#c79fa0',6);         // AlO₆ octahedra (Oh)
+  placeDots(scene,O,'#e0544a',0.20);
+  placeDots(scene,Mg,'#74c948',0.24);
+  placeDots(scene,Al,'#c79fa0',0.22);
+  scene.add(cellBox(lat,n,n,n,ctr));
+  viewers.setRadius(fitRadius([Mg,Al,O]));
 }
 function buildFluorite(scene,viewers,sup){
   const a=5.46,rCa=0.34,rF=0.22;
@@ -791,93 +923,57 @@ function buildPerovskite(scene,viewers,sup){
   viewers.setRadius(sup?16:9);
 }
 function buildRutile(scene,viewers,sup){
-  const a=4.59,c=2.96,u=0.305,rTi=0.26,rO=0.20;
-  const n=sup?2:1;
-  const Tipos=[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[.5,.5,.5]];
-  const Opos=[[u,u,0],[1-u,1-u,0],[.5+u,.5-u,.5],[.5-u,.5+u,.5],
-              [u,u,1],[1-u,1-u,1]];
-  const Ti=[],O=[];
-  for(let iz=0;iz<n;iz++){
-    for(let ix=0;ix<n;ix++)for(let iy=0;iy<n;iy++){
-      const ox=ix*a-n*a/2,oy=iy*a-n*a/2,oz=iz*c-n*c/2;
-      Tipos.forEach(([fx,fy,fz])=>Ti.push([ox+fx*a,oy+fy*a,oz+fz*c]));
-      Opos.forEach(([fx,fy,fz])=>O.push([ox+fx*a,oy+fy*a,oz+fz*c]));
-    }
-  }
-  bondAB(scene,Ti,O,2.2);                              // TiO₆ octahedron, Ti–O≈1.98 Å
-  polyhedra(scene,Ti,O,2.2,'#9aa0aa',6);               // edge-sharing TiO₆ chains along c
-  placeDots(scene,Ti,'#9aa0aa',rTi);
-  placeDots(scene,O,'#e0544a',rO);
-  scene.add(orthoBox(n*a,n*a,n*c,0x3a3f47));
-  viewers.setRadius(sup?16:10);
+  // TiO2 rutile, P4₂/mnm (MP conventional cell). Ti octahedral, O 3-coordinate. u≈0.3043.
+  const {lat,sites}=parsePoscar(POSCAR.rutile);
+  const n=sup?2:1, nz=sup?3:1;     // c is short → stack more along z to show edge-sharing chains
+  const {atoms,full,ctr}=fromCell(lat,sites,n,n,nz);
+  const Ti=atoms.Ti,O=atoms.O;
+  bondAB(scene,Ti,O,2.3);                              // TiO₆ octahedron, Ti–O 1.95–1.98 Å
+  polyhedra(scene,Ti,full.O,2.3,'#9aa0aa',6);          // edge-sharing TiO₆ chains along c
+  placeDots(scene,Ti,'#9aa0aa',0.26);
+  placeDots(scene,O,'#e0544a',0.20);
+  scene.add(cellBox(lat,n,n,nz,ctr));
+  viewers.setRadius(fitRadius([Ti,O]));
 }
 function buildWurtzite(scene,viewers,sup){
-  // P6₃mc: Zn & S both on Wyckoff 2b — (1/3,2/3,z) & (2/3,1/3,z+1/2). u≈0.375.
-  const a=3.82,c=6.26,u=0.375,rZn=0.30,rS=0.34;
-  const basis=[['Zn',1/3,2/3,0],['Zn',2/3,1/3,0.5],['S',1/3,2/3,u],['S',2/3,1/3,0.5+u]];
+  // ZnS 2H wurtzite, P6₃mc. Rebuilt from the MP cell's lattice (a=3.808, c=6.226), u=0.3748,
+  // because the supplied MP entry was a long-period polytype (62 Å / 20 layers).
+  const a=3.808,c=6.2264,u=0.3748;
+  const lat=[[a,0,0],[-a/2,a*Math.sqrt(3)/2,0],[0,0,c]];
+  const sites=[['Zn',1/3,2/3,0],['Zn',2/3,1/3,0.5],['S',1/3,2/3,u],['S',2/3,1/3,0.5+u]];
   const nx=sup?3:2,nz=sup?2:1;
-  const Zn=[],S=[];
-  for(let ix=0;ix<nx;ix++)for(let iy=0;iy<nx;iy++)for(let iz=-1;iz<nz;iz++){
-    basis.forEach(([t,fx,fy,fz])=>{
-      const p=hex120(ix+fx,iy+fy,iz+fz,a,c);
-      (t==='Zn'?Zn:S).push(p);
-    });
-  }
-  recenter([Zn,S]);
-  bondAB(scene,Zn,S,2.7,0x7a8696,0.055);              // tetrahedral Zn–S (apical u·c≈2.35 Å)
-  polyhedra(scene,Zn,S,2.7,'#8f8fc7',4);              // ZnS₄ tetrahedra
-  placeDots(scene,Zn,'#8f8fc7',rZn);
-  placeDots(scene,S,'#e6c12f',rS);
-  scene.add(hexConvBox(a*(sup?2.0:1.25),c*(sup?1.4:1.0),0x3a3f47));
-  viewers.setRadius(sup?18:12);
+  const {atoms,full,ctr}=fromCell(lat,sites,nx,nx,nz);
+  const Zn=atoms.Zn,S=atoms.S;
+  bondAB(scene,Zn,S,2.7);                              // tetrahedral Zn–S ≈ 2.33 Å
+  polyhedra(scene,Zn,full.S,2.7,'#8f8fc7',4);         // ZnS₄ tetrahedra
+  placeDots(scene,Zn,'#8f8fc7',0.30);
+  placeDots(scene,S,'#e6c12f',0.34);
+  scene.add(cellBox(lat,nx,nx,nz,ctr));
+  viewers.setRadius(fitRadius([Zn,S]));
 }
 function buildGraphite(scene,viewers,sup){
-  // honeycomb layers, Bernal ABAB stacking. In-plane C–C = a/√3 = 1.42 Å, interlayer = c/2 = 3.35 Å.
-  const a=2.46,c=6.70,rC=0.20,s3=Math.sqrt(3);
-  const layers=sup?4:2;
-  const delta=[0,a/s3];                               // honeycomb 2nd site (γ=120 basis)
-  const ext=sup?3:2;
-  const C=[];
-  for(let iz=0;iz<layers;iz++){
-    const zc=iz*c/2;
-    const sh=(iz%2)?delta:[0,0];                       // odd layers shift → ABAB
-    for(let ix=-ext;ix<=ext;ix++)for(let iy=-ext;iy<=ext;iy++){
-      const bx=ix*a-iy*a/2,by=iy*a*s3/2;
-      [[0,0],delta].forEach(([dx,dy])=>{
-        const px=bx+dx+sh[0],py=by+dy+sh[1];
-        if(Math.abs(px)<a*ext*0.95&&Math.abs(py)<a*ext*0.95) C.push([px,py,zc]);
-      });
-    }
-  }
-  recenter([C]);
-  bondSelf(scene,C,1.7,0x7a8696,0.06);                // in-plane bonds only (1.42 < 1.7 < 3.35)
-  placeDots(scene,C,'#6b7280',rC);
-  scene.add(hexConvBox(a*1.6,(layers-1)*c/2+1.2,0x3a3f47));
-  viewers.setRadius(sup?16:11);
+  // Graphite 2H (MP cell), Bernal ABAB stacking. In-plane C–C 1.42 Å, interlayer c/2 = 3.40 Å.
+  const {lat,sites}=parsePoscar(POSCAR.graphite);
+  const nxy=sup?4:3, nz=sup?2:1;                       // tile in-plane so the honeycomb sheets read
+  const {atoms,ctr}=fromCell(lat,sites,nxy,nxy,nz);
+  const C=atoms.C;
+  bondSelf(scene,C,1.8);                                // in-plane σ bonds only (1.42 < 1.8 < 3.40)
+  placeDots(scene,C,'#6b7280',0.20);
+  scene.add(cellBox(lat,nxy,nxy,nz,ctr));
+  viewers.setRadius(fitRadius([C]));
 }
 function buildCorundum(scene,viewers,sup){
-  // R-3c hexagonal setting: Al 12c (0,0,z) z≈0.352, O 18e (x,0,¼) x≈0.306, + rhombohedral centering.
-  const a=4.76,c=12.99,zAl=0.3522,xO=0.3064;
-  const cent=[[0,0,0],[2/3,1/3,1/3],[1/3,2/3,2/3]];
-  const alBase=[[0,0,zAl],[0,0,-zAl],[0,0,0.5+zAl],[0,0,0.5-zAl]];
-  const oBase=[[xO,0,0.25],[0,xO,0.25],[-xO,-xO,0.25],[-xO,0,0.75],[0,-xO,0.75],[xO,xO,0.75]];
-  const rawAl=[],rawO=[];
-  for(let ix=-1;ix<=1;ix++)for(let iy=-1;iy<=1;iy++)for(let iz=-1;iz<=1;iz++){
-    cent.forEach(([cx,cy,cz])=>{
-      alBase.forEach(([fx,fy,fz])=>rawAl.push(hex120(ix+fx+cx,iy+fy+cy,iz+fz+cz,a,c)));
-      oBase.forEach(([fx,fy,fz])=>rawO.push(hex120(ix+fx+cx,iy+fy+cy,iz+fz+cz,a,c)));
-    });
-  }
-  recenter([rawAl,rawO]);
-  const rmax=a*(sup?2.0:1.15),zmax=c*(sup?0.62:0.56);
-  const keep=p=>Math.hypot(p[0],p[1])<rmax&&Math.abs(p[2])<zmax;
-  const Al=rawAl.filter(keep),O=rawO.filter(keep);
-  bondAB(scene,Al,O,2.2,0x7a8696,0.05);               // AlO₆ octahedra (Al–O 1.86–1.97 Å)
-  polyhedra(scene,Al,O,2.2,'#c79fa0',6);              // face/edge-sharing AlO₆ octahedra
+  // α-Al2O3 corundum, R-3c (MP hexagonal conventional cell). AlO₆ octahedra, Al–O 1.87 & 1.99 Å.
+  const {lat,sites}=parsePoscar(POSCAR.corundum);
+  const n=sup?2:1, nz=sup?1:1;
+  const {atoms,full,ctr}=fromCell(lat,sites,n,n,nz);
+  const Al=atoms.Al,O=atoms.O;
+  bondAB(scene,Al,O,2.3);                              // AlO₆ octahedra (Al–O 1.87–1.99 Å)
+  polyhedra(scene,Al,full.O,2.3,'#c79fa0',6);         // face/edge-sharing AlO₆ octahedra
   placeDots(scene,Al,'#c79fa0',0.22);
   placeDots(scene,O,'#e0544a',0.22);
-  scene.add(hexConvBox(a*1.05,zmax*2,0x3a3f47));
-  viewers.setRadius(sup?20:16);
+  scene.add(cellBox(lat,n,n,nz,ctr));
+  viewers.setRadius(fitRadius([Al,O]));
 }
 
 // ═══════════════ RENDER PAGE ═══════════════
