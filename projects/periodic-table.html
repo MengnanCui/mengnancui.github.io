@@ -112,6 +112,20 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
 .tech-notes table{border-collapse:collapse;width:100%;margin:.4em 0;font-size:.8rem;}
 .tech-notes th{background:#f3f6f6;color:#2980b9;font-weight:700;padding:4px 8px;border:1px solid #e1e4e5;text-align:left;font-family:'DM Mono',monospace;}
 .tech-notes td{padding:4px 8px;border:1px solid #e1e4e5;font-family:'DM Mono',monospace;}
+/* render-options panel */
+.rp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.45em 1.4em;margin:.3em 0 1em;}
+.rp-row{display:flex;align-items:center;gap:.5em;font-size:.8rem;color:#404040;font-family:'DM Mono',monospace;}
+.rp-row input[type=range]{flex:1;min-width:70px;accent-color:#2980b9;}
+.rp-row input[type=color]{width:34px;height:22px;padding:0;border:1px solid #d6dbe1;border-radius:3px;cursor:pointer;background:none;}
+.rp-check{gap:.4em;}
+.rp-check input{accent-color:#2980b9;width:14px;height:14px;}
+.rp-val{min-width:34px;text-align:right;color:#2980b9;font-size:.78rem;}
+.rp-actions{display:flex;gap:.6em;margin-bottom:.6em;}
+.rp-btn{font-family:'DM Mono',monospace;font-size:.78rem;padding:4px 12px;border:1px solid #d6dbe1;background:#f3f6f6;color:#404040;border-radius:3px;cursor:pointer;}
+.rp-btn:hover{background:#e9eef0;}
+.rp-btn-pri{background:#2980b9;color:#fff;border-color:#2980b9;}
+.rp-btn-pri:hover{background:#236aa0;}
+.rp-out{font-family:'DM Mono',monospace;font-size:.74rem;background:#2b2b2b;color:#e0e0e0;border-radius:3px;padding:.6em .8em;margin:0;white-space:pre-wrap;word-break:break-all;}
 /* scrollbar */
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:2px;}
@@ -193,8 +207,35 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
             </ul>
           </div>
         </details>
+        <details class="tech-notes rpanel">
+          <summary>渲染选项 · 全局实时调节</summary>
+          <div class="tn-body">
+            <p style="margin:.3em 0 .9em;">下面所有控件<strong>全局生效</strong>，同时作用于页面里全部 3D 模型。"光照类"拖动即时刷新；"几何/材质类"在松手时重建模型。调到满意后点 <strong>复制当前配置</strong>，把那段文本发我，我就把它设成默认值。</p>
+            <div class="rp-grid">
+              <label class="rp-row">背景色<input type="color" id="rp_bg"></label>
+              <label class="rp-row rp-check"><input type="checkbox" id="rp_shadows">柔和阴影</label>
+              <label class="rp-row">阴影浓度<input type="range" id="rp_shadowStrength" min="0" max="0.5" step="0.01"><span class="rp-val" id="rpv_shadowStrength"></span></label>
+              <label class="rp-row">曝光<input type="range" id="rp_exposure" min="0.5" max="1.8" step="0.05"><span class="rp-val" id="rpv_exposure"></span></label>
+              <label class="rp-row">半球光<input type="range" id="rp_hemi" min="0" max="1.5" step="0.05"><span class="rp-val" id="rpv_hemi"></span></label>
+              <label class="rp-row">主光<input type="range" id="rp_key" min="0" max="2" step="0.05"><span class="rp-val" id="rpv_key"></span></label>
+              <label class="rp-row">补光<input type="range" id="rp_fill" min="0" max="1" step="0.05"><span class="rp-val" id="rpv_fill"></span></label>
+              <label class="rp-row">原子大小<input type="range" id="rp_atomScale" min="0.3" max="1.1" step="0.02"><span class="rp-val" id="rpv_atomScale"></span></label>
+              <label class="rp-row">键粗细<input type="range" id="rp_bondRadius" min="0.02" max="0.14" step="0.005"><span class="rp-val" id="rpv_bondRadius"></span></label>
+              <label class="rp-row">金属反光<input type="range" id="rp_metalness" min="0" max="1" step="0.05"><span class="rp-val" id="rpv_metalness"></span></label>
+              <label class="rp-row">粗糙度<input type="range" id="rp_roughness" min="0.05" max="1" step="0.05"><span class="rp-val" id="rpv_roughness"></span></label>
+              <label class="rp-row">球面精度<input type="range" id="rp_sphereSeg" min="10" max="40" step="2"><span class="rp-val" id="rpv_sphereSeg"></span></label>
+              <label class="rp-row rp-check"><input type="checkbox" id="rp_showPoly">配位多面体</label>
+              <label class="rp-row">多面体透明<input type="range" id="rp_polyOpacity" min="0" max="0.7" step="0.02"><span class="rp-val" id="rpv_polyOpacity"></span></label>
+            </div>
+            <div class="rp-actions">
+              <button id="rp_reset" class="rp-btn">恢复默认</button>
+              <button id="rp_copy" class="rp-btn rp-btn-pri">复制当前配置</button>
+            </div>
+            <pre id="rp_out" class="rp-out"></pre>
+          </div>
+        </details>
         <div id="mainContent"></div>
-        <div class="rst-footer">晶体结构基于标准无机晶体结构数据 · 数据来源：ICSD 标准晶胞参数</div>
+        <div class="rst-footer">晶体结构为标准原型的理想化分数坐标（程序化生成）· 晶格参数取自常见教科书/ICSD 量级 · 低对称结构为近似</div>
       </div>
     </div>
   </div>
@@ -364,29 +405,55 @@ const BRAVAIS=[
   {key:'trigonal',   label:'三方晶系 Trigonal',    sub:'菱面体格 / 六方设定',             navId:'navTrig'},
 ];
 
+// ═══════════════ GLOBAL RENDER SETTINGS (live-tunable from the panel) ═══════════════
+const RENDER_DEFAULTS={
+  bg:'#eef1f5', exposure:1.05, hemi:0.78, key:0.95, fill:0.34,
+  shadows:true, shadowStrength:0.16,
+  atomScale:0.6, bondRadius:0.05, metalness:0.7, roughness:0.5, sphereSeg:28,
+  showPoly:true, polyOpacity:0.3,
+};
+const RENDER=Object.assign({},RENDER_DEFAULTS);
+const VIEWERS={};   // id → {viewer, mode, cr}  (populated by buildPage)
+function applyAllLive(){Object.values(VIEWERS).forEach(s=>s.viewer.applyRender&&s.viewer.applyRender());}
+function rebuildAll(){
+  Object.values(VIEWERS).forEach(s=>{
+    const v=s.viewer;v.clearScene();
+    try{(s.mode==='super'?s.cr.buildSuper:s.cr.buildPrim)(v.scene,v);}catch(e){}
+    v.placeGround();v.applyRender&&v.applyRender();
+  });
+}
+
 // ═══════════════ THREE.JS ENGINE ═══════════════
 function createViewer(canvas){
   const W=canvas.offsetWidth||420,H=canvas.offsetHeight||420;
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.setSize(W,H);renderer.setClearColor(0xeef1f5,1);
+  renderer.setSize(W,H);
   // physically-based output: sRGB + filmic tone mapping for richer colour & contrast
   if('sRGBEncoding' in THREE) renderer.outputEncoding=THREE.sRGBEncoding;
-  if('ACESFilmicToneMapping' in THREE){renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;}
+  if('ACESFilmicToneMapping' in THREE) renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(42,W/H,0.01,300);
   // soft sky/ground hemisphere fill + warm key (casts shadow) + cool rim → clean VESTA/MP studio look
-  scene.add(new THREE.HemisphereLight(0xffffff,0xc4ccd6,0.78));
-  const d1=new THREE.DirectionalLight(0xfff6ec,0.95);d1.position.set(8,16,10);
+  const hemi=new THREE.HemisphereLight(0xffffff,0xc4ccd6,RENDER.hemi);scene.add(hemi);
+  const d1=new THREE.DirectionalLight(0xfff6ec,RENDER.key);d1.position.set(8,16,10);
   d1.castShadow=true;d1.shadow.mapSize.set(1024,1024);
   const sc=d1.shadow.camera;sc.left=-26;sc.right=26;sc.top=26;sc.bottom=-26;sc.near=0.5;sc.far=80;
   d1.shadow.bias=-0.0006;d1.shadow.radius=4;scene.add(d1);
-  const d2=new THREE.DirectionalLight(0xc9d6ff,0.34);d2.position.set(-8,3,-7);scene.add(d2);
+  const d2=new THREE.DirectionalLight(0xc9d6ff,RENDER.fill);d2.position.set(-8,3,-7);scene.add(d2);
   const d3=new THREE.DirectionalLight(0xffffff,0.18);d3.position.set(0,-9,3);scene.add(d3);
   // invisible ground plane that only catches a soft contact shadow
-  const ground=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.ShadowMaterial({opacity:0.16}));
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.ShadowMaterial({opacity:RENDER.shadowStrength}));
   ground.rotation.x=-Math.PI/2;ground.position.y=-12;ground.receiveShadow=true;ground.__keep=true;scene.add(ground);
+  // push global RENDER settings onto this viewer's renderer/lights (no rebuild needed)
+  function applyRender(){
+    renderer.setClearColor(RENDER.bg,1);
+    if('ACESFilmicToneMapping' in THREE) renderer.toneMappingExposure=RENDER.exposure;
+    hemi.intensity=RENDER.hemi;d1.intensity=RENDER.key;d2.intensity=RENDER.fill;
+    d1.castShadow=RENDER.shadows;ground.visible=RENDER.shadows;ground.material.opacity=RENDER.shadowStrength;
+  }
+  applyRender();
   let theta=0.6,phi=0.75,radius=12,dragging=false,prev={x:0,y:0};
   const target=new THREE.Vector3(0,0,0);
   function updateCam(){
@@ -426,7 +493,7 @@ function createViewer(canvas){
   });
   ro.observe(canvas);
   return{
-    scene,camera,renderer,
+    scene,camera,renderer,applyRender,
     clearScene(){const t=[];scene.traverse(o=>{if((o.isMesh||o.isLine||o.isLineSegments)&&!o.__keep)t.push(o);});t.forEach(o=>scene.remove(o));},
     setRadius(r){radius=r;updateCam();},
     reset(){theta=0.6;phi=0.75;radius=12;target.set(0,0,0);updateCam();},
@@ -435,20 +502,21 @@ function createViewer(canvas){
   };
 }
 // PRIMITIVES
-// ── dot-line (ball-and-stick) rendering: small bright "dot" atoms + clear "line" bonds ──
-const ATOM_SCALE=0.6;           // ball-and-stick: prominent atoms, slim bonds
+// ── ball-and-stick rendering; sizes/materials are driven by the global RENDER object ──
 const BOND_HEX=0x7a8696;        // bond colour (medium slate, reads on light bg)
 function mkAtom(pos,hex,r,metal=0){
-  const geo=new THREE.SphereGeometry(r*ATOM_SCALE,28,28);
-  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:metal>0?0.35:0.5,metalness:metal});
+  const seg=RENDER.sphereSeg;
+  const geo=new THREE.SphereGeometry(r*RENDER.atomScale,seg,seg);
+  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:RENDER.roughness,metalness:metal>0?RENDER.metalness:0});
   const m=new THREE.Mesh(geo,mat);m.position.set(...pos);m.castShadow=true;m.__atom=true;return m;
 }
-function mkBond(p1,p2,hex=BOND_HEX,r=0.05){
+function mkBond(p1,p2,hex=BOND_HEX,r){
   const v1=new THREE.Vector3(...p1),v2=new THREE.Vector3(...p2);
   const dir=new THREE.Vector3().subVectors(v2,v1),len=dir.length();
   if(len<0.001)return null;
-  const geo=new THREE.CylinderGeometry(r,r,len,10,1);
-  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:0.5,metalness:0.1,transparent:true,opacity:0.82});
+  const rad=RENDER.bondRadius;
+  const geo=new THREE.CylinderGeometry(rad,rad,len,10,1);
+  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:0.55,metalness:0.1,transparent:true,opacity:0.85});
   const m=new THREE.Mesh(geo,mat);m.castShadow=true;
   const mid=new THREE.Vector3().addVectors(v1,v2).multiplyScalar(0.5);
   m.position.copy(mid);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
@@ -460,10 +528,10 @@ function dist(a,b){return Math.sqrt(a.map((v,i)=>(v-b[i])**2).reduce((s,x)=>s+x,
 function placeDots(scene,arr,hex,r,metal=0){arr.forEach(p=>scene.add(mkAtom(p,hex,r,metal)));}
 // ── coordination polyhedra: translucent convex hull of a cation's neighbour shell ──
 function addPoly(scene,vertsV3,hex){
-  if(!THREE.ConvexGeometry||vertsV3.length<4)return;
+  if(!RENDER.showPoly||!THREE.ConvexGeometry||vertsV3.length<4)return;
   let geo;try{geo=new THREE.ConvexGeometry(vertsV3);}catch(e){return;}
   const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:0.45,metalness:0.05,
-    transparent:true,opacity:0.3,side:THREE.DoubleSide,depthWrite:false});
+    transparent:true,opacity:RENDER.polyOpacity,side:THREE.DoubleSide,depthWrite:false});
   scene.add(new THREE.Mesh(geo,mat));
   const edges=new THREE.LineSegments(new THREE.EdgesGeometry(geo),
     new THREE.LineBasicMaterial({color:new THREE.Color(hex),transparent:true,opacity:0.55}));
@@ -816,7 +884,7 @@ function buildCorundum(scene,viewers,sup){
 function buildPage(){
   const main=document.getElementById('mainContent');
   const sideNav=document.getElementById('sideNav');
-  const viewers={};
+  const viewers=VIEWERS;
   BRAVAIS.forEach(({key,label,sub})=>{
     const crystals=CRYSTALS.filter(c=>c.bravais===key);
     if(!crystals.length)return;
@@ -890,7 +958,7 @@ function buildPage(){
       const wrap=document.getElementById('wrap_'+cr.id);
       if(wrap){const s=Math.min(wrap.offsetWidth,480);canvas.style.height=s+'px';}
       const v=createViewer(canvas);
-      viewers[cr.id]={viewer:v,mode:'prim'};
+      viewers[cr.id]={viewer:v,mode:'prim',cr};
       try{cr.buildPrim(v.scene,v);v.placeGround();}catch(e){console.warn(cr.id,e);}
       const btnP=document.getElementById('btn_prim_'+cr.id);
       const btnS=document.getElementById('btn_super_'+cr.id);
@@ -935,6 +1003,34 @@ function filterNav(query){
   });
 }
 buildPage();
+
+// ═══════════════ RENDER OPTIONS PANEL ═══════════════
+function setupRenderPanel(){
+  const $=id=>document.getElementById(id);
+  // [key, isLiveOnly(no rebuild), decimals] for the range sliders
+  const RANGES=[
+    ['shadowStrength',true,2],['exposure',true,2],['hemi',true,2],['key',true,2],['fill',true,2],
+    ['atomScale',false,2],['bondRadius',false,3],['metalness',false,2],['roughness',false,2],
+    ['sphereSeg',false,0],['polyOpacity',false,2],
+  ];
+  function syncUI(){
+    RANGES.forEach(([k,,dec])=>{const el=$('rp_'+k);if(el){el.value=RENDER[k];const v=$('rpv_'+k);if(v)v.textContent=Number(RENDER[k]).toFixed(dec);}});
+    $('rp_bg').value=RENDER.bg;$('rp_shadows').checked=RENDER.shadows;$('rp_showPoly').checked=RENDER.showPoly;
+    $('rp_out').textContent=JSON.stringify(RENDER);
+  }
+  RANGES.forEach(([k,live,dec])=>{
+    const el=$('rp_'+k);if(!el)return;
+    el.addEventListener('input',()=>{RENDER[k]=parseFloat(el.value);const v=$('rpv_'+k);if(v)v.textContent=Number(RENDER[k]).toFixed(dec);if(live)applyAllLive();$('rp_out').textContent=JSON.stringify(RENDER);});
+    if(!live)el.addEventListener('change',rebuildAll);   // rebuild only on release
+  });
+  $('rp_bg').addEventListener('input',()=>{RENDER.bg=$('rp_bg').value;applyAllLive();$('rp_out').textContent=JSON.stringify(RENDER);});
+  $('rp_shadows').addEventListener('change',()=>{RENDER.shadows=$('rp_shadows').checked;applyAllLive();$('rp_out').textContent=JSON.stringify(RENDER);});
+  $('rp_showPoly').addEventListener('change',()=>{RENDER.showPoly=$('rp_showPoly').checked;rebuildAll();$('rp_out').textContent=JSON.stringify(RENDER);});
+  $('rp_reset').addEventListener('click',()=>{Object.assign(RENDER,RENDER_DEFAULTS);syncUI();applyAllLive();rebuildAll();});
+  $('rp_copy').addEventListener('click',()=>{const t=JSON.stringify(RENDER);$('rp_out').textContent=t;navigator.clipboard&&navigator.clipboard.writeText(t).catch(()=>{});$('rp_copy').textContent='已复制 ✓';setTimeout(()=>$('rp_copy').textContent='复制当前配置',1200);});
+  syncUI();
+}
+setupRenderPanel();
 </script>
 </body>
 </html>
