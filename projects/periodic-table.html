@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>常用晶体结构对照表 · Common Crystal Structures</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- convex hull / geometry for coordination polyhedra (legacy global build, matches r128) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/ConvexHull.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/ConvexGeometry.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=DM+Mono:wght@400&family=Noto+Serif+SC:wght@300;400&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -364,13 +367,17 @@ function createViewer(canvas){
   const W=canvas.offsetWidth||420,H=canvas.offsetHeight||420;
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.setSize(W,H);renderer.setClearColor(0x10101c,1);
+  renderer.setSize(W,H);renderer.setClearColor(0x0d1018,1);
+  // physically-based output: sRGB + filmic tone mapping for richer colour & contrast
+  if('sRGBEncoding' in THREE) renderer.outputEncoding=THREE.sRGBEncoding;
+  if('ACESFilmicToneMapping' in THREE){renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;}
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(42,W/H,0.01,300);
-  scene.add(new THREE.AmbientLight(0xffffff,0.55));
-  const d1=new THREE.DirectionalLight(0xffffff,0.9);d1.position.set(6,10,8);scene.add(d1);
-  const d2=new THREE.DirectionalLight(0x8899ff,0.35);d2.position.set(-5,-4,-6);scene.add(d2);
-  const d3=new THREE.DirectionalLight(0xffffff,0.2);d3.position.set(0,-8,0);scene.add(d3);
+  // soft sky/ground hemisphere fill + warm key + cool rim → clean studio look for PBR spheres
+  scene.add(new THREE.HemisphereLight(0xdfe9ff,0x20242e,0.95));
+  const d1=new THREE.DirectionalLight(0xfff4e6,1.15);d1.position.set(6,11,8);scene.add(d1);
+  const d2=new THREE.DirectionalLight(0x9fb6ff,0.45);d2.position.set(-7,-3,-6);scene.add(d2);
+  const d3=new THREE.DirectionalLight(0xffffff,0.3);d3.position.set(0,-9,2);scene.add(d3);
   let theta=0.6,phi=0.75,radius=12,dragging=false,prev={x:0,y:0};
   const target=new THREE.Vector3(0,0,0);
   function updateCam(){
@@ -421,17 +428,17 @@ function createViewer(canvas){
 // ── dot-line (ball-and-stick) rendering: small bright "dot" atoms + clear "line" bonds ──
 const ATOM_SCALE=0.55;          // shrink spheres into dots so the lattice framework stays legible
 const BOND_HEX=0x9fb1cc;        // bond line colour (light slate)
-function mkAtom(pos,hex,r){
-  const geo=new THREE.SphereGeometry(r*ATOM_SCALE,20,20);
-  const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(hex),shininess:70,specular:new THREE.Color(0x333344)});
+function mkAtom(pos,hex,r,metal=0){
+  const geo=new THREE.SphereGeometry(r*ATOM_SCALE,28,28);
+  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:metal>0?0.3:0.42,metalness:metal});
   const m=new THREE.Mesh(geo,mat);m.position.set(...pos);return m;
 }
 function mkBond(p1,p2,hex=BOND_HEX,r=0.05){
   const v1=new THREE.Vector3(...p1),v2=new THREE.Vector3(...p2);
   const dir=new THREE.Vector3().subVectors(v2,v1),len=dir.length();
   if(len<0.001)return null;
-  const geo=new THREE.CylinderGeometry(r,r,len,7,1);
-  const mat=new THREE.MeshPhongMaterial({color:new THREE.Color(hex),transparent:true,opacity:0.78,shininess:10});
+  const geo=new THREE.CylinderGeometry(r,r,len,10,1);
+  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:0.5,metalness:0.1,transparent:true,opacity:0.82});
   const m=new THREE.Mesh(geo,mat);
   const mid=new THREE.Vector3().addVectors(v1,v2).multiplyScalar(0.5);
   m.position.copy(mid);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
@@ -439,8 +446,31 @@ function mkBond(p1,p2,hex=BOND_HEX,r=0.05){
 }
 function addObj(scene,obj){if(obj)scene.add(obj);}
 function dist(a,b){return Math.sqrt(a.map((v,i)=>(v-b[i])**2).reduce((s,x)=>s+x,0));}
-// place a list of dot atoms of one species
-function placeDots(scene,arr,hex,r){arr.forEach(p=>scene.add(mkAtom(p,hex,r)));}
+// place a list of dot atoms of one species (metal>0 → metallic sheen)
+function placeDots(scene,arr,hex,r,metal=0){arr.forEach(p=>scene.add(mkAtom(p,hex,r,metal)));}
+// ── coordination polyhedra: translucent convex hull of a cation's neighbour shell ──
+function addPoly(scene,vertsV3,hex){
+  if(!THREE.ConvexGeometry||vertsV3.length<4)return;
+  let geo;try{geo=new THREE.ConvexGeometry(vertsV3);}catch(e){return;}
+  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:0.45,metalness:0.05,
+    transparent:true,opacity:0.3,side:THREE.DoubleSide,depthWrite:false});
+  scene.add(new THREE.Mesh(geo,mat));
+  const edges=new THREE.LineSegments(new THREE.EdgesGeometry(geo),
+    new THREE.LineBasicMaterial({color:new THREE.Color(hex),transparent:true,opacity:0.55}));
+  scene.add(edges);
+}
+// draw a polyhedron around every cation whose full coordination shell (cn neighbours) is present
+function polyhedra(scene,centers,anions,cutoff,hex,cn){
+  centers.forEach(c=>{
+    const nb=[];
+    anions.forEach(a=>{
+      const d=dist(c,a);if(d<=0.05||d>=cutoff)return;
+      if(nb.some(q=>dist([q.x,q.y,q.z],a)<0.05))return;   // skip atoms duplicated on shared cell faces
+      nb.push(new THREE.Vector3(a[0],a[1],a[2]));
+    });
+    if(nb.length===cn)addPoly(scene,nb,hex);
+  });
+}
 // bonds between two species (cation–anion): A[i]–B[j] within cutoff
 function bondAB(scene,A,B,cutoff,hex=BOND_HEX,r=0.05){
   for(let i=0;i<A.length;i++)for(let j=0;j<B.length;j++){
@@ -513,8 +543,8 @@ function buildBCC(scene,viewers,sup){
     centers.push([ox+a/2-n*a/2,oy+a/2-n*a/2,oz+a/2-n*a/2]);
   }
   bondAB(scene,centers,corners,a*0.93);            // 8 body-diagonal bonds (a√3/2≈0.87a)
-  placeDots(scene,corners,'#94a3b8',r);
-  placeDots(scene,centers,'#c4d4e8',r*1.05);
+  placeDots(scene,corners,'#94a3b8',r,0.7);
+  placeDots(scene,centers,'#c4d4e8',r*1.05,0.7);
   const s=sup?a*2:a;
   scene.add(orthoBox(s,s,s,0x5577cc));
   viewers.setRadius(sup?18:11);
@@ -529,7 +559,7 @@ function buildFCC(scene,viewers,sup){
     frac.forEach(([fx,fy,fz])=>P.push([ox+fx*a-n*a/2,oy+fy*a-n*a/2,oz+fz*a-n*a/2]));
   }
   bondSelf(scene,P,a*0.74);                          // nearest neighbour a/√2≈0.71a
-  placeDots(scene,P,'#f59e0b',r);
+  placeDots(scene,P,'#f59e0b',r,0.7);
   scene.add(orthoBox(n*a,n*a,n*a,0x5577cc));
   viewers.setRadius(sup?18:11);
 }
@@ -577,6 +607,7 @@ function buildZincBlende(scene,viewers,sup){
     tetFrac.forEach(([fx,fy,fz])=>Zn.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondAB(scene,Zn,S,a*0.46);                         // tetrahedral Zn–S at a√3/4
+  polyhedra(scene,Zn,S,a*0.46,'#ff7baf',4);          // ZnS₄ tetrahedra
   placeDots(scene,S,'#ffe17b',r2);
   placeDots(scene,Zn,'#ff7baf',r1);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
@@ -610,6 +641,7 @@ function buildDiamond(scene,viewers,sup){
     frac.forEach(([fx,fy,fz])=>P.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondSelf(scene,P,a*0.46);                           // sp³ C–C at a√3/4
+  polyhedra(scene,P,P,a*0.46,'#93c5fd',4);            // sp³ C tetrahedra
   placeDots(scene,P,'#93c5fd',r);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
   viewers.setRadius(sup?14:9);
@@ -632,6 +664,8 @@ function buildSpinel(scene,viewers,sup){
   const B=Bpos.map(([fx,fy,fz])=>[ox+fx*a,oy+fy*a,oz+fz*a]);
   bondAB(scene,A,O,a*0.26);                          // tetrahedral A–O
   bondAB(scene,B,O,a*0.30);                          // octahedral B–O
+  polyhedra(scene,A,O,a*0.26,'#4ade80',4);           // AO₄ tetrahedra (Td)
+  polyhedra(scene,B,O,a*0.30,'#60a5fa',6);           // BO₆ octahedra (Oh)
   placeDots(scene,O,'#f87171',rO);
   placeDots(scene,A,'#4ade80',rA);
   placeDots(scene,B,'#60a5fa',rB);
@@ -652,6 +686,7 @@ function buildFluorite(scene,viewers,sup){
     tetF.forEach(([fx,fy,fz])=>F.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondAB(scene,Ca,F,a*0.48);                          // Ca–F at a√3/4 (8:4 coordination)
+  polyhedra(scene,Ca,F,a*0.48,'#818cf8',8);           // CaF₈ cube
   placeDots(scene,Ca,'#818cf8',rCa);
   placeDots(scene,F,'#34d399',rF);
   scene.add(orthoBox(n*a,n*a,n*a,0x3355cc));
@@ -670,6 +705,7 @@ function buildPerovskite(scene,viewers,sup){
       O.push([ox+fx*a,oy+fy*a,oz+fz*a]));
   }
   bondAB(scene,Ti,O,a*0.56);                          // TiO₆ octahedron, Ti–O at a/2
+  polyhedra(scene,Ti,O,a*0.56,'#f87171',6);           // TiO₆ octahedron
   placeDots(scene,Ca,'#7ba7ff',rCa);
   placeDots(scene,Ti,'#f87171',rTi);
   placeDots(scene,O,'#fca5a5',rO);
@@ -691,6 +727,7 @@ function buildRutile(scene,viewers,sup){
     }
   }
   bondAB(scene,Ti,O,2.2);                              // TiO₆ octahedron, Ti–O≈1.98 Å
+  polyhedra(scene,Ti,O,2.2,'#c084fc',6);               // edge-sharing TiO₆ chains along c
   placeDots(scene,Ti,'#c084fc',rTi);
   placeDots(scene,O,'#f87171',rO);
   scene.add(orthoBox(n*a,n*a,n*c,0x5577cc));
@@ -710,6 +747,7 @@ function buildWurtzite(scene,viewers,sup){
   }
   recenter([Zn,S]);
   bondAB(scene,Zn,S,2.7,0x6f86b0,0.055);              // tetrahedral Zn–S (apical u·c≈2.35 Å)
+  polyhedra(scene,Zn,S,2.7,'#fb923c',4);              // ZnS₄ tetrahedra
   placeDots(scene,Zn,'#fb923c',rZn);
   placeDots(scene,S,'#facc15',rS);
   scene.add(hexConvBox(a*(sup?2.0:1.25),c*(sup?1.4:1.0),0x5577cc));
@@ -757,6 +795,7 @@ function buildCorundum(scene,viewers,sup){
   const keep=p=>Math.hypot(p[0],p[1])<rmax&&Math.abs(p[2])<zmax;
   const Al=rawAl.filter(keep),O=rawO.filter(keep);
   bondAB(scene,Al,O,2.2,0x6f86b0,0.05);               // AlO₆ octahedra (Al–O 1.86–1.97 Å)
+  polyhedra(scene,Al,O,2.2,'#fbbf24',6);              // face/edge-sharing AlO₆ octahedra
   placeDots(scene,Al,'#fbbf24',0.22);
   placeDots(scene,O,'#f87171',0.22);
   scene.add(hexConvBox(a*1.05,zmax*2,0x5577cc));
