@@ -92,6 +92,22 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
 .compare-note{background:#dbfaf4;border-left:3px solid #1abc9c;padding:10px 14px;margin-bottom:14px;font-size:.88rem;color:#065f46;font-family:'Noto Serif SC',serif;line-height:1.72;}
 /* footer */
 .rst-footer{margin-top:3em;padding-top:1em;border-top:1px solid #e1e4e5;color:#9b9b9b;font-size:.75rem;text-align:center;}
+/* tech notes (collapsible colophon) */
+.tech-notes{border:1px solid #e1e4e5;border-radius:3px;margin-bottom:1.5em;background:#fcfcfc;}
+.tech-notes>summary{cursor:pointer;list-style:none;padding:.6em .9em;font-size:.82rem;font-weight:700;color:#2980b9;background:#f3f6f6;border-radius:3px;user-select:none;display:flex;align-items:center;gap:.5em;}
+.tech-notes>summary::-webkit-details-marker{display:none;}
+.tech-notes>summary::before{content:'▸';font-size:.8em;color:#9b9b9b;transition:transform .15s;}
+.tech-notes[open]>summary::before{transform:rotate(90deg);}
+.tech-notes[open]>summary{border-bottom:1px solid #e1e4e5;border-radius:3px 3px 0 0;}
+.tech-notes .tn-body{padding:.4em 1.1em 1em;}
+.tech-notes h3{font-size:.92rem;font-weight:700;color:#404040;margin:1.2em 0 .35em;padding-bottom:.2em;border-bottom:1px solid #f0f0f0;}
+.tech-notes h3:first-child{margin-top:.6em;}
+.tech-notes p,.tech-notes li{font-size:.84rem;line-height:1.7;color:#404040;}
+.tech-notes ul{margin:.2em 0 .2em 1.2em;}
+.tech-notes code{font-family:'DM Mono',monospace;font-size:.8rem;background:#f3f6f6;border:1px solid #e1e4e5;border-radius:2px;padding:0 4px;color:#be185d;}
+.tech-notes table{border-collapse:collapse;width:100%;margin:.4em 0;font-size:.8rem;}
+.tech-notes th{background:#f3f6f6;color:#2980b9;font-weight:700;padding:4px 8px;border:1px solid #e1e4e5;text-align:left;font-family:'DM Mono',monospace;}
+.tech-notes td{padding:4px 8px;border:1px solid #e1e4e5;font-family:'DM Mono',monospace;}
 /* scrollbar */
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:2px;}
@@ -129,6 +145,49 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
           <span class="admonition-title">关于本页面</span>
           <p>共收录 13 种经典无机晶体结构，涵盖立方 · 四方 · 六方 · 三方 4 大晶系。采用点线（球棍）结构呈现，原子为节点、化学键为连线，框架清晰。每个结构配有可交互三维模型（拖动旋转 · 滚轮缩放 · 双击重置），支持原胞/超胞视图切换。</p>
         </div>
+        <details class="tech-notes">
+          <summary>技术说明 · 这个页面是怎么做出来的</summary>
+          <div class="tn-body">
+            <p>本页是<strong>单文件、零构建、零外部数据</strong>的静态页面——所有晶体都在浏览器里用晶格参数<strong>程序化生成</strong>，不读取任何 CIF / 模型文件。</p>
+
+            <h3>1. 数据模型与结构选择</h3>
+            <p>核心是一个 <code>CRYSTALS</code> 数组，每个结构是一个对象，含 id、晶系（<code>bravais</code>）、化学式、空间群、文字解说（起源/特征/洞见）、物理性质表、相关结构、图例配色，以及两个渲染函数 <code>buildPrim</code> / <code>buildSuper</code>（原胞 / 超胞）。另一个 <code>BRAVAIS</code> 数组按晶系分组，驱动侧边栏分节。</p>
+            <p>收录标准是结构化学中最具<strong>"原型"意义</strong>的无机结构：金属堆积（BCC、FCC）、AB 型（NaCl、CsCl、闪锌矿、纤锌矿、方铅矿）、AB₂/A₂B₃/ABO₃（萤石、金红石、刚玉、钙钛矿、尖晶石）、单质网络（金刚石、石墨）。每个都代表一整族真实材料。</p>
+
+            <h3>2. 数据来源</h3>
+            <ul>
+              <li>晶胞参数与空间群：ICSD 标准晶胞 / 教科书值。</li>
+              <li>六方 / 三方原子坐标：AFLOW Prototype Encyclopedia 标准原型 + Wyckoff 位（纤锌矿 = B4 / AB_hP4_186_b_b；刚玉 = D5₁ / A2B3_hR10_167_c_e）。</li>
+              <li>立方结构的分数坐标按对称性直接写出（面心、四面体空隙 ¼¼¼ 等）。</li>
+            </ul>
+
+            <h3>3. 渲染引擎 —— Three.js (r128)</h3>
+            <p>每个 canvas 一个独立 viewer，没有用 OrbitControls 而是自写轻量交互以减少依赖：相机用<strong>球坐标</strong> (θ, φ, radius) 表示，鼠标拖动改 θ/φ、滚轮改 radius、双击复位，触屏同逻辑；1 个环境光 + 3 个方向光营造体积感；<code>ResizeObserver</code> 自适应尺寸。</p>
+
+            <h3>4. 球棍模型的生成</h3>
+            <p>原子是缩小的球节点（<code>SphereGeometry × ATOM_SCALE</code>）；化学键是一根圆柱，用四元数 <code>setFromUnitVectors</code> 把默认沿 Y 轴的圆柱旋到两原子连线方向。</p>
+            <p>不存连接表，而是<strong>按距离阈值自动判键</strong>（<code>bondAB</code> 连异种离子，<code>bondSelf</code> 连同种网络）。阈值按已知最近邻距离精确卡定，只连真正的键：</p>
+            <table><tbody>
+              <tr><th>结构</th><th>最近邻</th><th>cutoff</th></tr>
+              <tr><td>BCC</td><td>体对角 a√3/2</td><td>a×0.93</td></tr>
+              <tr><td>FCC</td><td>面对角 a/√2</td><td>a×0.74</td></tr>
+              <tr><td>NaCl</td><td>a/2</td><td>a×0.62</td></tr>
+              <tr><td>闪锌矿/金刚石</td><td>a√3/4</td><td>a×0.46</td></tr>
+              <tr><td>钙钛矿 Ti–O</td><td>a/2</td><td>a×0.56（出 TiO₆ 八面体）</td></tr>
+            </tbody></table>
+            <p>坐标系：立方直接"分数 × a"；六方/三方用 γ=120° 变换 <code>hex120()</code>（修正了旧版用 γ=60° 基矢导致刚玉被剪切变形的问题），并用 <code>recenter()</code> 把多晶胞平铺后的原子团按质心居中。晶胞框用半透明 <code>LineSegments</code> 线框作参照。</p>
+
+            <h3>5. 页面框架</h3>
+            <p>外观仿 Read-the-Docs / Sphinx（左深色导航 + 右文档区），纯手写 CSS。<code>buildPage()</code> 遍历晶系动态拼出全部 DOM；<code>IntersectionObserver</code> 滚动时高亮当前结构；顶部搜索框按名过滤；原胞/超胞按钮 <code>clearScene()</code> 后重建（超胞即把平铺范围 n 从 1 改成 2）。</p>
+
+            <h3>6. 工程取舍与已知局限</h3>
+            <ul>
+              <li><strong>为何程序化生成而非读 CIF</strong>：保持单文件、可离线、秒开，并能精确控制教学化的视觉；代价是每加一个结构要手写一个 build 函数。</li>
+              <li><strong>距离判键的副作用</strong>：尖晶石 MgAl₂O₄ 用的是理想化坐标，八面体 B–O 距离偏大，键画得偏少（四面体 A–O 正常）。</li>
+              <li><strong>性能</strong>：超胞下可达数百个独立 Mesh，r128 + 简单几何体可扛；若再扩规模应改用 <code>InstancedMesh</code> 批量渲染。</li>
+            </ul>
+          </div>
+        </details>
         <div id="mainContent"></div>
         <div class="rst-footer">晶体结构基于标准无机晶体结构数据 · 数据来源：ICSD 标准晶胞参数</div>
       </div>
