@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Literature Search</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --ink: #1a2233;
+    --muted: #65718a;
+    --line: #e3e7ee;
+    --accent: #2f6df0;
+    --accent-soft: #eaf1fe;
+    --green: #2e9e6b;
+    --green-soft: #e6f6ee;
+    --shadow: 0 1px 3px rgba(20,30,50,.06), 0 6px 24px rgba(20,30,50,.05);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  header {
+    background: linear-gradient(135deg, #2f6df0 0%, #5b48e0 100%);
+    color: #fff;
+    padding: 28px 24px 24px;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  header h1 { margin: 0 0 4px; font-size: 22px; font-weight: 650; }
+  header p { margin: 0; opacity: .9; font-size: 13.5px; }
+
+  .panel {
+    background: var(--card);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 18px;
+    margin: -18px auto 18px;
+    position: relative;
+    z-index: 2;
+  }
+  .searchrow { display: flex; gap: 10px; }
+  #q {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 15px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    outline: none;
+  }
+  #q:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  button.primary {
+    padding: 0 22px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.primary:hover { background: #245ad6; }
+  button.primary:disabled { opacity: .55; cursor: default; }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 20px;
+    margin-top: 14px;
+    align-items: flex-end;
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 11.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+  .field select, .field input {
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 13.5px;
+    background: #fff;
+    color: var(--ink);
+  }
+  .field input[type=number] { width: 84px; }
+  .checkrow { display: flex; align-items: center; gap: 7px; padding-bottom: 8px; }
+  .checkrow input { width: 16px; height: 16px; }
+  .checkrow label { font-size: 13px; color: var(--ink); font-weight: 500; text-transform: none; letter-spacing: 0; }
+  .keyrow { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .keyrow label { font-size: 11.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+  .keyrow input { flex: 1; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; }
+  .keyrow a { font-size: 12.5px; white-space: nowrap; text-decoration: none; font-weight: 600; }
+
+  .meta-bar {
+    max-width: 920px;
+    margin: 0 auto 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0 4px;
+  }
+  .meta-bar .count { font-size: 13.5px; color: var(--muted); }
+  .meta-bar .count b { color: var(--ink); }
+  .exports { display: flex; gap: 8px; }
+  button.ghost {
+    padding: 7px 13px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button.ghost:hover { border-color: var(--accent); color: var(--accent); }
+  button.ghost:disabled { opacity: .5; cursor: default; }
+
+  .results { max-width: 920px; margin: 0 auto; padding: 0 4px 40px; }
+  .item {
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .item h3 { margin: 0 0 6px; font-size: 16px; line-height: 1.35; }
+  .item h3 a { color: var(--ink); text-decoration: none; }
+  .item h3 a:hover { color: var(--accent); text-decoration: underline; }
+  .authors { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .tag {
+    font-size: 11.5px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    background: #f0f2f6;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .tag.year { background: var(--accent-soft); color: var(--accent); }
+  .tag.cited { background: #fff4e5; color: #c2780f; }
+  .tag.oa { background: var(--green-soft); color: var(--green); }
+  .abstract { font-size: 13.5px; color: #36405a; margin: 4px 0 0; }
+  .abstract.collapsed { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .toggle { font-size: 12.5px; color: var(--accent); cursor: pointer; font-weight: 600; margin-top: 5px; display: inline-block; }
+
+  .pager { display: flex; justify-content: center; gap: 12px; align-items: center; margin: 18px 0 0; }
+  .pager span { font-size: 13px; color: var(--muted); }
+
+  .state { text-align: center; padding: 50px 20px; color: var(--muted); }
+  .spinner {
+    width: 30px; height: 30px; margin: 0 auto 14px;
+    border: 3px solid var(--line); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error { color: #c0392b; }
+  .note { max-width: 920px; margin: 8px auto 0; padding: 0 4px; font-size: 12px; color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Literature Search</h1>
+    <p>Search the scholarly literature across OpenAlex, Crossref, and arXiv — no login required.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="searchrow">
+      <input id="q" type="text" value="Transparent conducting oxide" placeholder="Enter keywords, e.g. transparent conducting oxide" />
+      <button class="primary" id="searchBtn">Search</button>
+    </div>
+    <div class="controls">
+      <div class="field">
+        <label>Source</label>
+        <select id="source">
+          <option value="openalex">OpenAlex (recommended)</option>
+          <option value="crossref">Crossref</option>
+          <option value="arxiv">arXiv (preprints)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Sort by</label>
+        <select id="sort">
+          <option value="relevance">Relevance</option>
+          <option value="date">Newest first</option>
+          <option value="citations">Most cited</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Year from</label>
+        <input id="yearFrom" type="number" placeholder="e.g. 2015" min="1900" max="2030" />
+      </div>
+      <div class="field">
+        <label>Year to</label>
+        <input id="yearTo" type="number" placeholder="e.g. 2026" min="1900" max="2030" />
+      </div>
+      <div class="field">
+        <label>Per page</label>
+        <select id="perPage">
+          <option>10</option>
+          <option selected>25</option>
+          <option>50</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Match</label>
+        <select id="match">
+          <option value="all" selected>All words · AND (title+abstract)</option>
+          <option value="phrase">Exact phrase (title+abstract)</option>
+          <option value="loose">Loose · ranked recall (broad)</option>
+        </select>
+      </div>
+      <div class="checkrow">
+        <input id="oaOnly" type="checkbox" />
+        <label for="oaOnly">Open access only</label>
+      </div>
+    </div>
+    <div class="keyrow">
+      <label for="apiKey">OpenAlex API key</label>
+      <input id="apiKey" type="password" placeholder="required since Feb 2026 — paste your free key" autocomplete="off" />
+      <a href="https://openalex.org/settings/api" target="_blank" rel="noopener">Get a free key →</a>
+    </div>
+  </div>
+</div>
+
+<div class="meta-bar" id="metaBar" style="display:none;">
+  <div class="count" id="count"></div>
+  <div class="exports">
+    <button class="ghost" id="csvBtn">Export CSV</button>
+    <button class="ghost" id="bibBtn">Export BibTeX</button>
+  </div>
+</div>
+
+<div class="results" id="results"></div>
+<p class="note" id="note"></p>
+
+<script>
+const els = {
+  q: document.getElementById('q'),
+  source: document.getElementById('source'),
+  sort: document.getElementById('sort'),
+  yearFrom: document.getElementById('yearFrom'),
+  yearTo: document.getElementById('yearTo'),
+  perPage: document.getElementById('perPage'),
+  match: document.getElementById('match'),
+  oaOnly: document.getElementById('oaOnly'),
+  apiKey: document.getElementById('apiKey'),
+  searchBtn: document.getElementById('searchBtn'),
+  results: document.getElementById('results'),
+  metaBar: document.getElementById('metaBar'),
+  count: document.getElementById('count'),
+  csvBtn: document.getElementById('csvBtn'),
+  bibBtn: document.getElementById('bibBtn'),
+  note: document.getElementById('note'),
+};
+
+const MAILTO = 'mncui88@gmail.com'; // polite pool for OpenAlex/Crossref
+let state = { page: 1, total: 0, items: [] };
+
+function esc(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// ---------- OpenAlex ----------
+function reconstructAbstract(inv){
+  if(!inv) return '';
+  const words = [];
+  for(const [w, idxs] of Object.entries(inv)) for(const i of idxs) words[i] = w;
+  return words.join(' ').replace(/\s+/g,' ').trim();
+}
+async function searchOpenAlex(){
+  const per = +els.perPage.value;
+  const params = new URLSearchParams();
+  const term = els.q.value.trim();
+  params.set('per_page', per);
+  params.set('page', state.page);
+  // OpenAlex requires a free API key since Feb 2026 (polite-pool/mailto retired).
+  const key = (els.apiKey.value||'').trim();
+  if(key) params.set('api_key', key);
+  const filters = [];
+  // Match mode controls query semantics + field scope for a fair cross-database comparison:
+  //   all    -> tokens AND-matched within title+abstract only (closest to WoS All Fields logic)
+  //   phrase -> exact phrase within title+abstract (strictest)
+  //   loose  -> ranked recall across title/abstract/fulltext (huge, inflated total)
+  const m = els.match.value;
+  if(m==='loose') params.set('search', term);
+  else if(m==='phrase') filters.push('title_and_abstract.search:"'+term+'"');
+  else filters.push('title_and_abstract.search:'+term);
+  const yf = els.yearFrom.value, yt = els.yearTo.value;
+  if(yf) filters.push('from_publication_date:'+yf+'-01-01');
+  if(yt) filters.push('to_publication_date:'+yt+'-12-31');
+  if(els.oaOnly.checked) filters.push('is_oa:true');
+  if(filters.length) params.set('filter', filters.join(','));
+  if(els.sort.value==='date') params.set('sort','publication_date:desc');
+  else if(els.sort.value==='citations') params.set('sort','cited_by_count:desc');
+  const res = await fetch('https://api.openalex.org/works?'+params.toString());
+  if(!res.ok) throw new Error('OpenAlex returned '+res.status);
+  const data = await res.json();
+  state.total = data.meta.count;
+  return data.results.map(w => ({
+    title: w.title || w.display_name || '(untitled)',
+    authors: (w.authorships||[]).map(a => a.author && a.author.display_name).filter(Boolean),
+    year: w.publication_year,
+    venue: (w.primary_location && w.primary_location.source && w.primary_location.source.display_name) || '',
+    cited: w.cited_by_count,
+    oa: w.open_access && w.open_access.is_oa,
+    url: w.doi || (w.primary_location && w.primary_location.landing_page_url) || w.id,
+    doi: w.doi ? w.doi.replace('https://doi.org/','') : '',
+    abstract: reconstructAbstract(w.abstract_inverted_index),
+  }));
+}
+
+// ---------- Crossref ----------
+async function searchCrossref(){
+  const per = +els.perPage.value;
+  const params = new URLSearchParams();
+  // Crossref has no field-scoped AND or phrase search; query.bibliographic is the most targeted option.
+  params.set(els.match.value==='loose' ? 'query' : 'query.bibliographic', els.q.value.trim());
+  params.set('rows', per);
+  params.set('offset', (state.page-1)*per);
+  params.set('mailto', MAILTO);
+  const f = [];
+  if(els.yearFrom.value) f.push('from-pub-date:'+els.yearFrom.value+'-01-01');
+  if(els.yearTo.value) f.push('until-pub-date:'+els.yearTo.value+'-12-31');
+  if(f.length) params.set('filter', f.join(','));
+  if(els.sort.value==='date'){ params.set('sort','published'); params.set('order','desc'); }
+  else if(els.sort.value==='citations'){ params.set('sort','is-referenced-by-count'); params.set('order','desc'); }
+  const res = await fetch('https://api.crossref.org/works?'+params.toString());
+  if(!res.ok) throw new Error('Crossref returned '+res.status);
+  const data = await res.json();
+  state.total = data.message['total-results'];
+  let items = data.message.items.map(it => {
+    const dp = (it.issued && it.issued['date-parts'] && it.issued['date-parts'][0]) || [];
+    return {
+      title: (it.title && it.title[0]) || '(untitled)',
+      authors: (it.author||[]).map(a => [a.given,a.family].filter(Boolean).join(' ')).filter(Boolean),
+      year: dp[0],
+      venue: (it['container-title'] && it['container-title'][0]) || '',
+      cited: it['is-referenced-by-count'],
+      oa: false,
+      url: it.URL || (it.DOI ? 'https://doi.org/'+it.DOI : ''),
+      doi: it.DOI || '',
+      abstract: it.abstract ? it.abstract.replace(/<[^>]+>/g,'').trim() : '',
+    };
+  });
+  const notes = [];
+  if(els.oaOnly.checked) notes.push('Crossref does not expose open-access status, so the "open access only" filter is ignored for this source.');
+  if(els.match.value!=='loose') notes.push('Crossref has no field-scoped AND or phrase search, so its total count stays inflated even in this mode — use OpenAlex for a fair, comparable count.');
+  if(notes.length) els.note.textContent = 'Note: ' + notes.join(' ');
+  return items;
+}
+
+// ---------- arXiv ----------
+async function searchArxiv(){
+  const per = +els.perPage.value;
+  const sortMap = { relevance:'relevance', date:'submittedDate', citations:'relevance' };
+  const params = new URLSearchParams();
+  params.set('search_query', 'all:'+els.q.value.trim());
+  params.set('start', (state.page-1)*per);
+  params.set('max_results', per);
+  params.set('sortBy', sortMap[els.sort.value]);
+  if(els.sort.value!=='relevance') params.set('sortOrder','descending');
+  const res = await fetch('https://export.arxiv.org/api/query?'+params.toString());
+  if(!res.ok) throw new Error('arXiv returned '+res.status);
+  const xml = new DOMParser().parseFromString(await res.text(), 'text/xml');
+  const tot = xml.getElementsByTagName('opensearch:totalResults')[0];
+  state.total = tot ? +tot.textContent : 0;
+  const entries = Array.from(xml.getElementsByTagName('entry'));
+  let items = entries.map(e => {
+    const get = t => { const n = e.getElementsByTagName(t)[0]; return n ? n.textContent.trim() : ''; };
+    const pub = get('published');
+    return {
+      title: get('title').replace(/\s+/g,' '),
+      authors: Array.from(e.getElementsByTagName('author')).map(a => a.getElementsByTagName('name')[0].textContent),
+      year: pub ? +pub.slice(0,4) : undefined,
+      venue: 'arXiv preprint',
+      cited: null,
+      oa: true,
+      url: get('id'),
+      doi: '',
+      abstract: get('summary').replace(/\s+/g,' '),
+    };
+  });
+  const yf = els.yearFrom.value, yt = els.yearTo.value;
+  if(yf) items = items.filter(i => i.year && i.year >= +yf);
+  if(yt) items = items.filter(i => i.year && i.year <= +yt);
+  return items;
+}
+
+const ENGINES = { openalex: searchOpenAlex, crossref: searchCrossref, arxiv: searchArxiv };
+
+async function run(){
+  if(!els.q.value.trim()) return;
+  els.note.textContent = '';
+  els.searchBtn.disabled = true;
+  els.metaBar.style.display = 'none';
+  els.results.innerHTML = '<div class="state"><div class="spinner"></div>Searching…</div>';
+  try {
+    state.items = await ENGINES[els.source.value]();
+    render();
+  } catch(err){
+    let msg = esc(err.message || String(err));
+    if(/Failed to fetch/i.test(msg))
+      msg = 'Network/CORS error. This source may block direct browser requests'+(els.source.value==='arxiv'?' (arXiv is the most likely to do so — try OpenAlex or Crossref).':'.');
+    else if(els.source.value==='openalex' && /\b40[13]\b/.test(msg))
+      msg = 'OpenAlex rejected the request. Since Feb 2026 a free API key is required — paste yours in the "OpenAlex API key" box above (Get a free key link).';
+    els.results.innerHTML = '<div class="state error">Search failed: '+msg+'</div>';
+  } finally {
+    els.searchBtn.disabled = false;
+  }
+}
+
+function render(){
+  const per = +els.perPage.value;
+  if(!state.items.length){
+    els.results.innerHTML = '<div class="state">No results found. Try different keywords or a wider year range.</div>';
+    els.metaBar.style.display = 'none';
+    return;
+  }
+  els.metaBar.style.display = 'flex';
+  const start = (state.page-1)*per + 1;
+  const end = start + state.items.length - 1;
+  const totTxt = state.total ? state.total.toLocaleString() : 'many';
+  els.count.innerHTML = 'Showing <b>'+start+'–'+end+'</b> of <b>'+totTxt+'</b> results';
+
+  let html = '';
+  state.items.forEach((it, i) => {
+    const auth = it.authors.length
+      ? (it.authors.slice(0,8).join(', ') + (it.authors.length>8 ? ', et al.' : ''))
+      : 'Unknown authors';
+    const tags = [];
+    if(it.year) tags.push('<span class="tag year">'+it.year+'</span>');
+    if(it.venue) tags.push('<span class="tag">'+esc(it.venue)+'</span>');
+    if(it.cited != null) tags.push('<span class="tag cited">'+it.cited.toLocaleString()+' citations</span>');
+    if(it.oa) tags.push('<span class="tag oa">Open access</span>');
+    if(it.doi) tags.push('<span class="tag">DOI: '+esc(it.doi)+'</span>');
+    const ab = it.abstract
+      ? '<p class="abstract collapsed" id="ab'+i+'">'+esc(it.abstract)+'</p>'
+        + (it.abstract.length>240 ? '<span class="toggle" data-i="'+i+'">Show more</span>' : '')
+      : '';
+    html += '<div class="item">'
+      + '<h3>'+(it.url?'<a href="'+esc(it.url)+'" target="_blank" rel="noopener">'+esc(it.title)+'</a>':esc(it.title))+'</h3>'
+      + '<div class="authors">'+esc(auth)+'</div>'
+      + '<div class="tags">'+tags.join('')+'</div>'
+      + ab
+      + '</div>';
+  });
+
+  const pages = Math.max(1, Math.ceil((state.total||end)/per));
+  html += '<div class="pager">'
+    + '<button class="ghost" id="prev"'+(state.page<=1?' disabled':'')+'>← Prev</button>'
+    + '<span>Page '+state.page+' of '+pages.toLocaleString()+'</span>'
+    + '<button class="ghost" id="next"'+(state.page>=pages?' disabled':'')+'>Next →</button>'
+    + '</div>';
+  els.results.innerHTML = html;
+
+  els.results.querySelectorAll('.toggle').forEach(t => t.onclick = () => {
+    const p = document.getElementById('ab'+t.dataset.i);
+    const c = p.classList.toggle('collapsed');
+    t.textContent = c ? 'Show more' : 'Show less';
+  });
+  const prev = document.getElementById('prev'), next = document.getElementById('next');
+  if(prev) prev.onclick = () => { if(state.page>1){ state.page--; run(); window.scrollTo({top:0,behavior:'smooth'}); } };
+  if(next) next.onclick = () => { if(state.page<pages){ state.page++; run(); window.scrollTo({top:0,behavior:'smooth'}); } };
+}
+
+// ---------- Exports ----------
+function download(name, text, type){
+  const blob = new Blob([text], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function csvCell(s){ s = (s==null?'':String(s)); return '"'+s.replace(/"/g,'""')+'"'; }
+els.csvBtn.onclick = () => {
+  if(!state.items.length) return;
+  const rows = [['Title','Authors','Year','Venue','Citations','OpenAccess','DOI','URL','Abstract']];
+  state.items.forEach(it => rows.push([
+    it.title, it.authors.join('; '), it.year||'', it.venue, it.cited==null?'':it.cited,
+    it.oa?'yes':'no', it.doi, it.url, it.abstract
+  ]));
+  download('literature_results.csv', rows.map(r => r.map(csvCell).join(',')).join('\n'), 'text/csv');
+};
+els.bibBtn.onclick = () => {
+  if(!state.items.length) return;
+  const bib = state.items.map((it,i) => {
+    const first = (it.authors[0]||'anon').split(' ').pop().replace(/[^a-zA-Z]/g,'');
+    const key = (first||'ref') + (it.year||'') + (i+1);
+    const authors = it.authors.join(' and ');
+    let e = '@article{'+key+',\n';
+    e += '  title   = {'+it.title+'},\n';
+    if(authors) e += '  author  = {'+authors+'},\n';
+    if(it.venue) e += '  journal = {'+it.venue+'},\n';
+    if(it.year) e += '  year    = {'+it.year+'},\n';
+    if(it.doi) e += '  doi     = {'+it.doi+'},\n';
+    if(it.url) e += '  url     = {'+it.url+'},\n';
+    e += '}';
+    return e;
+  }).join('\n\n');
+  download('literature_results.bib', bib, 'text/plain');
+};
+
+// ---------- wiring ----------
+function newSearch(){ state.page = 1; run(); }
+// Remember the API key locally on this device (never sent anywhere but OpenAlex).
+try { els.apiKey.value = localStorage.getItem('openalex_key') || ''; } catch(e){}
+els.apiKey.addEventListener('change', () => { try { localStorage.setItem('openalex_key', els.apiKey.value.trim()); } catch(e){} });
+els.searchBtn.onclick = newSearch;
+els.q.addEventListener('keydown', e => { if(e.key==='Enter') newSearch(); });
+[els.source, els.sort, els.yearFrom, els.yearTo, els.perPage, els.match, els.oaOnly].forEach(el =>
+  el.addEventListener('change', newSearch));
+newSearch();
+</script>
+</body>
+</html>
