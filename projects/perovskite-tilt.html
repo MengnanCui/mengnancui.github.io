@@ -60,6 +60,12 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 .canvas-wrap:active{cursor:grabbing;}
 canvas.cv{width:100%!important;height:100%!important;display:block;}
 .canvas-badge{position:absolute;bottom:6px;right:6px;background:rgba(255,255,255,.65);border:1px solid rgba(0,0,0,.06);border-radius:2px;padding:2px 6px;font-size:10px;color:#6b7280;backdrop-filter:blur(2px);font-family:'DM Mono',monospace;}
+/* atom / axis legends on canvas */
+.atom-legend{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:4px;padding:7px 9px;backdrop-filter:blur(3px);font-size:.72rem;color:#404040;display:flex;flex-direction:column;gap:3px;}
+.axis-legend{position:absolute;bottom:8px;left:8px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:4px;padding:5px 8px;backdrop-filter:blur(3px);display:flex;gap:10px;font-family:'DM Mono',monospace;font-size:.74rem;font-weight:700;color:#404040;}
+.lg-item{display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.lg-sw{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1px solid rgba(0,0,0,.15);}
+.adv-grid{display:flex;flex-direction:column;gap:2px;max-width:340px;}
 /* live readout overlay */
 .readout{position:absolute;top:8px;left:8px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:4px;padding:8px 11px;backdrop-filter:blur(3px);min-width:150px;}
 .readout .ro-gl{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:700;color:#1a1a2e;line-height:1.1;}
@@ -216,6 +222,12 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
               <div class="ro-sys" id="roSys">立方 Cubic</div>
               <span class="ro-known yes" id="roKnown">已知扭转系统</span>
             </div>
+            <div class="atom-legend" id="atomLegend"></div>
+            <div class="axis-legend">
+              <span class="lg-item"><span class="lg-sw" style="background:#d14b4b"></span>a</span>
+              <span class="lg-item"><span class="lg-sw" style="background:#3fa34d"></span>b</span>
+              <span class="lg-item"><span class="lg-sw" style="background:#3a6fd0"></span>c</span>
+            </div>
             <div class="canvas-badge">拖动旋转 · 滚轮缩放 · 双击复位</div>
           </div>
 
@@ -245,28 +257,36 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
             <div class="cgrp">
               <h4>扭转角度 Angle</h4>
               <div class="crow">
-                <input type="range" id="angMaster" min="0" max="15" step="0.5" value="10">
+                <input type="range" id="angMaster" min="0" max="60" step="0.5" value="10">
                 <span class="val" id="angVal">10.0°</span>
               </div>
               <div class="crow chk">
                 <input type="checkbox" id="lockEqual" checked><label for="lockEqual">等幅锁定（a=b=c）</label>
               </div>
               <div class="per-axis" id="perAxis">
-                <div class="crow"><span style="width:24px">a</span><input type="range" class="amx" data-ax="x" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="x">10.0°</span></div>
-                <div class="crow"><span style="width:24px">b</span><input type="range" class="amx" data-ax="y" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="y">10.0°</span></div>
-                <div class="crow"><span style="width:24px">c</span><input type="range" class="amx" data-ax="z" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="z">10.0°</span></div>
+                <div class="crow"><span style="width:24px">a</span><input type="range" class="amx" data-ax="x" min="0" max="60" step="0.5" value="10"><span class="val amv" data-ax="x">10.0°</span></div>
+                <div class="crow"><span style="width:24px">b</span><input type="range" class="amx" data-ax="y" min="0" max="60" step="0.5" value="10"><span class="val amv" data-ax="y">10.0°</span></div>
+                <div class="crow"><span style="width:24px">c</span><input type="range" class="amx" data-ax="z" min="0" max="60" step="0.5" value="10"><span class="val amv" data-ax="z">10.0°</span></div>
               </div>
             </div>
 
             <div class="cgrp">
               <h4>显示 Display</h4>
               <div class="crow chk"><input type="checkbox" id="showA" checked><label for="showA">A 位阳离子</label></div>
+              <div class="crow"><label for="aType" style="width:auto">A 位</label>
+                <select id="aType" style="flex:1;font-family:'DM Mono',monospace;font-size:.78rem;padding:2px 4px;border:1px solid #cdd5dc;border-radius:3px;">
+                  <option value="Cs">Cs⁺</option>
+                  <option value="MA">MA⁺ (CH₃NH₃⁺)</option>
+                  <option value="FA">FA⁺ (CH(NH₂)₂⁺)</option>
+                </select>
+              </div>
               <div class="crow"><label for="netN" style="width:auto">网络</label>
                 <select id="netN" style="flex:1;font-family:'DM Mono',monospace;font-size:.78rem;padding:2px 4px;border:1px solid #cdd5dc;border-radius:3px;">
                   <option value="2">2 × 2 × 2</option>
                   <option value="3">3 × 3 × 3</option>
                 </select>
               </div>
+              <div class="crow chk"><input type="checkbox" id="autoRotate"><label for="autoRotate">自动旋转</label></div>
             </div>
 
             <div class="cgrp">
@@ -277,6 +297,17 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
               <div class="preset-quick" id="quickPresets"></div>
             </div>
           </div>
+
+          <details class="tech-notes" id="advSettings">
+            <summary>精细设置 · 原子 / 键 / 透明度</summary>
+            <div class="tn-body">
+              <div class="adv-grid">
+                <div class="crow"><label style="width:72px">原子大小</label><input type="range" id="setAtom" min="0.5" max="1.6" step="0.02" value="1"><span class="val" id="vAtom">1.00</span></div>
+                <div class="crow"><label style="width:72px">键粗细</label><input type="range" id="setBond" min="0.4" max="2.4" step="0.05" value="1"><span class="val" id="vBond">1.00</span></div>
+                <div class="crow"><label style="width:72px">多面体透明</label><input type="range" id="setPoly" min="0" max="0.8" step="0.02" value="0.42"><span class="val" id="vPoly">0.42</span></div>
+              </div>
+            </div>
+          </details>
         </div>
         </div>
 
@@ -432,9 +463,11 @@ const GALLERY=[
 
 /* ════════════════════ 颜色 / 常数 ════════════════════ */
 const COL={A:0x2f6f9e,B:0x767d8a,X:0xc63a30,poly:0x6b73a0,bond:0x6b7079};
-const POLY_OPACITY=0.42;
+const COL_C=0x555b66, COL_N=0x3b56c4;   // MA/FA 分子团中的 C / N
 const A_SP=2.0, HALF=1.0;        // B–B 间距 / 八面体半对角
 const R_B=0.34, R_X=0.26, R_A=0.46, R_BOND=0.065;
+// 可运行时调节的渲染设置
+const SET={atomScale:1, bondScale:1, polyOpacity:0.42, autoRotate:false, aType:'Cs'};
 
 /* ════════════════════ 状态 ════════════════════ */
 const state={phases:{x:'0',y:'0',z:'0'},mags:{x:10,y:10,z:10},n:2,showA:true,lockEqual:true};
@@ -476,7 +509,7 @@ function makeViewer(canvas){
   const fill=new THREE.DirectionalLight(0xdfeaff,0.45); fill.position.set(-6,3,-6); scene.add(fill);
   const root=new THREE.Group(); scene.add(root);
 
-  let theta=0.85,phi=1.05,radius=14;
+  let theta=0.5,phi=1.08,radius=14;   // 默认 3/4 视角：b(世界Y)大致竖直，中心 A 透出可见
   const target=new THREE.Vector3();
   function updateCam(){
     // 与「晶体结构博物馆」periodic-table.html 完全一致的球坐标参数化，保证拖拽手感相同
@@ -495,7 +528,7 @@ function makeViewer(canvas){
     px=e.clientX;py=e.clientY; updateCam();
   });
   canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(6,Math.min(40,radius*(e.deltaY>0?1.08:0.93)));updateCam();},{passive:false});
-  canvas.addEventListener('dblclick',()=>{theta=0.85;phi=1.05;radius=defaultRadius();updateCam();});
+  canvas.addEventListener('dblclick',()=>{theta=0.5;phi=1.08;radius=defaultRadius();updateCam();});
   // touch
   let tdrag=false,tx=0,ty=0;
   canvas.addEventListener('touchstart',e=>{if(e.touches.length===1){tdrag=true;tx=e.touches[0].clientX;ty=e.touches[0].clientY;}},{passive:true});
@@ -514,7 +547,7 @@ function makeViewer(canvas){
   }
   const ro=new ResizeObserver(resize); ro.observe(canvas);
 
-  return {scene,camera,renderer,root,updateCam,resize,setRadius:r=>{radius=r;updateCam();},defaultRadius,resetView:()=>{theta=0.85;phi=1.05;radius=defaultRadius();updateCam();}};
+  return {scene,camera,renderer,root,updateCam,resize,orbit:d=>{theta+=d;updateCam();},setRadius:r=>{radius=r;updateCam();},defaultRadius,resetView:()=>{theta=0.5;phi=1.08;radius=defaultRadius();updateCam();}};
 }
 
 const sphGeo=new THREE.SphereGeometry(1,28,20);
@@ -541,7 +574,43 @@ function addOcta(group,corners,color,opacity){
 }
 
 function clearGroup(g){
-  for(let i=g.children.length-1;i>=0;i--){const c=g.children[i];if(c.geometry&&c.geometry!==sphGeo)c.geometry.dispose();if(c.material)c.material.dispose();g.remove(c);}
+  for(let i=g.children.length-1;i>=0;i--){
+    const c=g.children[i];
+    if(c.type==='ArrowHelper'){                       // ArrowHelper 用共享几何体，仅释放材质
+      c.line&&c.line.material&&c.line.material.dispose();
+      c.cone&&c.cone.material&&c.cone.material.dispose();
+    }else{
+      c.traverse&&c.traverse(o=>{
+        if(o.geometry&&o.geometry!==sphGeo)o.geometry.dispose();
+        if(o.material&&o.material.dispose)o.material.dispose();
+      });
+    }
+    g.remove(c);
+  }
+}
+// A 位阳离子：Cs 单球 / MA(C–N) / FA(N–C–N) 简化分子团
+function buildAcation(g,center){
+  const t=SET.aType, as=SET.atomScale;
+  if(t==='Cs'){ addSphere(g,center,R_A*as,COL.A,0.5,0.45); return; }
+  const rs=R_A*0.42*as, br=R_BOND*0.85*SET.bondScale, d=0.42;
+  if(t==='MA'){                                        // CH₃NH₃⁺ → C–N
+    const dir=new THREE.Vector3(1,0.5,0.3).normalize();
+    const cC=center.clone().addScaledVector(dir,-d), cN=center.clone().addScaledVector(dir,d);
+    addBond(g,cC,cN,br,0x9aa3ad); addSphere(g,cC,rs,COL_C,0.3,0.5); addSphere(g,cN,rs,COL_N,0.3,0.5);
+  }else{                                               // CH(NH₂)₂⁺ → N–C–N 弯曲
+    const cC=center.clone();
+    const n1=center.clone().addScaledVector(new THREE.Vector3(1,0.35,0).normalize(),d*1.15);
+    const n2=center.clone().addScaledVector(new THREE.Vector3(-1,0.35,0.1).normalize(),d*1.15);
+    addBond(g,cC,n1,br,0x9aa3ad); addBond(g,cC,n2,br,0x9aa3ad);
+    addSphere(g,cC,rs,COL_C,0.3,0.5); addSphere(g,n1,rs,COL_N,0.3,0.5); addSphere(g,n2,rs,COL_N,0.3,0.5);
+  }
+}
+// 坐标三角：a=红 b=绿 c=蓝，随相机一同旋转，指示取向
+function addAxisTriad(g,off){
+  const o=new THREE.Vector3(-off-1.5,-off-1.5,-off-1.5), len=1.6;
+  g.add(new THREE.ArrowHelper(_ax.x,o,len,0xd14b4b,0.42,0.2)); // a
+  g.add(new THREE.ArrowHelper(_ax.y,o,len,0x3fa34d,0.42,0.2)); // b
+  g.add(new THREE.ArrowHelper(_ax.z,o,len,0x3a6fd0,0.42,0.2)); // c
 }
 
 const _ax={x:new THREE.Vector3(1,0,0),y:new THREE.Vector3(0,1,0),z:new THREE.Vector3(0,0,1)};
@@ -580,6 +649,7 @@ function buildNetwork(viewer){
       plusOx[D.d+'|'+i+','+j+','+l]=o;
     });
   }
+  const rX=R_X*SET.atomScale, rB=R_B*SET.atomScale, rBond=R_BOND*SET.bondScale;
   // 八面体（角共享：负向角借用邻居 +向桥氧）
   const drawnOx=new Set();
   for(let i=0;i<n;i++)for(let j=0;j<n;j++)for(let l=0;l<n;l++){
@@ -589,35 +659,36 @@ function buildNetwork(viewer){
     [['x',plusOx['x|'+i+','+j+','+l]],['y',plusOx['y|'+i+','+j+','+l]],['z',plusOx['z|'+i+','+j+','+l]]].forEach(([d,p])=>{
       corners.push(p);
       const key=d+'|'+i+','+j+','+l;
-      if(!drawnOx.has(key)){drawnOx.add(key);addSphere(g,p,R_X,COL.X,0.1,0.5);addBond(g,c,p,R_BOND,COL.bond);}
-      else{addBond(g,c,p,R_BOND,COL.bond);}
+      if(!drawnOx.has(key)){drawnOx.add(key);addSphere(g,p,rX,COL.X,0.1,0.5);}
+      addBond(g,c,p,rBond,COL.bond);
     });
     // -x
     let cm;
     if(i>0){cm=plusOx['x|'+(i-1)+','+j+','+l];}
-    else {cm=_ax.x.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cm,R_X,COL.X,0.1,0.5);}
-    corners.push(cm); addBond(g,c,cm,R_BOND,COL.bond);
+    else {cm=_ax.x.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cm,rX,COL.X,0.1,0.5);}
+    corners.push(cm); addBond(g,c,cm,rBond,COL.bond);
     // -y
     let cy;
     if(j>0){cy=plusOx['y|'+i+','+(j-1)+','+l];}
-    else {cy=_ax.y.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cy,R_X,COL.X,0.1,0.5);}
-    corners.push(cy); addBond(g,c,cy,R_BOND,COL.bond);
+    else {cy=_ax.y.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cy,rX,COL.X,0.1,0.5);}
+    corners.push(cy); addBond(g,c,cy,rBond,COL.bond);
     // -z
     let cz;
     if(l>0){cz=plusOx['z|'+i+','+j+','+(l-1)];}
-    else {cz=_ax.z.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cz,R_X,COL.X,0.1,0.5);}
-    corners.push(cz); addBond(g,c,cz,R_BOND,COL.bond);
+    else {cz=_ax.z.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cz,rX,COL.X,0.1,0.5);}
+    corners.push(cz); addBond(g,c,cz,rBond,COL.bond);
 
-    addSphere(g,c,R_B,COL.B,0.55,0.4);            // B 阳离子
-    addOcta(g,corners,COL.poly,POLY_OPACITY);     // 配位多面体
+    addSphere(g,c,rB,COL.B,0.55,0.4);             // B 阳离子
+    addOcta(g,corners,COL.poly,SET.polyOpacity);  // 配位多面体
   }
   // A 位阳离子（内部体心）
   if(state.showA){
     for(let i=0;i<n-1;i++)for(let j=0;j<n-1;j++)for(let l=0;l<n-1;l++){
       const p=new THREE.Vector3((i+0.5)*A_SP-off,(j+0.5)*A_SP-off,(l+0.5)*A_SP-off);
-      addSphere(g,p,R_A,COL.A,0.5,0.45);
+      buildAcation(g,p);
     }
   }
+  addAxisTriad(g,off);                            // a/b/c 坐标三角
 }
 
 /* ════════════════════ 控件同步 ════════════════════ */
@@ -649,7 +720,7 @@ function animateTo(presetName){
   if(tween)tween=null;
   const startMags={...state.mags};
   const midPhases={...state.phases};
-  const t0=performance.now(), HALF_T=280;
+  const t0=performance.now(), HALF_T=600;   // 每半程 0.6s，整段约 1.2s
   // 阶段1：当前幅度→0（保持当前相位）；阶段2：0→目标幅度（切到目标相位）
   tween={
     step(now){
@@ -795,6 +866,11 @@ function wireControls(){
   });
   document.getElementById('showA').addEventListener('change',e=>{state.showA=e.target.checked;rebuild();});
   document.getElementById('netN').addEventListener('change',e=>{state.n=parseInt(e.target.value);MAIN.resetView();rebuild();});
+  document.getElementById('aType').addEventListener('change',e=>{SET.aType=e.target.value;renderLegend();rebuild();});
+  document.getElementById('autoRotate').addEventListener('change',e=>{SET.autoRotate=e.target.checked;});
+  // 精细设置
+  const adv=(id,key,disp)=>{const el=document.getElementById(id);el.addEventListener('input',()=>{SET[key]=parseFloat(el.value);document.getElementById(disp).textContent=SET[key].toFixed(2);rebuild();});};
+  adv('setAtom','atomScale','vAtom'); adv('setBond','bondScale','vBond'); adv('setPoly','polyOpacity','vPoly');
   document.getElementById('btnReset').addEventListener('click',()=>{tween=null;applyPreset('a0a0a0');MAIN.resetView();});
   // 快捷预设
   const qp=document.getElementById('quickPresets');
@@ -818,9 +894,26 @@ function wireScrollSpy(){
   },{passive:true});
 }
 
+/* ════════════════════ 原子图例 ════════════════════ */
+function renderLegend(){
+  const host=document.getElementById('atomLegend'); if(!host)return;
+  const hx=c=>'#'+c.toString(16).padStart(6,'0');
+  let rows=[];
+  if(SET.aType==='Cs'){ rows.push([hx(COL.A),'A 位 · Cs⁺']); }
+  else{
+    const nm=SET.aType==='MA'?'MA⁺':'FA⁺';
+    rows.push([hx(COL_N),'A 位 · '+nm+' — N']);
+    rows.push([hx(COL_C),'　　　　　 C']);
+  }
+  rows.push([hx(COL.B),'B 位 · Pb / Sn']);
+  rows.push([hx(COL.X),'X · 卤素 (I⁻)']);
+  host.innerHTML=rows.map(([c,t])=>`<div class="lg-item"><span class="lg-sw" style="background:${c}"></span>${t}</div>`).join('');
+}
+
 /* ════════════════════ 启动 ════════════════════ */
 function loop(now){
   requestAnimationFrame(loop);
+  if(SET.autoRotate)MAIN.orbit(0.004);
   if(tween)tween.step(now);
   MAIN.renderer.render(MAIN.scene,MAIN.camera);
 }
@@ -834,7 +927,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   MAIN=makeViewer(document.getElementById('mainCanvas'));
   MAIN.resetView();
   wireControls(); renderGallery(); wireScrollSpy(); wireModal();
-  syncControls(); rebuild();
+  syncControls(); renderLegend(); rebuild();
   requestAnimationFrame(loop);
 });
 </script>
