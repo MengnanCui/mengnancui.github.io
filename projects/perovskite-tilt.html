@@ -65,7 +65,8 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
 .axis-legend{position:absolute;bottom:8px;left:8px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:4px;padding:5px 8px;backdrop-filter:blur(3px);display:flex;gap:10px;font-family:'DM Mono',monospace;font-size:.74rem;font-weight:700;color:#404040;}
 .lg-item{display:flex;align-items:center;gap:5px;white-space:nowrap;}
 .lg-sw{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1px solid rgba(0,0,0,.15);}
-.adv-grid{display:flex;flex-direction:column;gap:2px;max-width:340px;}
+.adv-grid{display:flex;flex-direction:column;gap:2px;max-width:360px;}
+.adv-sub{font-family:'DM Mono',monospace;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9b9b9b;margin:.5em 0 .1em;border-top:1px solid #e1e4e5;padding-top:.45em;}
 /* live readout overlay */
 .readout{position:absolute;top:8px;left:8px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:4px;padding:8px 11px;backdrop-filter:blur(3px);min-width:150px;}
 .readout .ro-gl{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:700;color:#1a1a2e;line-height:1.1;}
@@ -113,6 +114,13 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
 .modal-meta .glx{color:#7c3aed;font-weight:700;}
 .modal-close{border:none;background:#f3f6f6;color:#404040;font-size:1rem;border-radius:4px;width:30px;height:30px;cursor:pointer;flex-shrink:0;line-height:1;}
 .modal-close:hover{background:#e6eaec;}
+.modal-switcher{display:flex;flex-wrap:wrap;gap:6px 14px;padding:9px 16px;border-bottom:1px solid #e1e4e5;background:#f7f9fa;align-items:center;}
+.sw-group{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.sw-formula{font-family:'DM Mono',monospace;font-size:.74rem;font-weight:700;color:#404040;margin-right:2px;}
+.sw-chip{font-family:'DM Mono',monospace;font-size:.72rem;padding:2px 8px;border:1px solid #cdd5dc;background:#fff;color:#2980b9;border-radius:10px;cursor:pointer;white-space:nowrap;transition:all .1s;}
+.sw-chip:hover{background:#e7f2fa;}
+.sw-chip.active{background:#2980b9;border-color:#2980b9;color:#fff;}
+.sw-chip.disabled{color:#b08a2f;background:#fdf7e8;border-color:#ecd9a6;cursor:not-allowed;opacity:.85;}
 .modal-body{padding:14px 16px 4px;}
 .modal-body .canvas-wrap{height:60vh;min-height:380px;}
 .modal-info{padding:2px 16px 16px;font-family:'Noto Serif SC',serif;font-size:.9rem;line-height:1.7;color:#404040;}
@@ -302,9 +310,12 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
             <summary>精细设置 · 原子 / 键 / 透明度</summary>
             <div class="tn-body">
               <div class="adv-grid">
-                <div class="crow"><label style="width:72px">原子大小</label><input type="range" id="setAtom" min="0.5" max="1.6" step="0.02" value="1"><span class="val" id="vAtom">1.00</span></div>
-                <div class="crow"><label style="width:72px">键粗细</label><input type="range" id="setBond" min="0.4" max="2.4" step="0.05" value="1"><span class="val" id="vBond">1.00</span></div>
-                <div class="crow"><label style="width:72px">多面体透明</label><input type="range" id="setPoly" min="0" max="0.8" step="0.02" value="0.42"><span class="val" id="vPoly">0.42</span></div>
+                <div class="crow"><label style="width:80px">原子大小</label><input type="range" id="setAtom" min="0.5" max="1.6" step="0.02" value="1"><span class="val" id="vAtom">1.00</span></div>
+                <div class="crow"><label style="width:80px">键粗细</label><input type="range" id="setBond" min="0.4" max="2.4" step="0.05" value="1"><span class="val" id="vBond">1.00</span></div>
+                <div class="crow"><label style="width:80px">多面体透明</label><input type="range" id="setPoly" min="0" max="0.8" step="0.02" value="0.32"><span class="val" id="vPoly">0.32</span></div>
+                <div class="adv-sub">动画 Animation</div>
+                <div class="crow"><label style="width:80px">切换时长</label><input type="range" id="setMorph" min="0.4" max="3.0" step="0.1" value="1.2"><span class="val" id="vMorph">1.2s</span></div>
+                <div class="crow"><label style="width:80px">旋转速度</label><input type="range" id="setRot" min="0" max="0.015" step="0.001" value="0.004"><span class="val" id="vRot">0.004</span></div>
               </div>
             </div>
           </details>
@@ -400,6 +411,7 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
       </div>
       <button class="modal-close" id="modalClose" title="关闭 (Esc)">✕</button>
     </div>
+    <div class="modal-switcher" id="modalSwitcher"></div>
     <div class="modal-body" id="modalBody"></div>
     <div class="modal-info" id="modalInfo"></div>
   </div>
@@ -467,7 +479,7 @@ const COL_C=0x555b66, COL_N=0x3b56c4;   // MA/FA 分子团中的 C / N
 const A_SP=2.0, HALF=1.0;        // B–B 间距 / 八面体半对角
 const R_B=0.34, R_X=0.26, R_A=0.46, R_BOND=0.065;
 // 可运行时调节的渲染设置
-const SET={atomScale:1, bondScale:1, polyOpacity:0.42, autoRotate:false, aType:'Cs'};
+const SET={atomScale:1, bondScale:1, polyOpacity:0.32, autoRotate:false, aType:'Cs', morphMs:600, rotSpeed:0.004};
 
 /* ════════════════════ 状态 ════════════════════ */
 const state={phases:{x:'0',y:'0',z:'0'},mags:{x:10,y:10,z:10},n:2,showA:true,lockEqual:true};
@@ -509,7 +521,7 @@ function makeViewer(canvas){
   const fill=new THREE.DirectionalLight(0xdfeaff,0.45); fill.position.set(-6,3,-6); scene.add(fill);
   const root=new THREE.Group(); scene.add(root);
 
-  let theta=0.5,phi=1.08,radius=14;   // 默认 3/4 视角：b(世界Y)大致竖直，中心 A 透出可见
+  let theta=0.6,phi=0.55,radius=14;   // 默认近 b 轴高角俯视：沿轴通道透视到中心 A
   const target=new THREE.Vector3();
   function updateCam(){
     // 与「晶体结构博物馆」periodic-table.html 完全一致的球坐标参数化，保证拖拽手感相同
@@ -528,7 +540,7 @@ function makeViewer(canvas){
     px=e.clientX;py=e.clientY; updateCam();
   });
   canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(6,Math.min(40,radius*(e.deltaY>0?1.08:0.93)));updateCam();},{passive:false});
-  canvas.addEventListener('dblclick',()=>{theta=0.5;phi=1.08;radius=defaultRadius();updateCam();});
+  canvas.addEventListener('dblclick',()=>{theta=0.6;phi=0.55;radius=defaultRadius();updateCam();});
   // touch
   let tdrag=false,tx=0,ty=0;
   canvas.addEventListener('touchstart',e=>{if(e.touches.length===1){tdrag=true;tx=e.touches[0].clientX;ty=e.touches[0].clientY;}},{passive:true});
@@ -547,12 +559,14 @@ function makeViewer(canvas){
   }
   const ro=new ResizeObserver(resize); ro.observe(canvas);
 
-  return {scene,camera,renderer,root,updateCam,resize,orbit:d=>{theta+=d;updateCam();},setRadius:r=>{radius=r;updateCam();},defaultRadius,resetView:()=>{theta=0.5;phi=1.08;radius=defaultRadius();updateCam();}};
+  return {scene,camera,renderer,root,updateCam,resize,orbit:d=>{theta+=d;updateCam();},setRadius:r=>{radius=r;updateCam();},defaultRadius,resetView:()=>{theta=0.6;phi=0.55;radius=defaultRadius();updateCam();}};
 }
 
 const sphGeo=new THREE.SphereGeometry(1,28,20);
-function addSphere(group,pos,r,color,metal,rough){
-  const m=new THREE.Mesh(sphGeo,new THREE.MeshStandardMaterial({color,metalness:metal,roughness:rough}));
+function addSphere(group,pos,r,color,metal,rough,emissive){
+  const mat=new THREE.MeshStandardMaterial({color,metalness:metal,roughness:rough});
+  if(emissive!==undefined){mat.emissive=new THREE.Color(emissive);mat.emissiveIntensity=1;}
+  const m=new THREE.Mesh(sphGeo,mat);
   m.position.copy(pos); m.scale.setScalar(r); group.add(m);
 }
 function addBond(group,a,b,r,color){
@@ -591,18 +605,19 @@ function clearGroup(g){
 // A 位阳离子：Cs 单球 / MA(C–N) / FA(N–C–N) 简化分子团
 function buildAcation(g,center){
   const t=SET.aType, as=SET.atomScale;
-  if(t==='Cs'){ addSphere(g,center,R_A*as,COL.A,0.5,0.45); return; }
+  const EA=0x16384e, EN=0x121a3c;                      // A / N 的微弱自发光，使其透过八面体可辨
+  if(t==='Cs'){ addSphere(g,center,R_A*as,COL.A,0.5,0.45,EA); return; }
   const rs=R_A*0.42*as, br=R_BOND*0.85*SET.bondScale, d=0.42;
   if(t==='MA'){                                        // CH₃NH₃⁺ → C–N
     const dir=new THREE.Vector3(1,0.5,0.3).normalize();
     const cC=center.clone().addScaledVector(dir,-d), cN=center.clone().addScaledVector(dir,d);
-    addBond(g,cC,cN,br,0x9aa3ad); addSphere(g,cC,rs,COL_C,0.3,0.5); addSphere(g,cN,rs,COL_N,0.3,0.5);
+    addBond(g,cC,cN,br,0x9aa3ad); addSphere(g,cC,rs,COL_C,0.3,0.5); addSphere(g,cN,rs,COL_N,0.3,0.5,EN);
   }else{                                               // CH(NH₂)₂⁺ → N–C–N 弯曲
     const cC=center.clone();
     const n1=center.clone().addScaledVector(new THREE.Vector3(1,0.35,0).normalize(),d*1.15);
     const n2=center.clone().addScaledVector(new THREE.Vector3(-1,0.35,0.1).normalize(),d*1.15);
     addBond(g,cC,n1,br,0x9aa3ad); addBond(g,cC,n2,br,0x9aa3ad);
-    addSphere(g,cC,rs,COL_C,0.3,0.5); addSphere(g,n1,rs,COL_N,0.3,0.5); addSphere(g,n2,rs,COL_N,0.3,0.5);
+    addSphere(g,cC,rs,COL_C,0.3,0.5); addSphere(g,n1,rs,COL_N,0.3,0.5,EN); addSphere(g,n2,rs,COL_N,0.3,0.5,EN);
   }
 }
 // 坐标三角：a=红 b=绿 c=蓝，随相机一同旋转，指示取向
@@ -720,7 +735,7 @@ function animateTo(presetName){
   if(tween)tween=null;
   const startMags={...state.mags};
   const midPhases={...state.phases};
-  const t0=performance.now(), HALF_T=600;   // 每半程 0.6s，整段约 1.2s
+  const t0=performance.now(), HALF_T=SET.morphMs;   // 每半程时长（可调）
   // 阶段1：当前幅度→0（保持当前相位）；阶段2：0→目标幅度（切到目标相位）
   tween={
     step(now){
@@ -807,25 +822,51 @@ function renderGallery(){
   });
   host.innerHTML=html;
   host.querySelectorAll('.demo-btn').forEach(b=>{
-    b.addEventListener('click',()=>{
-      const mat=GALLERY[+b.dataset.mi], ph=mat.phases[+b.dataset.pi];
-      openTiltModal(mat.formula,ph);
-    });
+    b.addEventListener('click',()=>openTiltModal(+b.dataset.mi,+b.dataset.pi));
   });
 }
 
 /* ════════════════════ 浮层扭转台 ════════════════════ */
-function openTiltModal(formula,ph){
-  const m=document.getElementById('tiltModal');
-  document.getElementById('modalTitle').textContent=formula+' · '+ph.name;
+let modalActive={mi:-1,pi:-1};
+// 一次性构建「相切换」芯片（按材料分组；δ 非钙钛矿相为禁用芯片）
+function renderSwitcher(){
+  const host=document.getElementById('modalSwitcher'); let html='';
+  GALLERY.forEach((mat,mi)=>{
+    html+=`<div class="sw-group"><span class="sw-formula">${mat.formula}</span>`;
+    mat.phases.forEach((ph,pi)=>{
+      const greek=(ph.name.match(/^[αβγδ]|赝立方/)||[ph.name[0]])[0];
+      if(ph.type==='perov')
+        html+=`<button class="sw-chip" data-mi="${mi}" data-pi="${pi}" title="${ph.sg} · ${ph.gl}">${greek} ${ph.gl}</button>`;
+      else
+        html+=`<span class="sw-chip disabled" title="非钙钛矿相，无法由八面体扭转得到">${greek} 黄相</span>`;
+    });
+    html+=`</div>`;
+  });
+  host.innerHTML=html;
+  host.querySelectorAll('.sw-chip:not(.disabled)').forEach(b=>{
+    b.addEventListener('click',()=>setModalPhase(+b.dataset.mi,+b.dataset.pi));
+  });
+}
+// 更新浮层标题/信息 + 高亮芯片 + 动画变形（经 Pm3̄m）
+function setModalPhase(mi,pi){
+  modalActive={mi,pi};
+  const mat=GALLERY[mi], ph=mat.phases[pi];
+  document.getElementById('modalTitle').textContent=mat.formula+' · '+ph.name;
   document.getElementById('modalMeta').innerHTML=ph.sg+' &nbsp;·&nbsp; <span class="glx">'+ph.gl+'</span>';
   document.getElementById('modalInfo').innerHTML=
     '<b>稳定性 / 转变：</b>'+ph.stab+'<br><b>带隙 (eV)：</b>'+ph.gap+
     ' &nbsp; <b>光伏性能：</b>'+ph.note;
+  document.querySelectorAll('#modalSwitcher .sw-chip').forEach(c=>{
+    c.classList.toggle('active', +c.dataset.mi===mi && +c.dataset.pi===pi);
+  });
+  animateTo(ph.preset);
+}
+function openTiltModal(mi,pi){
+  const m=document.getElementById('tiltModal');
   document.getElementById('modalBody').appendChild(document.getElementById('pg'));  // 移入扭转台
   m.classList.add('open'); m.setAttribute('aria-hidden','false');
   document.body.style.overflow='hidden';
-  requestAnimationFrame(()=>{ MAIN.resize(); animateTo(ph.preset); });
+  requestAnimationFrame(()=>{ MAIN.resize(); setModalPhase(mi,pi); });
 }
 function closeTiltModal(){
   const m=document.getElementById('tiltModal');
@@ -871,6 +912,8 @@ function wireControls(){
   // 精细设置
   const adv=(id,key,disp)=>{const el=document.getElementById(id);el.addEventListener('input',()=>{SET[key]=parseFloat(el.value);document.getElementById(disp).textContent=SET[key].toFixed(2);rebuild();});};
   adv('setAtom','atomScale','vAtom'); adv('setBond','bondScale','vBond'); adv('setPoly','polyOpacity','vPoly');
+  document.getElementById('setMorph').addEventListener('input',e=>{const v=parseFloat(e.target.value);SET.morphMs=v*500;document.getElementById('vMorph').textContent=v.toFixed(1)+'s';});
+  document.getElementById('setRot').addEventListener('input',e=>{SET.rotSpeed=parseFloat(e.target.value);document.getElementById('vRot').textContent=SET.rotSpeed.toFixed(3);});
   document.getElementById('btnReset').addEventListener('click',()=>{tween=null;applyPreset('a0a0a0');MAIN.resetView();});
   // 快捷预设
   const qp=document.getElementById('quickPresets');
@@ -913,7 +956,7 @@ function renderLegend(){
 /* ════════════════════ 启动 ════════════════════ */
 function loop(now){
   requestAnimationFrame(loop);
-  if(SET.autoRotate)MAIN.orbit(0.004);
+  if(SET.autoRotate)MAIN.orbit(SET.rotSpeed);
   if(tween)tween.step(now);
   MAIN.renderer.render(MAIN.scene,MAIN.camera);
 }
@@ -926,7 +969,7 @@ function wireModal(){
 window.addEventListener('DOMContentLoaded',()=>{
   MAIN=makeViewer(document.getElementById('mainCanvas'));
   MAIN.resetView();
-  wireControls(); renderGallery(); wireScrollSpy(); wireModal();
+  wireControls(); renderGallery(); renderSwitcher(); wireScrollSpy(); wireModal();
   syncControls(); renderLegend(); rebuild();
   requestAnimationFrame(loop);
 });
