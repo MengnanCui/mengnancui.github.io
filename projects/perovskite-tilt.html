@@ -54,9 +54,9 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
 .admonition.warn .admonition-title{color:#b9701b;}
 .admonition p{margin:0;font-size:.88rem;color:#404040;font-family:'Noto Serif SC',serif;line-height:1.72;}
 /* ── PLAYGROUND ── */
-.pg{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start;margin:1em 0 1.4em;}
-@media(max-width:880px){.pg{grid-template-columns:1fr;}}
-.canvas-wrap{position:relative;background:#d0d8e2;border:1px solid #c2cad6;border-radius:4px;overflow:hidden;height:440px;cursor:grab;box-shadow:inset 0 1px 4px rgba(0,0,0,.05);}
+.pg{display:flex;flex-direction:column;gap:14px;margin:1em 0 1.4em;}
+.canvas-wrap{position:relative;background:#d0d8e2;border:1px solid #c2cad6;border-radius:4px;overflow:hidden;height:68vh;min-height:420px;max-height:760px;cursor:grab;box-shadow:inset 0 1px 4px rgba(0,0,0,.05);}
+@media(max-width:768px){.canvas-wrap{height:56vh;min-height:340px;}}
 .canvas-wrap:active{cursor:grabbing;}
 canvas.cv{width:100%!important;height:100%!important;display:block;}
 .canvas-badge{position:absolute;bottom:6px;right:6px;background:rgba(255,255,255,.65);border:1px solid rgba(0,0,0,.06);border-radius:2px;padding:2px 6px;font-size:10px;color:#6b7280;backdrop-filter:blur(2px);font-family:'DM Mono',monospace;}
@@ -68,9 +68,10 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
 .readout .ro-known{display:inline-block;margin-top:4px;font-size:.64rem;padding:1px 6px;border-radius:8px;font-family:'DM Mono',monospace;}
 .ro-known.yes{background:#dbfaf4;color:#0d8c6c;border:1px solid #9fe6d6;}
 .ro-known.no{background:#f3f4f6;color:#9b9b9b;border:1px solid #e1e4e5;}
-/* control panel */
-.ctrl{background:#f3f6f6;border:1px solid #e1e4e5;border-radius:4px;padding:13px 14px;}
-.ctrl h4{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#2980b9;margin:0 0 .5em;font-family:'DM Mono',monospace;}
+/* control panel — horizontal bar below canvas */
+.ctrl{background:#f3f6f6;border:1px solid #e1e4e5;border-radius:4px;padding:13px 16px;display:flex;flex-wrap:wrap;gap:12px 34px;align-items:flex-start;}
+.cgrp{min-width:170px;}
+.ctrl h4{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#2980b9;margin:0 0 .55em;font-family:'DM Mono',monospace;}
 .ctrl h4.mt{margin-top:1em;}
 .axis-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
 .axis-lab{font-family:'DM Mono',monospace;font-size:.82rem;font-weight:700;width:74px;color:#404040;}
@@ -96,6 +97,20 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
 .preset-quick button:hover{background:#e7f2fa;}
 .per-axis{display:none;}
 .per-axis.show{display:block;}
+/* ── MODAL (浮层扭转台) ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(20,24,33,.55);backdrop-filter:blur(2px);z-index:500;display:none;align-items:center;justify-content:center;padding:2vh 2vw;}
+.modal-overlay.open{display:flex;}
+.modal-panel{background:#fcfcfc;border-radius:6px;box-shadow:0 14px 50px rgba(0,0,0,.35);width:min(1100px,96vw);max-height:96vh;overflow:auto;display:flex;flex-direction:column;}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid #e1e4e5;position:sticky;top:0;background:#fcfcfc;z-index:3;}
+.modal-title{font-size:1.05rem;font-weight:700;color:#404040;}
+.modal-meta{font-family:'DM Mono',monospace;font-size:.8rem;color:#2980b9;margin-top:2px;}
+.modal-meta .glx{color:#7c3aed;font-weight:700;}
+.modal-close{border:none;background:#f3f6f6;color:#404040;font-size:1rem;border-radius:4px;width:30px;height:30px;cursor:pointer;flex-shrink:0;line-height:1;}
+.modal-close:hover{background:#e6eaec;}
+.modal-body{padding:14px 16px 4px;}
+.modal-body .canvas-wrap{height:60vh;min-height:380px;}
+.modal-info{padding:2px 16px 16px;font-family:'Noto Serif SC',serif;font-size:.9rem;line-height:1.7;color:#404040;}
+.modal-info b{font-family:Lato,sans-serif;color:#2980b9;}
 /* ── GALLERY ── */
 .mat-block{margin:1.6em 0 2.2em;}
 .mat-head{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid #e1e4e5;padding-bottom:.35em;margin-bottom:.7em;flex-wrap:wrap;}
@@ -191,7 +206,8 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
         <h2 id="play">交互扭转台 · Interactive Tilt Playground</h2>
         <p class="zh">拖动模型旋转视角、滚轮缩放、双击复位。<strong>扭转由右侧控制</strong>：每个赝立方轴 <span class="gl">a·b·c</span> 可设为 <span class="mono">0</span>（不扭）/ <span class="mono" style="color:#0d8c6c;font-weight:700">+</span>（同相，相邻层同向）/ <span class="mono" style="color:#e0544a;font-weight:700">−</span>（反相，相邻层反向）。左上角实时显示当前 Glazer 记号、空间群与晶系。</p>
 
-        <div class="pg">
+        <div id="pgHome">
+        <div class="pg" id="pg">
           <div class="canvas-wrap" id="cwrap">
             <canvas class="cv" id="mainCanvas"></canvas>
             <div class="readout" id="readout">
@@ -204,55 +220,64 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
           </div>
 
           <div class="ctrl">
-            <h4>各轴扭转 Tilt about axis</h4>
-            <div class="axis-row">
-              <span class="axis-lab">a <small>[100]</small></span>
-              <div class="seg" data-axis="x">
-                <button data-v="0" class="on">0</button><button data-v="+" class="plus">+</button><button data-v="-" class="minus">−</button>
+            <div class="cgrp">
+              <h4>各轴扭转 Tilt</h4>
+              <div class="axis-row">
+                <span class="axis-lab">a <small>[100]</small></span>
+                <div class="seg" data-axis="x">
+                  <button data-v="0" class="on">0</button><button data-v="+" class="plus">+</button><button data-v="-" class="minus">−</button>
+                </div>
               </div>
-            </div>
-            <div class="axis-row">
-              <span class="axis-lab">b <small>[010]</small></span>
-              <div class="seg" data-axis="y">
-                <button data-v="0" class="on">0</button><button data-v="+" class="plus">+</button><button data-v="-" class="minus">−</button>
+              <div class="axis-row">
+                <span class="axis-lab">b <small>[010]</small></span>
+                <div class="seg" data-axis="y">
+                  <button data-v="0" class="on">0</button><button data-v="+" class="plus">+</button><button data-v="-" class="minus">−</button>
+                </div>
               </div>
-            </div>
-            <div class="axis-row">
-              <span class="axis-lab">c <small>[001]</small></span>
-              <div class="seg" data-axis="z">
-                <button data-v="0" class="on">0</button><button data-v="+" class="plus">+</button><button data-v="-" class="minus">−</button>
+              <div class="axis-row">
+                <span class="axis-lab">c <small>[001]</small></span>
+                <div class="seg" data-axis="z">
+                  <button data-v="0" class="on">0</button><button data-v="+" class="plus">+</button><button data-v="-" class="minus">−</button>
+                </div>
               </div>
             </div>
 
-            <h4 class="mt">扭转角度 Tilt angle</h4>
-            <div class="crow">
-              <input type="range" id="angMaster" min="0" max="15" step="0.5" value="10">
-              <span class="val" id="angVal">10.0°</span>
-            </div>
-            <div class="crow chk">
-              <input type="checkbox" id="lockEqual" checked><label for="lockEqual">等幅锁定（a=b=c）</label>
-            </div>
-            <div class="per-axis" id="perAxis">
-              <div class="crow"><span style="width:24px">a</span><input type="range" class="amx" data-ax="x" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="x">10.0°</span></div>
-              <div class="crow"><span style="width:24px">b</span><input type="range" class="amx" data-ax="y" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="y">10.0°</span></div>
-              <div class="crow"><span style="width:24px">c</span><input type="range" class="amx" data-ax="z" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="z">10.0°</span></div>
-            </div>
-
-            <h4 class="mt">显示 Display</h4>
-            <div class="crow chk"><input type="checkbox" id="showA" checked><label for="showA">A 位阳离子</label></div>
-            <div class="crow"><label for="netN" style="width:auto">网络</label>
-              <select id="netN" style="flex:1;font-family:'DM Mono',monospace;font-size:.78rem;padding:2px 4px;border:1px solid #cdd5dc;border-radius:3px;">
-                <option value="2">2 × 2 × 2</option>
-                <option value="3">3 × 3 × 3</option>
-              </select>
+            <div class="cgrp">
+              <h4>扭转角度 Angle</h4>
+              <div class="crow">
+                <input type="range" id="angMaster" min="0" max="15" step="0.5" value="10">
+                <span class="val" id="angVal">10.0°</span>
+              </div>
+              <div class="crow chk">
+                <input type="checkbox" id="lockEqual" checked><label for="lockEqual">等幅锁定（a=b=c）</label>
+              </div>
+              <div class="per-axis" id="perAxis">
+                <div class="crow"><span style="width:24px">a</span><input type="range" class="amx" data-ax="x" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="x">10.0°</span></div>
+                <div class="crow"><span style="width:24px">b</span><input type="range" class="amx" data-ax="y" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="y">10.0°</span></div>
+                <div class="crow"><span style="width:24px">c</span><input type="range" class="amx" data-ax="z" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="z">10.0°</span></div>
+              </div>
             </div>
 
-            <div class="btn-row">
-              <button class="mini-btn pri" id="btnReset">复位 Pm3̄m</button>
+            <div class="cgrp">
+              <h4>显示 Display</h4>
+              <div class="crow chk"><input type="checkbox" id="showA" checked><label for="showA">A 位阳离子</label></div>
+              <div class="crow"><label for="netN" style="width:auto">网络</label>
+                <select id="netN" style="flex:1;font-family:'DM Mono',monospace;font-size:.78rem;padding:2px 4px;border:1px solid #cdd5dc;border-radius:3px;">
+                  <option value="2">2 × 2 × 2</option>
+                  <option value="3">3 × 3 × 3</option>
+                </select>
+              </div>
             </div>
-            <h4 class="mt">快捷预设</h4>
-            <div class="preset-quick" id="quickPresets"></div>
+
+            <div class="cgrp">
+              <h4>预设 / 复位</h4>
+              <div class="btn-row">
+                <button class="mini-btn pri" id="btnReset">复位 Pm3̄m</button>
+              </div>
+              <div class="preset-quick" id="quickPresets"></div>
+            </div>
           </div>
+        </div>
         </div>
 
         <div class="admonition tip" style="margin-bottom:1.6em;">
@@ -283,7 +308,7 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
 
         <!-- ───────── 画廊 ───────── -->
         <h2 id="gallery">常见钙钛矿结构 · Common Phases</h2>
-        <p class="zh">以四种典型卤化物钙钛矿光伏材料为例，列出其随温度变化的相序。<strong>黑色钙钛矿相</strong>（α/β/γ）是角共享八面体网络的不同扭转态——点击「扭转台演示 →」让上方模型动画变形过去；<strong>黄色 δ 相</strong>是面/边共享的一维链状<strong>非钙钛矿</strong>，无法由网络扭转得到，单独给出示意图。</p>
+        <p class="zh">以四种典型卤化物钙钛矿光伏材料为例，列出其随温度变化的相序。<strong>黑色钙钛矿相</strong>（α/β/γ）是角共享八面体网络的不同扭转态——点击「扭转台演示 →」即在<strong>浮层窗口</strong>中打开扭转台并动画变形到该结构（不跳转、可继续拖拽调参）；<strong>黄色 δ 相</strong>是面/边共享的一维链状<strong>非钙钛矿</strong>，无法由网络扭转得到，单独给出示意图。</p>
         <div class="admonition warn" style="margin-bottom:1.4em;">
           <span class="admonition-title">黑相 vs 黄相</span>
           <p>同一化学式可结晶为光活性的黑色钙钛矿相（直接带隙、强吸光）或光惰性的黄色非钙钛矿相（宽带隙、绝缘）。室温下不少组分（如 CsPbI₃、FAPbI₃）的热力学稳定相恰是黄相——这正是钙钛矿太阳能电池相稳定性难题的根源。</p>
@@ -331,6 +356,21 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
         <div class="rst-footer">八面体网络与扭转实时程序化生成 · Three.js r128 · 黄相为非钙钛矿示意 · 参考文献编号待补全</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- 浮层扭转台（复用同一套扭转台 DOM，单 WebGL 上下文） -->
+<div class="modal-overlay" id="tiltModal" aria-hidden="true">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-meta" id="modalMeta"></div>
+      </div>
+      <button class="modal-close" id="modalClose" title="关闭 (Esc)">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-info" id="modalInfo"></div>
   </div>
 </div>
 
@@ -391,7 +431,8 @@ const GALLERY=[
 ];
 
 /* ════════════════════ 颜色 / 常数 ════════════════════ */
-const COL={A:0x4f93c4,B:0x9aa0aa,X:0xe0544a,poly:0x9aa0aa,bond:0x8b9099};
+const COL={A:0x2f6f9e,B:0x767d8a,X:0xc63a30,poly:0x6b73a0,bond:0x6b7079};
+const POLY_OPACITY=0.42;
 const A_SP=2.0, HALF=1.0;        // B–B 间距 / 八面体半对角
 const R_B=0.34, R_X=0.26, R_A=0.46, R_BOND=0.065;
 
@@ -438,10 +479,11 @@ function makeViewer(canvas){
   let theta=0.85,phi=1.05,radius=14;
   const target=new THREE.Vector3();
   function updateCam(){
+    // 与「晶体结构博物馆」periodic-table.html 完全一致的球坐标参数化，保证拖拽手感相同
     camera.position.set(
-      target.x+radius*Math.sin(phi)*Math.cos(theta),
+      target.x+radius*Math.sin(phi)*Math.sin(theta),
       target.y+radius*Math.cos(phi),
-      target.z+radius*Math.sin(phi)*Math.sin(theta));
+      target.z+radius*Math.sin(phi)*Math.cos(theta));
     camera.lookAt(target);
   }
   let drag=false,px=0,py=0;
@@ -466,13 +508,13 @@ function makeViewer(canvas){
   canvas.addEventListener('touchend',()=>tdrag=false);
 
   function defaultRadius(){return state.n*A_SP*2.3+3.5;}
-  const ro=new ResizeObserver(()=>{
+  function resize(){
     const w=canvas.clientWidth,h=canvas.clientHeight;
     if(w&&h){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
-  });
-  ro.observe(canvas);
+  }
+  const ro=new ResizeObserver(resize); ro.observe(canvas);
 
-  return {scene,camera,renderer,root,updateCam,setRadius:r=>{radius=r;updateCam();},defaultRadius,resetView:()=>{theta=0.85;phi=1.05;radius=defaultRadius();updateCam();}};
+  return {scene,camera,renderer,root,updateCam,resize,setRadius:r=>{radius=r;updateCam();},defaultRadius,resetView:()=>{theta=0.85;phi=1.05;radius=defaultRadius();updateCam();}};
 }
 
 const sphGeo=new THREE.SphereGeometry(1,28,20);
@@ -567,7 +609,7 @@ function buildNetwork(viewer){
     corners.push(cz); addBond(g,c,cz,R_BOND,COL.bond);
 
     addSphere(g,c,R_B,COL.B,0.55,0.4);            // B 阳离子
-    addOcta(g,corners,COL.poly,0.34);             // 配位多面体
+    addOcta(g,corners,COL.poly,POLY_OPACITY);     // 配位多面体
   }
   // A 位阳离子（内部体心）
   if(state.showA){
@@ -658,8 +700,8 @@ function svgOcta(gl){ // 黑相小图标：两个角共享八面体（按记号�
   const tilt = gl.includes('⁺')||gl.includes('⁻');
   const rot = tilt?12:0;
   return `<svg viewBox="0 0 96 96" width="96" height="96">
-    <g transform="translate(34,48) rotate(${-rot})"><polygon points="0,-18 16,0 0,18 -16,0" fill="#8d93b8" stroke="#cfd4e6" stroke-width="1.3" opacity="0.95"/><circle r="3" fill="#cfd4e6"/></g>
-    <g transform="translate(62,48) rotate(${rot})"><polygon points="0,-18 16,0 0,18 -16,0" fill="#8d93b8" stroke="#cfd4e6" stroke-width="1.3" opacity="0.95"/><circle r="3" fill="#cfd4e6"/></g>
+    <g transform="translate(34,48) rotate(${-rot})"><polygon points="0,-18 16,0 0,18 -16,0" fill="#5a6296" stroke="#cfd4e6" stroke-width="1.3" opacity="0.95"/><circle r="3" fill="#cfd4e6"/></g>
+    <g transform="translate(62,48) rotate(${rot})"><polygon points="0,-18 16,0 0,18 -16,0" fill="#5a6296" stroke="#cfd4e6" stroke-width="1.3" opacity="0.95"/><circle r="3" fill="#cfd4e6"/></g>
     <circle cx="48" cy="48" r="3.2" fill="#e0544a"/>
     <text x="48" y="90" text-anchor="middle" font-family="DM Mono" font-size="8.5" fill="#cfd4e6">${gl}</text>
   </svg>`;
@@ -667,13 +709,13 @@ function svgOcta(gl){ // 黑相小图标：两个角共享八面体（按记号�
 function renderGallery(){
   const host=document.getElementById('galleryHost');
   let html='';
-  GALLERY.forEach(mat=>{
+  GALLERY.forEach((mat,mi)=>{
     html+=`<div class="mat-block"><div class="mat-head"><span class="mat-formula">${mat.formula}</span><span class="mat-sub">${mat.sub}</span></div>`;
-    mat.phases.forEach(ph=>{
+    mat.phases.forEach((ph,pi)=>{
       const isPerov=ph.type==='perov';
       const icon=isPerov?svgOcta(ph.gl):svgChain(ph.type);
       const sideBtn=isPerov
-        ? `<button class="demo-btn" data-preset="${ph.preset}">扭转台演示 →</button>`
+        ? `<button class="demo-btn" data-mi="${mi}" data-pi="${pi}">扭转台演示 →</button>`
         : `<span class="badge inert">非钙钛矿 · 光惰性</span>`;
       const pvBadge=isPerov?`<span class="badge pv">光活性</span>`:'';
       html+=`<div class="phase-card">
@@ -695,10 +737,32 @@ function renderGallery(){
   host.innerHTML=html;
   host.querySelectorAll('.demo-btn').forEach(b=>{
     b.addEventListener('click',()=>{
-      document.getElementById('cwrap').scrollIntoView({behavior:'smooth',block:'center'});
-      setTimeout(()=>animateTo(b.dataset.preset),260);
+      const mat=GALLERY[+b.dataset.mi], ph=mat.phases[+b.dataset.pi];
+      openTiltModal(mat.formula,ph);
     });
   });
+}
+
+/* ════════════════════ 浮层扭转台 ════════════════════ */
+function openTiltModal(formula,ph){
+  const m=document.getElementById('tiltModal');
+  document.getElementById('modalTitle').textContent=formula+' · '+ph.name;
+  document.getElementById('modalMeta').innerHTML=ph.sg+' &nbsp;·&nbsp; <span class="glx">'+ph.gl+'</span>';
+  document.getElementById('modalInfo').innerHTML=
+    '<b>稳定性 / 转变：</b>'+ph.stab+'<br><b>带隙 (eV)：</b>'+ph.gap+
+    ' &nbsp; <b>光伏性能：</b>'+ph.note;
+  document.getElementById('modalBody').appendChild(document.getElementById('pg'));  // 移入扭转台
+  m.classList.add('open'); m.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  requestAnimationFrame(()=>{ MAIN.resize(); animateTo(ph.preset); });
+}
+function closeTiltModal(){
+  const m=document.getElementById('tiltModal');
+  if(!m.classList.contains('open'))return;
+  document.getElementById('pgHome').appendChild(document.getElementById('pg'));  // 移回原位
+  m.classList.remove('open'); m.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  requestAnimationFrame(()=>MAIN.resize());
 }
 
 /* ════════════════════ 控件事件 ════════════════════ */
@@ -760,10 +824,16 @@ function loop(now){
   if(tween)tween.step(now);
   MAIN.renderer.render(MAIN.scene,MAIN.camera);
 }
+function wireModal(){
+  const m=document.getElementById('tiltModal');
+  document.getElementById('modalClose').addEventListener('click',closeTiltModal);
+  m.addEventListener('click',e=>{ if(e.target===m)closeTiltModal(); });   // 点暗背景关闭
+  window.addEventListener('keydown',e=>{ if(e.key==='Escape')closeTiltModal(); });
+}
 window.addEventListener('DOMContentLoaded',()=>{
   MAIN=makeViewer(document.getElementById('mainCanvas'));
   MAIN.resetView();
-  wireControls(); renderGallery(); wireScrollSpy();
+  wireControls(); renderGallery(); wireScrollSpy(); wireModal();
   syncControls(); rebuild();
   requestAnimationFrame(loop);
 });
