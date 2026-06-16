@@ -123,6 +123,11 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
               <span class="wy-nav-dot" style="background:#dc2626"></span>Electronegativity
             </a>
           </li>
+          <li id="nav-perovskite">
+            <a href="projects/perovskite-tilt.html">
+              <span class="wy-nav-dot" style="background:#e0544a"></span>Perovskite Octahedral Tilt
+            </a>
+          </li>
         </ul>
         <p class="caption">Tools</p>
         <ul>
@@ -270,6 +275,33 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
         <!-- Project 05 -->
         <div class="project-entry clearfix">
           <div class="project-preview-wrap">
+            <div class="project-preview-inner" style="background:#2b2f3a;padding:8px;">
+              <svg viewBox="0 0 210 120" style="width:100%;height:100%;">
+                <g transform="translate(70,60) rotate(-13)">
+                  <polygon points="0,-34 30,0 0,34 -30,0" fill="#8d93b8" fill-opacity="0.9" stroke="#cfd4e6" stroke-width="2"/>
+                  <circle r="5" fill="#cfd4e6"/>
+                </g>
+                <g transform="translate(140,60) rotate(13)">
+                  <polygon points="0,-34 30,0 0,34 -30,0" fill="#8d93b8" fill-opacity="0.9" stroke="#cfd4e6" stroke-width="2"/>
+                  <circle r="5" fill="#cfd4e6"/>
+                </g>
+                <circle cx="105" cy="60" r="6" fill="#e0544a"/>
+                <text x="105" y="112" text-anchor="middle" font-family="'DM Mono',monospace" font-size="13" font-weight="700" fill="#cfd4e6">a⁺b⁻b⁻</text>
+              </svg>
+            </div>
+          </div>
+          <h3><a href="projects/perovskite-tilt.html">05. Perovskite Octahedral Tilt</a></h3>
+          <p>Interactive 3D walkthrough of Glazer octahedral-tilt theory. Start from the ideal cubic Pm3̄m framework, then tilt the corner-sharing BX₆ octahedra about each axis (in-phase <code>+</code> / anti-phase <code>−</code>) and watch the Glazer symbol, space group, and crystal system update live. Click any real halide-perovskite phase (CsPbI₃, FAPbI₃, CsSnI₃, FASnI₃) to morph the model into it.</p>
+          <table class="field-list">
+            <tr><th>Tags</th><td>Chemistry · 3D · Three.js · Perovskite · Symmetry</td></tr>
+            <tr><th>Coverage</th><td>Glazer tilt systems · halide-perovskite phase sequences (black vs yellow)</td></tr>
+          </table>
+          <a href="projects/perovskite-tilt.html" class="project-link-btn">Open Project →</a>
+        </div>
+
+        <!-- Project 06 -->
+        <div class="project-entry clearfix">
+          <div class="project-preview-wrap">
             <div class="project-preview-inner" style="padding:10px;">
               <svg viewBox="0 0 210 120" style="width:100%;height:100%;">
                 <rect x="20" y="18" width="140" height="20" rx="5" fill="#fff" stroke="#2f6df0" stroke-width="2"/>
@@ -283,7 +315,7 @@ body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-heig
               </svg>
             </div>
           </div>
-          <h3><a href="projects/literature-search.html">05. Literature Search</a></h3>
+          <h3><a href="projects/literature-search.html">06. Literature Search</a></h3>
           <p>Browser-side scholarly search across OpenAlex, Crossref, and arXiv from a single box — with year-range and open-access filters, sorting by relevance / date / citations, reconstructed abstracts, and one-click CSV / BibTeX export. Everything runs client-side; no login required (OpenAlex needs a free API key, pasted once and stored locally).</p>
           <table class="field-list">
             <tr><th>Tags</th><td>Bibliography · OpenAlex · Crossref · arXiv</td></tr>

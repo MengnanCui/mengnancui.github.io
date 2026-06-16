@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>钙钛矿八面体扭转 · Glazer Tilt System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- convex hull / geometry for coordination polyhedra (legacy global build, matches r128) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/ConvexHull.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/ConvexGeometry.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=DM+Mono:wght@400&family=Noto+Serif+SC:wght@300;400&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:Lato,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.65;color:#404040;background:#edf0f2;}
+/* ── RTD SIDEBAR ── */
+.wy-nav-side{position:fixed;top:0;left:0;width:300px;height:100%;background:#343131;z-index:200;display:flex;flex-direction:column;transition:transform .25s;}
+.wy-side-scroll{overflow-y:auto;height:100%;padding-bottom:3rem;}
+.wy-side-nav-search{background:#2980b9;padding:.809rem;}
+.wy-side-nav-search>a{display:block;color:#fcfcfc;font-size:1rem;font-weight:700;padding:.25em 0 .1em;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wy-side-nav-search>a:hover{text-decoration:underline;}
+.wy-side-nav-ver{color:rgba(255,255,255,.6);font-size:.75rem;margin-bottom:.2em;}
+.back-mini{display:inline-block;color:rgba(255,255,255,.85);font-size:.72rem;text-decoration:none;margin-top:.3em;}
+.back-mini:hover{text-decoration:underline;color:#fff;}
+.wy-menu-vertical p.caption{color:#9b9b9b;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.7rem 1.618rem .2rem;margin-top:.5rem;}
+.wy-menu-vertical ul{list-style:none;}
+.wy-menu-vertical li a{display:block;color:#d9d9d9;padding:.4045rem 1.618rem;font-size:.875rem;text-decoration:none;transition:background .1s;cursor:pointer;}
+.wy-menu-vertical li a:hover{background:#4e4a4a;color:#fff;}
+.wy-menu-vertical li.current>a{background:#2980b9;color:#fff;}
+.wy-nav-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle;flex-shrink:0;}
+/* ── RTD CONTENT AREA ── */
+.wy-nav-content-wrap{margin-left:300px;background:#fcfcfc;min-height:100vh;}
+.wy-nav-top{display:none;background:#2980b9;color:#fff;padding:.5em .809em;align-items:center;gap:.7em;}
+.wy-nav-top a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem;}
+.wy-nav-top-btn{background:none;border:none;color:#fff;font-size:1.4em;cursor:pointer;line-height:1;padding:0;}
+.wy-nav-content{max-width:860px;margin:0 auto;padding:1.618em 3.236em 4em;}
+/* ── RST CONTENT TYPOGRAPHY ── */
+.rst-content h1{font-size:175%;font-weight:700;color:#404040;border-bottom:1px solid #e1e4e5;padding-bottom:.5rem;margin-bottom:.8rem;}
+.rst-content h2{font-size:150%;font-weight:700;color:#404040;border-bottom:1px solid #e1e4e5;padding-bottom:.3rem;margin:2.4em 0 .8em;scroll-margin-top:1em;}
+.rst-content h3{font-size:1.1rem;font-weight:700;color:#404040;margin:1.4em 0 .5em;}
+.rst-content p{font-size:14px;line-height:1.75;margin-bottom:.7em;}
+.rst-content p.zh{font-family:'Noto Serif SC',serif;}
+.muted{color:#9b9b9b;}
+.mono{font-family:'DM Mono',monospace;}
+.gl{font-family:'DM Mono',monospace;font-weight:700;letter-spacing:.02em;white-space:nowrap;}
+/* admonition (note / tip) */
+.admonition{padding:12px 14px;margin-bottom:14px;border-left:3px solid;}
+.admonition.note{background:#e7f2fa;border-color:#6ab0de;}
+.admonition.tip{background:#dbfaf4;border-color:#1abc9c;}
+.admonition.warn{background:#fdf3e7;border-color:#e0a854;}
+.admonition-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;display:block;}
+.admonition.note .admonition-title{color:#2980b9;}
+.admonition.tip .admonition-title{color:#0d8c6c;}
+.admonition.warn .admonition-title{color:#b9701b;}
+.admonition p{margin:0;font-size:.88rem;color:#404040;font-family:'Noto Serif SC',serif;line-height:1.72;}
+/* ── PLAYGROUND ── */
+.pg{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start;margin:1em 0 1.4em;}
+@media(max-width:880px){.pg{grid-template-columns:1fr;}}
+.canvas-wrap{position:relative;background:#d0d8e2;border:1px solid #c2cad6;border-radius:4px;overflow:hidden;height:440px;cursor:grab;box-shadow:inset 0 1px 4px rgba(0,0,0,.05);}
+.canvas-wrap:active{cursor:grabbing;}
+canvas.cv{width:100%!important;height:100%!important;display:block;}
+.canvas-badge{position:absolute;bottom:6px;right:6px;background:rgba(255,255,255,.65);border:1px solid rgba(0,0,0,.06);border-radius:2px;padding:2px 6px;font-size:10px;color:#6b7280;backdrop-filter:blur(2px);font-family:'DM Mono',monospace;}
+/* live readout overlay */
+.readout{position:absolute;top:8px;left:8px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:4px;padding:8px 11px;backdrop-filter:blur(3px);min-width:150px;}
+.readout .ro-gl{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:700;color:#1a1a2e;line-height:1.1;}
+.readout .ro-sg{font-family:'DM Mono',monospace;font-size:.82rem;color:#2980b9;font-weight:700;margin-top:3px;}
+.readout .ro-sys{font-size:.74rem;color:#6b7280;margin-top:1px;}
+.readout .ro-known{display:inline-block;margin-top:4px;font-size:.64rem;padding:1px 6px;border-radius:8px;font-family:'DM Mono',monospace;}
+.ro-known.yes{background:#dbfaf4;color:#0d8c6c;border:1px solid #9fe6d6;}
+.ro-known.no{background:#f3f4f6;color:#9b9b9b;border:1px solid #e1e4e5;}
+/* control panel */
+.ctrl{background:#f3f6f6;border:1px solid #e1e4e5;border-radius:4px;padding:13px 14px;}
+.ctrl h4{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#2980b9;margin:0 0 .5em;font-family:'DM Mono',monospace;}
+.ctrl h4.mt{margin-top:1em;}
+.axis-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.axis-lab{font-family:'DM Mono',monospace;font-size:.82rem;font-weight:700;width:74px;color:#404040;}
+.axis-lab small{color:#9b9b9b;font-weight:400;}
+.seg{display:inline-flex;border:1px solid #cdd5dc;border-radius:4px;overflow:hidden;}
+.seg button{border:none;background:#fff;color:#6b7280;font-family:'DM Mono',monospace;font-size:.82rem;font-weight:700;padding:3px 9px;cursor:pointer;transition:all .1s;border-left:1px solid #e1e4e5;}
+.seg button:first-child{border-left:none;}
+.seg button.on{background:#2980b9;color:#fff;}
+.seg button.on.minus{background:#e0544a;}
+.seg button.on.plus{background:#0d8c6c;}
+.crow{display:flex;align-items:center;gap:8px;font-size:.8rem;font-family:'DM Mono',monospace;color:#404040;margin-bottom:7px;}
+.crow input[type=range]{flex:1;min-width:60px;accent-color:#2980b9;}
+.crow .val{min-width:42px;text-align:right;color:#2980b9;}
+.crow.chk{gap:6px;}
+.crow.chk input{accent-color:#2980b9;width:14px;height:14px;}
+.btn-row{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
+.mini-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:4px 10px;border:1px solid #cdd5dc;background:#fff;color:#404040;border-radius:3px;cursor:pointer;}
+.mini-btn:hover{background:#eef2f4;}
+.mini-btn.pri{background:#2980b9;color:#fff;border-color:#2980b9;}
+.mini-btn.pri:hover{background:#236aa0;}
+.preset-quick{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.preset-quick button{font-family:'DM Mono',monospace;font-size:.72rem;padding:3px 7px;border:1px solid #cdd5dc;background:#fff;color:#2980b9;border-radius:3px;cursor:pointer;}
+.preset-quick button:hover{background:#e7f2fa;}
+.per-axis{display:none;}
+.per-axis.show{display:block;}
+/* ── GALLERY ── */
+.mat-block{margin:1.6em 0 2.2em;}
+.mat-head{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid #e1e4e5;padding-bottom:.35em;margin-bottom:.7em;flex-wrap:wrap;}
+.mat-formula{font-family:'DM Mono',monospace;font-size:1.15rem;font-weight:700;color:#404040;}
+.mat-sub{font-size:.78rem;color:#9b9b9b;}
+.phase-card{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:start;border:1px solid #e1e4e5;border-radius:4px;padding:10px 12px;margin-bottom:8px;background:#fcfcfc;}
+@media(max-width:620px){.phase-card{grid-template-columns:1fr;}}
+.pc-icon{width:96px;height:96px;border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.pc-icon.black{background:#2b2f3a;}
+.pc-icon.yellow{background:#fff7df;border:1px solid #ecd98a;}
+.pc-body .pc-title{font-weight:700;font-size:.95rem;color:#404040;margin-bottom:2px;}
+.pc-body .pc-meta{font-family:'DM Mono',monospace;font-size:.76rem;color:#2980b9;margin-bottom:5px;}
+.pc-body .pc-meta .sgx{color:#404040;}
+.pc-body .pc-meta .glx{color:#7c3aed;}
+.pc-fields{font-size:.8rem;line-height:1.55;}
+.pc-fields .fl{color:#9b9b9b;}
+.pc-fields .ref{font-family:'DM Mono',monospace;font-size:.68rem;color:#b0b0b0;}
+.pc-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.badge{font-size:.66rem;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:8px;white-space:nowrap;}
+.badge.pv{background:#dbfaf4;color:#0d8c6c;border:1px solid #9fe6d6;}
+.badge.inert{background:#fdf3e7;color:#b9701b;border:1px solid #ecd0a0;}
+.demo-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:4px 11px;background:#2980b9;color:#fff;border:none;border-radius:3px;cursor:pointer;white-space:nowrap;}
+.demo-btn:hover{background:#236aa0;}
+/* field table */
+.field-list{border-collapse:collapse;width:100%;margin:.4em 0 .9em;font-size:.82rem;}
+.field-list th{background:#f3f6f6;color:#2980b9;font-weight:700;padding:5px 10px;border:1px solid #e1e4e5;text-align:left;white-space:nowrap;font-family:'DM Mono',monospace;}
+.field-list td{padding:5px 10px;border:1px solid #e1e4e5;font-family:'DM Mono',monospace;color:#404040;}
+/* tech notes */
+.tech-notes{border:1px solid #e1e4e5;border-radius:3px;margin-bottom:1.5em;background:#fcfcfc;}
+.tech-notes>summary{cursor:pointer;list-style:none;padding:.6em .9em;font-size:.82rem;font-weight:700;color:#2980b9;background:#f3f6f6;border-radius:3px;user-select:none;display:flex;align-items:center;gap:.5em;}
+.tech-notes>summary::-webkit-details-marker{display:none;}
+.tech-notes>summary::before{content:'▸';font-size:.8em;color:#9b9b9b;transition:transform .15s;}
+.tech-notes[open]>summary::before{transform:rotate(90deg);}
+.tech-notes[open]>summary{border-bottom:1px solid #e1e4e5;border-radius:3px 3px 0 0;}
+.tech-notes .tn-body{padding:.4em 1.1em 1em;}
+.tech-notes h3{font-size:.92rem;font-weight:700;color:#404040;margin:1.2em 0 .35em;padding-bottom:.2em;border-bottom:1px solid #f0f0f0;}
+.tech-notes h3:first-child{margin-top:.6em;}
+.tech-notes p,.tech-notes li{font-size:.84rem;line-height:1.7;color:#404040;}
+.tech-notes ul{margin:.2em 0 .2em 1.2em;}
+.tech-notes code{font-family:'DM Mono',monospace;font-size:.8rem;background:#f3f6f6;border:1px solid #e1e4e5;border-radius:2px;padding:0 4px;color:#be185d;}
+.formula-box{font-family:'DM Mono',monospace;background:#f3f6f6;border:1px solid #e1e4e5;border-radius:3px;padding:10px 14px;font-size:.9rem;margin:.6em 0;color:#404040;text-align:center;}
+.rst-footer{margin-top:3em;padding-top:1em;border-top:1px solid #e1e4e5;color:#9b9b9b;font-size:.75rem;text-align:center;font-family:'DM Mono',monospace;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:2px;}
+@media(max-width:768px){
+  .wy-nav-side{transform:translateX(-300px);}
+  .wy-nav-side.open{transform:translateX(0);}
+  .wy-nav-content-wrap{margin-left:0;}
+  .wy-nav-top{display:flex;}
+  .wy-nav-content{padding:1em 1.2em;}
+}
+</style>
+</head>
+<body>
+<div class="wy-grid-for-nav">
+  <nav class="wy-nav-side">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="#">钙钛矿八面体扭转</a>
+        <div class="wy-side-nav-ver">Glazer Octahedral Tilt</div>
+        <a href="../index.html" class="back-mini">&larr; 返回 Data Visualization Lab</a>
+      </div>
+      <div class="wy-menu-vertical">
+        <p class="caption">目录 Contents</p>
+        <ul>
+          <li id="nav-intro"><a href="#intro"><span class="wy-nav-dot" style="background:#6ab0de"></span>理论简介</a></li>
+          <li id="nav-play"><a href="#play"><span class="wy-nav-dot" style="background:#e0544a"></span>交互扭转台</a></li>
+          <li id="nav-notation"><a href="#notation"><span class="wy-nav-dot" style="background:#a78bfa"></span>Glazer 记号详解</a></li>
+          <li id="nav-gallery"><a href="#gallery"><span class="wy-nav-dot" style="background:#34d399"></span>常见钙钛矿结构</a></li>
+          <li id="nav-tolerance"><a href="#tolerance"><span class="wy-nav-dot" style="background:#f59e0b"></span>容忍因子</a></li>
+          <li id="nav-tech"><a href="#tech"><span class="wy-nav-dot" style="background:#9b9b9b"></span>技术说明</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="wy-nav-content-wrap">
+    <div class="wy-nav-top">
+      <button class="wy-nav-top-btn" onclick="document.querySelector('.wy-nav-side').classList.toggle('open')">☰</button>
+      <a href="#">钙钛矿八面体扭转</a>
+    </div>
+    <div class="wy-nav-content">
+      <div class="rst-content">
+
+        <h1>钙钛矿八面体扭转 <small style="font-size:52%;color:#9b9b9b;font-weight:400">Glazer Octahedral Tilt System</small></h1>
+
+        <div class="admonition note" id="intro" style="margin-bottom:1.4em;scroll-margin-top:1em;">
+          <span class="admonition-title">关于本页面</span>
+          <p>理想钙钛矿 ABX₃ 是立方 Pm3̄m：BX₆ 八面体角共享成三维网络，A 阳离子填在立方空腔。当 A/B 离子尺寸失配（容忍因子 t&lt;1）时，刚性八面体会协同<strong>转动（扭转）</strong>以填补空隙，降低对称性。Glazer（1972）用三字母记号 <span class="gl">aᵏbᵏcᵏ</span> 系统描述这些扭转。下面的交互扭转台从 Pm3̄m 出发，可实时改变各轴扭转方式并读出空间群；再往下按真实卤化物钙钛矿光伏材料列出常见相，点击即可让模型动画变形过去。</p>
+        </div>
+
+        <!-- ───────── 交互扭转台 ───────── -->
+        <h2 id="play">交互扭转台 · Interactive Tilt Playground</h2>
+        <p class="zh">拖动模型旋转视角、滚轮缩放、双击复位。<strong>扭转由右侧控制</strong>：每个赝立方轴 <span class="gl">a·b·c</span> 可设为 <span class="mono">0</span>（不扭）/ <span class="mono" style="color:#0d8c6c;font-weight:700">+</span>（同相，相邻层同向）/ <span class="mono" style="color:#e0544a;font-weight:700">−</span>（反相，相邻层反向）。左上角实时显示当前 Glazer 记号、空间群与晶系。</p>
+
+        <div class="pg">
+          <div class="canvas-wrap" id="cwrap">
+            <canvas class="cv" id="mainCanvas"></canvas>
+            <div class="readout" id="readout">
+              <div class="ro-gl" id="roGl">a⁰a⁰a⁰</div>
+              <div class="ro-sg" id="roSg">Pm3̄m (221)</div>
+              <div class="ro-sys" id="roSys">立方 Cubic</div>
+              <span class="ro-known yes" id="roKnown">已知扭转系统</span>
+            </div>
+            <div class="canvas-badge">拖动旋转 · 滚轮缩放 · 双击复位</div>
+          </div>
+
+          <div class="ctrl">
+            <h4>各轴扭转 Tilt about axis</h4>
+            <div class="axis-row">
+              <span class="axis-lab">a <small>[100]</small></span>
+              <div class="seg" data-axis="x">
+                <button data-v="0" class="on">0</button><button data-v="+" class="plus">+</button><button data-v="-" class="minus">−</button>
+              </div>
+            </div>
+            <div class="axis-row">
+              <span class="axis-lab">b <small>[010]</small></span>
+              <div class="seg" data-axis="y">
+                <button data-v="0" class="on">0</button><button data-v="+" class="plus">+</button><button data-v="-" class="minus">−</button>
+              </div>
+            </div>
+            <div class="axis-row">
+              <span class="axis-lab">c <small>[001]</small></span>
+              <div class="seg" data-axis="z">
+                <button data-v="0" class="on">0</button><button data-v="+" class="plus">+</button><button data-v="-" class="minus">−</button>
+              </div>
+            </div>
+
+            <h4 class="mt">扭转角度 Tilt angle</h4>
+            <div class="crow">
+              <input type="range" id="angMaster" min="0" max="15" step="0.5" value="10">
+              <span class="val" id="angVal">10.0°</span>
+            </div>
+            <div class="crow chk">
+              <input type="checkbox" id="lockEqual" checked><label for="lockEqual">等幅锁定（a=b=c）</label>
+            </div>
+            <div class="per-axis" id="perAxis">
+              <div class="crow"><span style="width:24px">a</span><input type="range" class="amx" data-ax="x" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="x">10.0°</span></div>
+              <div class="crow"><span style="width:24px">b</span><input type="range" class="amx" data-ax="y" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="y">10.0°</span></div>
+              <div class="crow"><span style="width:24px">c</span><input type="range" class="amx" data-ax="z" min="0" max="15" step="0.5" value="10"><span class="val amv" data-ax="z">10.0°</span></div>
+            </div>
+
+            <h4 class="mt">显示 Display</h4>
+            <div class="crow chk"><input type="checkbox" id="showA" checked><label for="showA">A 位阳离子</label></div>
+            <div class="crow"><label for="netN" style="width:auto">网络</label>
+              <select id="netN" style="flex:1;font-family:'DM Mono',monospace;font-size:.78rem;padding:2px 4px;border:1px solid #cdd5dc;border-radius:3px;">
+                <option value="2">2 × 2 × 2</option>
+                <option value="3">3 × 3 × 3</option>
+              </select>
+            </div>
+
+            <div class="btn-row">
+              <button class="mini-btn pri" id="btnReset">复位 Pm3̄m</button>
+            </div>
+            <h4 class="mt">快捷预设</h4>
+            <div class="preset-quick" id="quickPresets"></div>
+          </div>
+        </div>
+
+        <div class="admonition tip" style="margin-bottom:1.6em;">
+          <span class="admonition-title">怎么看出同相 / 反相</span>
+          <p>把 <span class="gl">c</span> 轴设为 <span class="mono" style="color:#0d8c6c;font-weight:700">+</span>，上下两层八面体绕 c 轴<strong>转向相同</strong>（同相，→ P4/mbm）；设为 <span class="mono" style="color:#e0544a;font-weight:700">−</span>，上下两层<strong>转向相反</strong>（反相，→ I4/mcm）。这正是必须画 2×2×2 网络的原因——单个八面体看不出层间相位关系。</p>
+        </div>
+
+        <!-- ───────── Glazer 记号 ───────── -->
+        <h2 id="notation">Glazer 记号详解 · Notation</h2>
+        <p class="zh">记号形如 <span class="gl">a⁺b⁻b⁻</span>，三个字母依次对应绕 <span class="mono">[100] · [010] · [001]</span> 三个赝立方轴的扭转：</p>
+        <table class="field-list">
+          <tr><th>要素</th><th>含义</th></tr>
+          <tr><td>字母 a / b / c</td><td>扭转<strong>幅度</strong>。相同字母 = 等幅；不同字母 = 不等幅。</td></tr>
+          <tr><td>上标 ⁰</td><td>该轴<strong>不扭转</strong>。</td></tr>
+          <tr><td>上标 ⁺ (同相 in-phase)</td><td>沿该轴相邻的八面体层<strong>同向</strong>转动。</td></tr>
+          <tr><td>上标 ⁻ (反相 anti-phase)</td><td>沿该轴相邻的八面体层<strong>反向</strong>转动。</td></tr>
+        </table>
+        <p class="zh">同一层内，角共享约束强制相邻八面体必然反向转动；上标描述的是<strong>层与层之间</strong>沿该轴的关系。Glazer 原始给出 23 种体系，Howard &amp; Stokes（1998）用群论证明其中 15 种独立。下表是出现在本页材料中的核心体系：</p>
+        <table class="field-list">
+          <tr><th>Glazer</th><th>空间群</th><th>晶系</th><th>代表</th></tr>
+          <tr><td class="gl">a⁰a⁰a⁰</td><td>Pm3̄m (221)</td><td>立方</td><td>理想钙钛矿 · 高温 SrTiO₃</td></tr>
+          <tr><td class="gl">a⁰a⁰c⁺</td><td>P4/mbm (127)</td><td>四方</td><td>单轴同相 · β 相卤化物钙钛矿</td></tr>
+          <tr><td class="gl">a⁰a⁰c⁻</td><td>I4/mcm (140)</td><td>四方</td><td>单轴反相 · 低温 SrTiO₃ · CsPbBr₃</td></tr>
+          <tr><td class="gl">a⁰b⁻b⁻</td><td>Imma (74)</td><td>正交</td><td>双轴反相</td></tr>
+          <tr><td class="gl">a⁻a⁻a⁻</td><td>R3̄c (167)</td><td>三方</td><td>三轴等幅反相 · LaAlO₃ · BiFeO₃</td></tr>
+          <tr><td class="gl">a⁺b⁻b⁻</td><td>Pnma (62)</td><td>正交</td><td><strong>最常见</strong> · CaTiO₃ · γ 相卤化物钙钛矿</td></tr>
+        </table>
+
+        <!-- ───────── 画廊 ───────── -->
+        <h2 id="gallery">常见钙钛矿结构 · Common Phases</h2>
+        <p class="zh">以四种典型卤化物钙钛矿光伏材料为例，列出其随温度变化的相序。<strong>黑色钙钛矿相</strong>（α/β/γ）是角共享八面体网络的不同扭转态——点击「扭转台演示 →」让上方模型动画变形过去；<strong>黄色 δ 相</strong>是面/边共享的一维链状<strong>非钙钛矿</strong>，无法由网络扭转得到，单独给出示意图。</p>
+        <div class="admonition warn" style="margin-bottom:1.4em;">
+          <span class="admonition-title">黑相 vs 黄相</span>
+          <p>同一化学式可结晶为光活性的黑色钙钛矿相（直接带隙、强吸光）或光惰性的黄色非钙钛矿相（宽带隙、绝缘）。室温下不少组分（如 CsPbI₃、FAPbI₃）的热力学稳定相恰是黄相——这正是钙钛矿太阳能电池相稳定性难题的根源。</p>
+        </div>
+        <div id="galleryHost"></div>
+
+        <!-- ───────── 容忍因子 ───────── -->
+        <h2 id="tolerance">容忍因子 · Goldschmidt Tolerance Factor</h2>
+        <p class="zh">扭转的几何动因可由容忍因子 <span class="mono">t</span> 量化：</p>
+        <div class="formula-box">t = (r<sub>A</sub> + r<sub>X</sub>) / [ √2 · (r<sub>B</sub> + r<sub>X</sub>) ]</div>
+        <table class="field-list">
+          <tr><th>t 范围</th><th>结构倾向</th></tr>
+          <tr><td>t ≈ 1.0</td><td>理想立方 Pm3̄m（a⁰a⁰a⁰），八面体不扭转</td></tr>
+          <tr><td>0.9 ≲ t &lt; 1.0</td><td>A 位偏大或临界 → 同相/单轴扭转（四方）</td></tr>
+          <tr><td>0.8 ≲ t &lt; 0.9</td><td>A 位偏小 → 八面体协同倾转填补空腔 → 正交 Pnma（a⁺b⁻b⁻）</td></tr>
+          <tr><td>t &lt; 0.8</td><td>钙钛矿框架失稳 → 转为非钙钛矿（黄相）链状结构</td></tr>
+        </table>
+        <p class="zh muted">直觉：A 阳离子偏小时，立方空腔太大，BX₆ 八面体协同转动「收紧」框架去配位 A，于是出现扭转、对称性下降。把上方扭转台的角度调大，可直观感受框架如何随扭转收缩。</p>
+
+        <!-- ───────── 技术说明 ───────── -->
+        <h2 id="tech" style="border:none;margin-bottom:.3em;">技术说明</h2>
+        <details class="tech-notes" open>
+          <summary>这个页面是怎么做出来的</summary>
+          <div class="tn-body">
+            <p>单文件、零构建、零数据请求的静态页面，结构在浏览器里实时生成。</p>
+            <h3>1. 八面体网络模型</h3>
+            <p>B 阳离子置于固定立方格点 <code>(i,j,l)</code>，每个 BX₆ 画成「半透明配位多面体（<code>ConvexGeometry</code> 凸包 + 棱线）+ 6 根 B–X 键 + X 球」。桥连 X 由相邻两八面体<strong>共享</strong>（按「低指标八面体拥有 +向角」的规则统一计算位置），因此网络<strong>恒保持角共享连通</strong>。</p>
+            <h3>2. 扭转算法</h3>
+            <p>格点 <code>(i,j,l)</code> 的八面体绕活动轴 <code>k</code> 转 <code>±θ</code>，符号规则：与 <code>k</code> 垂直的两指标之和给出层内棋盘式交替 <code>(-1)^(perp)</code>（角共享约束）；上标决定沿 <code>k</code> 的层间关系——<code>+</code>（同相）层间同号，<code>-</code>（反相）层间再乘 <code>(-1)^(沿k指标)</code>。多轴依次叠加旋转。</p>
+            <h3>3. 实时对称性判定</h3>
+            <p>由三轴 <code>(相位, 幅度)</code> 规范化为标准 Glazer 字符串（零扭转轴排前、等幅共字母），再查内置 <code>KNOWN</code> 表得空间群与晶系；无匹配时标注「低对称·一般扭转」。</p>
+            <h3>4. 渲染 / 交互</h3>
+            <p>Three.js r128；相机用<strong>球坐标</strong>(θ,φ,radius)，拖动转视角、滚轮缩放、双击复位、<code>ResizeObserver</code> 自适应；VESTA 风格浅色影棚光照（半球光 + 暖主光 + 冷补光，sRGB + ACES 调映射）。预设演示用 <code>requestAnimationFrame</code> 对扭转角先归零再升到目标（约 560ms），实现平滑变形。</p>
+            <h3>5. 已知简化</h3>
+            <ul>
+              <li>八面体按刚体绕自身中心转动，共享角取「拥有者」一侧位置——反相单轴严格连通，同相/多轴叠加时桥氧位置为一阶近似（θ≤15° 视觉无碍）。</li>
+              <li>黄色 δ 相（P6₃/mmc 面共享、Pnma 双链、P6₃cm）为非钙钛矿拓扑，用 SVG 示意而非网络扭转。</li>
+              <li>P3m1（FAPbI₃ 赝立方）为轻微三方极性畸变，演示按近立方处理并加注。</li>
+            </ul>
+            <h3>6. 数据来源</h3>
+            <p>相序、空间群、稳定温区、带隙与光伏性能取自卤化物钙钛矿相变文献综述；表中数字为参考文献编号（书目待补全）。理论框架：A. M. Glazer, <em>Acta Cryst.</em> B28 (1972) 3384；C. J. Howard &amp; H. T. Stokes, <em>Acta Cryst.</em> B54 (1998) 782。</p>
+          </div>
+        </details>
+
+        <div class="rst-footer">八面体网络与扭转实时程序化生成 · Three.js r128 · 黄相为非钙钛矿示意 · 参考文献编号待补全</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════ 数据 ════════════════════ */
+const SUP={'0':'⁰','+':'⁺','-':'⁻'};
+// 已知扭转系统（键 = 规范化 Glazer 字符串）
+const KNOWN={
+  'a⁰a⁰a⁰':{sg:'Pm3̄m (221)',sys:'立方 Cubic'},
+  'a⁰a⁰c⁺':{sg:'P4/mbm (127)',sys:'四方 Tetragonal'},
+  'a⁰a⁰c⁻':{sg:'I4/mcm (140)',sys:'四方 Tetragonal'},
+  'a⁰b⁻b⁻':{sg:'Imma (74)',sys:'正交 Orthorhombic'},
+  'a⁰b⁺b⁺':{sg:'—',sys:'正交 Orthorhombic'},
+  'a⁻a⁻a⁻':{sg:'R3̄c (167)',sys:'三方 Trigonal'},
+  'a⁺a⁺a⁺':{sg:'Im3̄ (204)',sys:'立方 Cubic'},
+  'a⁺b⁻b⁻':{sg:'Pnma (62)',sys:'正交 Orthorhombic'},
+  'a⁰b⁺c⁻':{sg:'Cmcm (63)',sys:'正交 Orthorhombic'},
+  'a⁺b⁺c⁺':{sg:'Immm (71)',sys:'正交 Orthorhombic'},
+};
+// 预设：相位 + 各轴幅度(度)
+const PRESETS={
+  'a0a0a0':{phases:{x:'0',y:'0',z:'0'},mags:{x:10,y:10,z:10}},
+  'a0a0c+':{phases:{x:'0',y:'0',z:'+'},mags:{x:10,y:10,z:11}},
+  'a0a0c-':{phases:{x:'0',y:'0',z:'-'},mags:{x:10,y:10,z:11}},
+  'a-a-a-':{phases:{x:'-',y:'-',z:'-'},mags:{x:11,y:11,z:11}},
+  'a0b-b-':{phases:{x:'0',y:'-',z:'-'},mags:{x:10,y:12,z:12}},
+  'a+b-b-':{phases:{x:'+',y:'-',z:'-'},mags:{x:7,y:12,z:12}},
+};
+const QUICK=['a0a0a0','a0a0c+','a0a0c-','a-a-a-','a0b-b-','a+b-b-'];
+
+// 画廊：四种材料 × 各相（严格复刻用户数据表）
+const GALLERY=[
+ {formula:'CsPbI₃',sub:'全无机 · 宽带隙卤化物钙钛矿',phases:[
+   {name:'α 立方相（黑）',color:'black',sg:'Pm3̄m',gl:'a⁰a⁰a⁰',stab:'>325 °C (573 K) 稳定',gap:'~1.73',note:'直接带隙；光捕获优异，但室温不稳定',ref:'1,3,6',type:'perov',preset:'a0a0a0'},
+   {name:'β 四方相（黑）',color:'black',sg:'P4/mbm',gl:'a⁰a⁰c⁺',stab:'237–325 °C (510–573 K) 稳定',gap:'~1.75',note:'直接带隙；良好吸光，过渡相',ref:'1,7',type:'perov',preset:'a0a0c+'},
+   {name:'γ 正交相（黑）',color:'black',sg:'Pnma',gl:'a⁺b⁻b⁻',stab:'室温亚稳（快速冷却）',gap:'~1.63–1.73',note:'直接带隙；优异光活性相，动力学稳定',ref:'3,8,9',type:'perov',preset:'a+b-b-'},
+   {name:'δ 正交相（黄）',color:'yellow',sg:'Pnma',gl:'—（非钙钛矿）',stab:'室温热力学稳定',gap:'~2.75–2.88',note:'非钙钛矿相；吸光差，光惰性',ref:'3,7,10,11',type:'doublechain'},
+ ]},
+ {formula:'FAPbI₃',sub:'甲脒铅碘 · 近理想带隙',phases:[
+   {name:'α 立方相（黑）',color:'black',sg:'Pm3̄m',gl:'a⁰a⁰a⁰',stab:'>117 °C (390 K) 稳定；室温亚稳',gap:'~1.45–1.50',note:'近理想带隙；吸收与器件性能最佳',ref:'1,5',type:'perov',preset:'a0a0a0'},
+   {name:'三方相（赝立方）',color:'black',sg:'P3m1',gl:'赝立方·极性',stab:'室温附近亚稳',gap:'~1.48',note:'优异吸光，室温光活性相（轻微三方极性畸变）',ref:'1,5',type:'perov',preset:'a0a0a0'},
+   {name:'β 四方相',color:'black',sg:'P4/mbm',gl:'a⁰a⁰c⁺',stab:'140–285 K 稳定',gap:'~1.50',note:'良好吸光；过渡相',ref:'1,5,12',type:'perov',preset:'a0a0c+'},
+   {name:'γ 正交相',color:'black',sg:'Pnma',gl:'a⁺b⁻b⁻',stab:'<140 K 稳定',gap:'~1.52',note:'轨道重叠减弱；低温相',ref:'1,5,12',type:'perov',preset:'a+b-b-'},
+   {name:'δ 六方相（黄）',color:'yellow',sg:'P6₃/mmc',gl:'—（非钙钛矿）',stab:'室温热力学稳定',gap:'~2.88',note:'一维面共享非钙钛矿；光惰性、绝缘',ref:'1,5,13',type:'facechain'},
+ ]},
+ {formula:'CsSnI₃',sub:'无铅锡基 · 窄带隙 NIR 吸光',phases:[
+   {name:'α 立方相（黑）',color:'black',sg:'Pm3̄m',gl:'a⁰a⁰a⁰',stab:'>440 K (167 °C) 稳定',gap:'~1.30',note:'直接带隙；理想单结吸光体，高 p 型电导',ref:'4,14,15',type:'perov',preset:'a0a0a0'},
+   {name:'β 四方相（黑）',color:'black',sg:'P4/mbm',gl:'a⁰a⁰c⁺',stab:'362–440 K (89–167 °C) 稳定',gap:'~1.40–1.60',note:'直接带隙；强光活性，过渡相',ref:'14,15,16',type:'perov',preset:'a0a0c+'},
+   {name:'γ 正交相（黑）',color:'black',sg:'Pnma',gl:'a⁺b⁻b⁻',stab:'室温稳定（对 δ 相亚稳）',gap:'~1.30',note:'直接带隙；NIR 吸收优异，高载流子迁移率',ref:'4,15,17',type:'perov',preset:'a+b-b-'},
+   {name:'δ 正交相（黄）',color:'yellow',sg:'Pnma',gl:'—（非钙钛矿）',stab:'室温热力学稳定（空气中）',gap:'~2.55',note:'一维双链非钙钛矿；间接带隙，光惰性',ref:'4,14,15',type:'doublechain'},
+ ]},
+ {formula:'FASnI₃',sub:'无铅甲脒锡碘 · 宽温域黑相',phases:[
+   {name:'α 立方相（黑）',color:'black',sg:'Pm3̄m',gl:'a⁰a⁰a⁰',stab:'室温稳定（宽温域，可至 200 °C）',gap:'~1.30–1.41',note:'直接带隙；优异 NIR 吸光体，热力学稳定',ref:'18,19,20,21',type:'perov',preset:'a0a0a0'},
+   {name:'β 四方相',color:'black',sg:'P4/mbm',gl:'a⁰a⁰c⁺',stab:'155–255 K 稳定',gap:'~1.30',note:'强光活性；面内 SnI₆ 八面体转动',ref:'1,21',type:'perov',preset:'a0a0c+'},
+   {name:'γ 四方/正交相',color:'black',sg:'P4bm',gl:'a⁰a⁰c⁺（极性）',stab:'<155 K 稳定',gap:'~1.25',note:'强光活性；FA 分子完全有序（极性 P4bm）',ref:'1,21,22',type:'perov',preset:'a0a0c+'},
+   {name:'δ 六方相（黄）',color:'yellow',sg:'P6₃cm',gl:'—（非钙钛矿）',stab:'室温不稳定（特定条件下出现）',gap:'—',note:'非光活性相',ref:'1',type:'facechain'},
+ ]},
+];
+
+/* ════════════════════ 颜色 / 常数 ════════════════════ */
+const COL={A:0x4f93c4,B:0x9aa0aa,X:0xe0544a,poly:0x9aa0aa,bond:0x8b9099};
+const A_SP=2.0, HALF=1.0;        // B–B 间距 / 八面体半对角
+const R_B=0.34, R_X=0.26, R_A=0.46, R_BOND=0.065;
+
+/* ════════════════════ 状态 ════════════════════ */
+const state={phases:{x:'0',y:'0',z:'0'},mags:{x:10,y:10,z:10},n:2,showA:true,lockEqual:true};
+
+/* ════════════════════ Glazer 分类 ════════════════════ */
+function classify(phases,mags){
+  const arr=[ {ax:'x',p:phases.x,m:phases.x==='0'?0:Math.round(mags.x*2)/2},
+              {ax:'y',p:phases.y,m:phases.y==='0'?0:Math.round(mags.y*2)/2},
+              {ax:'z',p:phases.z,m:phases.z==='0'?0:Math.round(mags.z*2)/2} ];
+  const ord={'+':0,'-':1,'0':2};
+  const d=arr.slice().sort((A,B)=> A.m-B.m || ord[A.p]-ord[B.p]);
+  const L=['a','b','c']; let s='';
+  for(let i=0;i<3;i++){let j=0;while(d[j].m!==d[i].m)j++;s+=L[j]+SUP[d[i].p];}
+  const k=KNOWN[s];
+  return {glazer:s, sg:k?k.sg:'—', sys:k?k.sys:'低对称 · 一般扭转', known:!!k};
+}
+function updateReadout(){
+  const r=classify(state.phases,state.mags);
+  document.getElementById('roGl').textContent=r.glazer;
+  document.getElementById('roSg').textContent=r.sg;
+  document.getElementById('roSys').textContent=r.sys;
+  const kb=document.getElementById('roKnown');
+  kb.textContent=r.known?'已知扭转系统':'一般扭转（低对称）';
+  kb.className='ro-known '+(r.known?'yes':'no');
+}
+
+/* ════════════════════ Three.js 视图 ════════════════════ */
+function makeViewer(canvas){
+  const scene=new THREE.Scene();
+  scene.background=new THREE.Color(0xd0d8e2);
+  const camera=new THREE.PerspectiveCamera(45,1,0.1,1000);
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.05;
+  scene.add(new THREE.HemisphereLight(0xffffff,0x666677,0.95));
+  const key=new THREE.DirectionalLight(0xfff1e0,1.05); key.position.set(6,10,7); scene.add(key);
+  const fill=new THREE.DirectionalLight(0xdfeaff,0.45); fill.position.set(-6,3,-6); scene.add(fill);
+  const root=new THREE.Group(); scene.add(root);
+
+  let theta=0.85,phi=1.05,radius=14;
+  const target=new THREE.Vector3();
+  function updateCam(){
+    camera.position.set(
+      target.x+radius*Math.sin(phi)*Math.cos(theta),
+      target.y+radius*Math.cos(phi),
+      target.z+radius*Math.sin(phi)*Math.sin(theta));
+    camera.lookAt(target);
+  }
+  let drag=false,px=0,py=0;
+  canvas.addEventListener('mousedown',e=>{drag=true;px=e.clientX;py=e.clientY;});
+  window.addEventListener('mouseup',()=>drag=false);
+  window.addEventListener('mousemove',e=>{
+    if(!drag)return;
+    theta-=(e.clientX-px)*0.006; phi=Math.max(0.12,Math.min(Math.PI-0.12,phi-(e.clientY-py)*0.006));
+    px=e.clientX;py=e.clientY; updateCam();
+  });
+  canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(6,Math.min(40,radius*(e.deltaY>0?1.08:0.93)));updateCam();},{passive:false});
+  canvas.addEventListener('dblclick',()=>{theta=0.85;phi=1.05;radius=defaultRadius();updateCam();});
+  // touch
+  let tdrag=false,tx=0,ty=0;
+  canvas.addEventListener('touchstart',e=>{if(e.touches.length===1){tdrag=true;tx=e.touches[0].clientX;ty=e.touches[0].clientY;}},{passive:true});
+  canvas.addEventListener('touchmove',e=>{
+    if(!tdrag||e.touches.length!==1)return;
+    const t=e.touches[0];
+    theta-=(t.clientX-tx)*0.007; phi=Math.max(0.12,Math.min(Math.PI-0.12,phi-(t.clientY-ty)*0.007));
+    tx=t.clientX;ty=t.clientY;updateCam();
+  },{passive:true});
+  canvas.addEventListener('touchend',()=>tdrag=false);
+
+  function defaultRadius(){return state.n*A_SP*2.3+3.5;}
+  const ro=new ResizeObserver(()=>{
+    const w=canvas.clientWidth,h=canvas.clientHeight;
+    if(w&&h){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  });
+  ro.observe(canvas);
+
+  return {scene,camera,renderer,root,updateCam,setRadius:r=>{radius=r;updateCam();},defaultRadius,resetView:()=>{theta=0.85;phi=1.05;radius=defaultRadius();updateCam();}};
+}
+
+const sphGeo=new THREE.SphereGeometry(1,28,20);
+function addSphere(group,pos,r,color,metal,rough){
+  const m=new THREE.Mesh(sphGeo,new THREE.MeshStandardMaterial({color,metalness:metal,roughness:rough}));
+  m.position.copy(pos); m.scale.setScalar(r); group.add(m);
+}
+function addBond(group,a,b,r,color){
+  const dir=new THREE.Vector3().subVectors(b,a); const len=dir.length(); if(len<1e-4)return;
+  const geo=new THREE.CylinderGeometry(r,r,len,12);
+  const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,metalness:0.1,roughness:0.7}));
+  m.position.copy(a).add(b).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize());
+  group.add(m);
+}
+function addOcta(group,corners,color,opacity){
+  try{
+    const g=new THREE.ConvexGeometry(corners);
+    const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color,metalness:0.15,roughness:0.55,transparent:true,opacity,side:THREE.DoubleSide,depthWrite:false}));
+    group.add(m);
+    const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0x6b7280,transparent:true,opacity:0.5}));
+    group.add(e);
+  }catch(err){}
+}
+
+function clearGroup(g){
+  for(let i=g.children.length-1;i>=0;i--){const c=g.children[i];if(c.geometry&&c.geometry!==sphGeo)c.geometry.dispose();if(c.material)c.material.dispose();g.remove(c);}
+}
+
+const _ax={x:new THREE.Vector3(1,0,0),y:new THREE.Vector3(0,1,0),z:new THREE.Vector3(0,0,1)};
+function np(k){return (k%2===0)?1:-1;}   // (-1)^k
+function tiltSign(axis,i,j,l,phases){
+  const p=phases[axis]; if(p==='0')return 0;
+  let base, par;
+  if(axis==='x'){base=np(j+l); par=i;}
+  else if(axis==='y'){base=np(i+l); par=j;}
+  else {base=np(i+j); par=l;}
+  if(p==='-') base*=np(par);
+  return base;
+}
+function cellQuat(i,j,l){
+  const e=new THREE.Euler(
+    THREE.MathUtils.degToRad(tiltSign('x',i,j,l,state.phases)*(state.phases.x==='0'?0:state.mags.x)),
+    THREE.MathUtils.degToRad(tiltSign('y',i,j,l,state.phases)*(state.phases.y==='0'?0:state.mags.y)),
+    THREE.MathUtils.degToRad(tiltSign('z',i,j,l,state.phases)*(state.phases.z==='0'?0:state.mags.z)),
+    'XYZ');
+  return new THREE.Quaternion().setFromEuler(e);
+}
+
+function buildNetwork(viewer){
+  const g=viewer.root; clearGroup(g);
+  const n=state.n;
+  const off=(n-1)/2*A_SP;
+  const center=(i,j,l)=>new THREE.Vector3(i*A_SP-off,j*A_SP-off,l*A_SP-off);
+  // 预计算每个 cell 的四元数与 +向桥氧位置
+  const Q={}, plusOx={};
+  const dirs=[{d:'x',v:_ax.x},{d:'y',v:_ax.y},{d:'z',v:_ax.z}];
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++)for(let l=0;l<n;l++){
+    const q=cellQuat(i,j,l); Q[i+','+j+','+l]=q;
+    const c=center(i,j,l);
+    dirs.forEach(D=>{
+      const o=D.v.clone().multiplyScalar(HALF).applyQuaternion(q).add(c);
+      plusOx[D.d+'|'+i+','+j+','+l]=o;
+    });
+  }
+  // 八面体（角共享：负向角借用邻居 +向桥氧）
+  const drawnOx=new Set();
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++)for(let l=0;l<n;l++){
+    const q=Q[i+','+j+','+l], c=center(i,j,l);
+    const corners=[];
+    // +x,+y,+z = 自身桥氧
+    [['x',plusOx['x|'+i+','+j+','+l]],['y',plusOx['y|'+i+','+j+','+l]],['z',plusOx['z|'+i+','+j+','+l]]].forEach(([d,p])=>{
+      corners.push(p);
+      const key=d+'|'+i+','+j+','+l;
+      if(!drawnOx.has(key)){drawnOx.add(key);addSphere(g,p,R_X,COL.X,0.1,0.5);addBond(g,c,p,R_BOND,COL.bond);}
+      else{addBond(g,c,p,R_BOND,COL.bond);}
+    });
+    // -x
+    let cm;
+    if(i>0){cm=plusOx['x|'+(i-1)+','+j+','+l];}
+    else {cm=_ax.x.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cm,R_X,COL.X,0.1,0.5);}
+    corners.push(cm); addBond(g,c,cm,R_BOND,COL.bond);
+    // -y
+    let cy;
+    if(j>0){cy=plusOx['y|'+i+','+(j-1)+','+l];}
+    else {cy=_ax.y.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cy,R_X,COL.X,0.1,0.5);}
+    corners.push(cy); addBond(g,c,cy,R_BOND,COL.bond);
+    // -z
+    let cz;
+    if(l>0){cz=plusOx['z|'+i+','+j+','+(l-1)];}
+    else {cz=_ax.z.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cz,R_X,COL.X,0.1,0.5);}
+    corners.push(cz); addBond(g,c,cz,R_BOND,COL.bond);
+
+    addSphere(g,c,R_B,COL.B,0.55,0.4);            // B 阳离子
+    addOcta(g,corners,COL.poly,0.34);             // 配位多面体
+  }
+  // A 位阳离子（内部体心）
+  if(state.showA){
+    for(let i=0;i<n-1;i++)for(let j=0;j<n-1;j++)for(let l=0;l<n-1;l++){
+      const p=new THREE.Vector3((i+0.5)*A_SP-off,(j+0.5)*A_SP-off,(l+0.5)*A_SP-off);
+      addSphere(g,p,R_A,COL.A,0.5,0.45);
+    }
+  }
+}
+
+/* ════════════════════ 控件同步 ════════════════════ */
+function syncControls(){
+  document.querySelectorAll('.seg').forEach(seg=>{
+    const ax=seg.dataset.axis;
+    seg.querySelectorAll('button').forEach(b=>{
+      const on=b.dataset.v===state.phases[ax];
+      b.classList.toggle('on',on);
+    });
+  });
+  document.getElementById('angMaster').value=state.mags.x;
+  document.getElementById('angVal').textContent=Number(state.mags.x).toFixed(1)+'°';
+  document.getElementById('lockEqual').checked=state.lockEqual;
+  document.getElementById('perAxis').classList.toggle('show',!state.lockEqual);
+  document.querySelectorAll('.amx').forEach(s=>{const a=s.dataset.ax;s.value=state.mags[a];});
+  document.querySelectorAll('.amv').forEach(v=>{const a=v.dataset.ax;v.textContent=Number(state.mags[a]).toFixed(1)+'°';});
+  document.getElementById('showA').checked=state.showA;
+  document.getElementById('netN').value=String(state.n);
+}
+
+let MAIN;
+function rebuild(){ buildNetwork(MAIN); updateReadout(); }
+
+/* ════════════════════ 预设动画 ════════════════════ */
+let tween=null;
+function animateTo(presetName){
+  const p=PRESETS[presetName]; if(!p)return;
+  if(tween)tween=null;
+  const startMags={...state.mags};
+  const midPhases={...state.phases};
+  const t0=performance.now(), HALF_T=280;
+  // 阶段1：当前幅度→0（保持当前相位）；阶段2：0→目标幅度（切到目标相位）
+  tween={
+    step(now){
+      const e=now-t0;
+      if(e<HALF_T){
+        const k=e/HALF_T;
+        state.mags={x:startMags.x*(1-k),y:startMags.y*(1-k),z:startMags.z*(1-k)};
+      }else if(e<HALF_T*2){
+        state.phases={...p.phases};
+        const k=(e-HALF_T)/HALF_T;
+        state.mags={x:p.mags.x*k,y:p.mags.y*k,z:p.mags.z*k};
+      }else{
+        state.phases={...p.phases}; state.mags={...p.mags};
+        state.lockEqual=(p.mags.x===p.mags.y&&p.mags.y===p.mags.z);
+        tween=null; syncControls();
+      }
+      rebuild();
+    }
+  };
+}
+
+function applyPreset(name){    // 即时（无动画，用于快捷按钮初始）
+  const p=PRESETS[name]; if(!p)return;
+  state.phases={...p.phases}; state.mags={...p.mags};
+  state.lockEqual=(p.mags.x===p.mags.y&&p.mags.y===p.mags.z);
+  syncControls(); rebuild();
+}
+
+/* ════════════════════ 画廊渲染 ════════════════════ */
+function svgChain(type){
+  // 黄色非钙钛矿一维链示意
+  if(type==='facechain'){ // 面共享：竖直叠放八面体
+    let s='';
+    for(let k=0;k<3;k++){const y=14+k*24;
+      s+=`<polygon points="48,${y} 70,${y+11} 48,${y+22} 26,${y+11}" fill="#e7cf6a" stroke="#a8922f" stroke-width="1.2" opacity="0.9"/>`;
+    }
+    return `<svg viewBox="0 0 96 96" width="96" height="96"><rect width="96" height="96" fill="none"/>${s}<text x="48" y="92" text-anchor="middle" font-family="DM Mono" font-size="8" fill="#a8922f">面共享链</text></svg>`;
+  }
+  // doublechain 双链（边共享）
+  let s='';
+  for(let k=0;k<3;k++){const y=16+k*23;
+    s+=`<polygon points="36,${y} 54,${y+10} 36,${y+20} 18,${y+10}" fill="#e7cf6a" stroke="#a8922f" stroke-width="1.1" opacity="0.92"/>`;
+    s+=`<polygon points="60,${y+6} 78,${y+16} 60,${y+26} 42,${y+16}" fill="#dcc257" stroke="#a8922f" stroke-width="1.1" opacity="0.92"/>`;
+  }
+  return `<svg viewBox="0 0 96 96" width="96" height="96">${s}<text x="48" y="93" text-anchor="middle" font-family="DM Mono" font-size="8" fill="#a8922f">双链</text></svg>`;
+}
+function svgOcta(gl){ // 黑相小图标：两个角共享八面体（按记号示意斜置）
+  const tilt = gl.includes('⁺')||gl.includes('⁻');
+  const rot = tilt?12:0;
+  return `<svg viewBox="0 0 96 96" width="96" height="96">
+    <g transform="translate(34,48) rotate(${-rot})"><polygon points="0,-18 16,0 0,18 -16,0" fill="#8d93b8" stroke="#cfd4e6" stroke-width="1.3" opacity="0.95"/><circle r="3" fill="#cfd4e6"/></g>
+    <g transform="translate(62,48) rotate(${rot})"><polygon points="0,-18 16,0 0,18 -16,0" fill="#8d93b8" stroke="#cfd4e6" stroke-width="1.3" opacity="0.95"/><circle r="3" fill="#cfd4e6"/></g>
+    <circle cx="48" cy="48" r="3.2" fill="#e0544a"/>
+    <text x="48" y="90" text-anchor="middle" font-family="DM Mono" font-size="8.5" fill="#cfd4e6">${gl}</text>
+  </svg>`;
+}
+function renderGallery(){
+  const host=document.getElementById('galleryHost');
+  let html='';
+  GALLERY.forEach(mat=>{
+    html+=`<div class="mat-block"><div class="mat-head"><span class="mat-formula">${mat.formula}</span><span class="mat-sub">${mat.sub}</span></div>`;
+    mat.phases.forEach(ph=>{
+      const isPerov=ph.type==='perov';
+      const icon=isPerov?svgOcta(ph.gl):svgChain(ph.type);
+      const sideBtn=isPerov
+        ? `<button class="demo-btn" data-preset="${ph.preset}">扭转台演示 →</button>`
+        : `<span class="badge inert">非钙钛矿 · 光惰性</span>`;
+      const pvBadge=isPerov?`<span class="badge pv">光活性</span>`:'';
+      html+=`<div class="phase-card">
+        <div class="pc-icon ${ph.color}">${icon}</div>
+        <div class="pc-body">
+          <div class="pc-title">${ph.name}</div>
+          <div class="pc-meta"><span class="sgx">${ph.sg}</span> &nbsp;·&nbsp; <span class="glx gl">${ph.gl}</span></div>
+          <div class="pc-fields">
+            <div><span class="fl">稳定性／转变：</span>${ph.stab}</div>
+            <div><span class="fl">带隙 (eV)：</span>${ph.gap} &nbsp; <span class="ref">[${ph.ref}]</span></div>
+            <div><span class="fl">光伏性能：</span>${ph.note}</div>
+          </div>
+        </div>
+        <div class="pc-side">${pvBadge}${sideBtn}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  host.innerHTML=html;
+  host.querySelectorAll('.demo-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.getElementById('cwrap').scrollIntoView({behavior:'smooth',block:'center'});
+      setTimeout(()=>animateTo(b.dataset.preset),260);
+    });
+  });
+}
+
+/* ════════════════════ 控件事件 ════════════════════ */
+function wireControls(){
+  document.querySelectorAll('.seg').forEach(seg=>{
+    const ax=seg.dataset.axis;
+    seg.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click',()=>{
+        tween=null;
+        state.phases[ax]=b.dataset.v;
+        syncControls(); rebuild();
+      });
+    });
+  });
+  const angM=document.getElementById('angMaster');
+  angM.addEventListener('input',()=>{
+    tween=null;
+    const v=parseFloat(angM.value);
+    if(state.lockEqual){state.mags={x:v,y:v,z:v};}
+    else{state.mags.x=v;} // master 不锁定时仅用于显示，实际用 per-axis
+    syncControls(); rebuild();
+  });
+  document.getElementById('lockEqual').addEventListener('change',e=>{
+    state.lockEqual=e.target.checked;
+    if(state.lockEqual){const v=state.mags.x;state.mags={x:v,y:v,z:v};}
+    syncControls(); rebuild();
+  });
+  document.querySelectorAll('.amx').forEach(s=>{
+    s.addEventListener('input',()=>{tween=null;state.mags[s.dataset.ax]=parseFloat(s.value);syncControls();rebuild();});
+  });
+  document.getElementById('showA').addEventListener('change',e=>{state.showA=e.target.checked;rebuild();});
+  document.getElementById('netN').addEventListener('change',e=>{state.n=parseInt(e.target.value);MAIN.resetView();rebuild();});
+  document.getElementById('btnReset').addEventListener('click',()=>{tween=null;applyPreset('a0a0a0');MAIN.resetView();});
+  // 快捷预设
+  const qp=document.getElementById('quickPresets');
+  QUICK.forEach(name=>{
+    const r=classify(PRESETS[name].phases,PRESETS[name].mags);
+    const btn=document.createElement('button');
+    btn.textContent=r.glazer; btn.title=r.sg;
+    btn.addEventListener('click',()=>animateTo(name));
+    qp.appendChild(btn);
+  });
+}
+
+/* ════════════════════ 滚动高亮 ════════════════════ */
+function wireScrollSpy(){
+  const ids=['intro','play','notation','gallery','tolerance','tech'];
+  const map={intro:'nav-intro',play:'nav-play',notation:'nav-notation',gallery:'nav-gallery',tolerance:'nav-tolerance',tech:'nav-tech'};
+  window.addEventListener('scroll',()=>{
+    let cur=ids[0];
+    ids.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<240)cur=id;});
+    ids.forEach(id=>{const li=document.getElementById(map[id]);if(li)li.classList.toggle('current',id===cur);});
+  },{passive:true});
+}
+
+/* ════════════════════ 启动 ════════════════════ */
+function loop(now){
+  requestAnimationFrame(loop);
+  if(tween)tween.step(now);
+  MAIN.renderer.render(MAIN.scene,MAIN.camera);
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  MAIN=makeViewer(document.getElementById('mainCanvas'));
+  MAIN.resetView();
+  wireControls(); renderGallery(); wireScrollSpy();
+  syncControls(); rebuild();
+  requestAnimationFrame(loop);
+});
+</script>
+</body>
+</html>
