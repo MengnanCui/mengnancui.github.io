@@ -67,6 +67,11 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
 .lg-sw{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1px solid rgba(0,0,0,.15);}
 .adv-grid{display:flex;flex-direction:column;gap:2px;max-width:360px;}
 .adv-sub{font-family:'DM Mono',monospace;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9b9b9b;margin:.5em 0 .1em;border-top:1px solid #e1e4e5;padding-top:.45em;}
+.color-row{display:flex;flex-wrap:wrap;gap:8px 12px;margin:.2em 0 .3em;}
+.color-row .ci{display:flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:.74rem;color:#404040;}
+.color-row .ci input[type=color]{width:26px;height:20px;padding:0;border:1px solid #cdd5dc;border-radius:3px;background:none;cursor:pointer;}
+.cfg-out{font-family:'DM Mono',monospace;font-size:.7rem;background:#2b2b2b;color:#e0e0e0;border-radius:3px;padding:.6em .7em;margin:.3em 0 0;white-space:pre-wrap;word-break:break-all;max-width:360px;display:none;}
+.cfg-out.show{display:block;}
 /* live readout overlay */
 .readout{position:absolute;top:8px;left:8px;background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:4px;padding:8px 11px;backdrop-filter:blur(3px);min-width:150px;}
 .readout .ro-gl{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:700;color:#1a1a2e;line-height:1.1;}
@@ -307,15 +312,31 @@ canvas.cv{width:100%!important;height:100%!important;display:block;}
           </div>
 
           <details class="tech-notes" id="advSettings">
-            <summary>精细设置 · 原子 / 键 / 透明度</summary>
+            <summary>精细设置 · 外观 / 颜色 / 动画 / 导出</summary>
             <div class="tn-body">
               <div class="adv-grid">
+                <div class="adv-sub">外观 Appearance</div>
                 <div class="crow"><label style="width:80px">原子大小</label><input type="range" id="setAtom" min="0.5" max="1.6" step="0.02" value="1"><span class="val" id="vAtom">1.00</span></div>
                 <div class="crow"><label style="width:80px">键粗细</label><input type="range" id="setBond" min="0.4" max="2.4" step="0.05" value="1"><span class="val" id="vBond">1.00</span></div>
                 <div class="crow"><label style="width:80px">多面体透明</label><input type="range" id="setPoly" min="0" max="0.8" step="0.02" value="0.32"><span class="val" id="vPoly">0.32</span></div>
+                <div class="crow"><label style="width:80px">颜色深浅</label><input type="range" id="setShade" min="0.5" max="1.2" step="0.02" value="1"><span class="val" id="vShade">1.00</span></div>
+                <div class="crow"><label style="width:80px">曝光</label><input type="range" id="setExp" min="0.6" max="1.6" step="0.02" value="1.05"><span class="val" id="vExp">1.05</span></div>
+                <div class="adv-sub">颜色 Colors</div>
+                <div class="color-row">
+                  <label class="ci"><input type="color" id="colA" value="#2f6f9e">A</label>
+                  <label class="ci"><input type="color" id="colB" value="#767d8a">B</label>
+                  <label class="ci"><input type="color" id="colX" value="#c63a30">X</label>
+                  <label class="ci"><input type="color" id="colPoly" value="#6b73a0">八面体</label>
+                  <label class="ci"><input type="color" id="colBond" value="#6b7079">键</label>
+                  <label class="ci"><input type="color" id="colBg" value="#d0d8e2">背景</label>
+                </div>
                 <div class="adv-sub">动画 Animation</div>
                 <div class="crow"><label style="width:80px">切换时长</label><input type="range" id="setMorph" min="0.4" max="3.0" step="0.1" value="1.2"><span class="val" id="vMorph">1.2s</span></div>
+                <div class="crow"><label style="width:80px">经立方停顿</label><input type="range" id="setPause" min="0" max="1.5" step="0.05" value="0.5"><span class="val" id="vPause">0.50s</span></div>
                 <div class="crow"><label style="width:80px">旋转速度</label><input type="range" id="setRot" min="0" max="0.015" step="0.001" value="0.004"><span class="val" id="vRot">0.004</span></div>
+                <div class="adv-sub">导出 Export</div>
+                <div class="btn-row"><button class="mini-btn pri" id="cfgCopy">复制当前配置</button></div>
+                <pre id="cfgOut" class="cfg-out"></pre>
               </div>
             </div>
           </details>
@@ -474,12 +495,22 @@ const GALLERY=[
 ];
 
 /* ════════════════════ 颜色 / 常数 ════════════════════ */
-const COL={A:0x2f6f9e,B:0x767d8a,X:0xc63a30,poly:0x6b73a0,bond:0x6b7079};
+const COL={A:0x2f6f9e,B:0x767d8a,X:0xc63a30,poly:0x6b73a0,bond:0x6b7079};   // 基色（取色器可改）
 const COL_C=0x555b66, COL_N=0x3b56c4;   // MA/FA 分子团中的 C / N
 const A_SP=2.0, HALF=1.0;        // B–B 间距 / 八面体半对角
 const R_B=0.34, R_X=0.26, R_A=0.46, R_BOND=0.065;
 // 可运行时调节的渲染设置
-const SET={atomScale:1, bondScale:1, polyOpacity:0.32, autoRotate:false, aType:'Cs', morphMs:600, rotSpeed:0.004};
+const SET={atomScale:1, bondScale:1, polyOpacity:0.32, autoRotate:false, aType:'Cs',
+           morphMs:600, pauseMs:500, rotSpeed:0.004, colorShade:1, exposure:1.05, bg:'#d0d8e2'};
+// 颜色深浅：RGB×f 截断
+function shade(hex,f){
+  const r=Math.max(0,Math.min(255,Math.round(((hex>>16)&255)*f)));
+  const g=Math.max(0,Math.min(255,Math.round(((hex>>8)&255)*f)));
+  const b=Math.max(0,Math.min(255,Math.round((hex&255)*f)));
+  return (r<<16)|(g<<8)|b;
+}
+const hex6=c=>'#'+c.toString(16).padStart(6,'0');
+const hex2int=s=>parseInt(s.replace('#',''),16);
 
 /* ════════════════════ 状态 ════════════════════ */
 const state={phases:{x:'0',y:'0',z:'0'},mags:{x:10,y:10,z:10},n:2,showA:true,lockEqual:true};
@@ -559,7 +590,11 @@ function makeViewer(canvas){
   }
   const ro=new ResizeObserver(resize); ro.observe(canvas);
 
-  return {scene,camera,renderer,root,updateCam,resize,orbit:d=>{theta+=d;updateCam();},setRadius:r=>{radius=r;updateCam();},defaultRadius,resetView:()=>{theta=0.6;phi=0.55;radius=defaultRadius();updateCam();}};
+  return {scene,camera,renderer,root,updateCam,resize,orbit:d=>{theta+=d;updateCam();},setRadius:r=>{radius=r;updateCam();},defaultRadius,
+    resetView:()=>{theta=0.6;phi=0.55;radius=defaultRadius();updateCam();},
+    setExposure:v=>{renderer.toneMappingExposure=v;},
+    setBg:hex=>{scene.background.set(hex);},
+    getView:()=>({theta,phi,radius})};
 }
 
 const sphGeo=new THREE.SphereGeometry(1,28,20);
@@ -604,20 +639,21 @@ function clearGroup(g){
 }
 // A 位阳离子：Cs 单球 / MA(C–N) / FA(N–C–N) 简化分子团
 function buildAcation(g,center){
-  const t=SET.aType, as=SET.atomScale;
+  const t=SET.aType, as=SET.atomScale, f=SET.colorShade;
   const EA=0x16384e, EN=0x121a3c;                      // A / N 的微弱自发光，使其透过八面体可辨
-  if(t==='Cs'){ addSphere(g,center,R_A*as,COL.A,0.5,0.45,EA); return; }
+  const sA=shade(COL.A,f), sC=shade(COL_C,f), sN=shade(COL_N,f);
+  if(t==='Cs'){ addSphere(g,center,R_A*as,sA,0.5,0.45,EA); return; }
   const rs=R_A*0.42*as, br=R_BOND*0.85*SET.bondScale, d=0.42;
   if(t==='MA'){                                        // CH₃NH₃⁺ → C–N
     const dir=new THREE.Vector3(1,0.5,0.3).normalize();
     const cC=center.clone().addScaledVector(dir,-d), cN=center.clone().addScaledVector(dir,d);
-    addBond(g,cC,cN,br,0x9aa3ad); addSphere(g,cC,rs,COL_C,0.3,0.5); addSphere(g,cN,rs,COL_N,0.3,0.5,EN);
+    addBond(g,cC,cN,br,0x9aa3ad); addSphere(g,cC,rs,sC,0.3,0.5); addSphere(g,cN,rs,sN,0.3,0.5,EN);
   }else{                                               // CH(NH₂)₂⁺ → N–C–N 弯曲
     const cC=center.clone();
     const n1=center.clone().addScaledVector(new THREE.Vector3(1,0.35,0).normalize(),d*1.15);
     const n2=center.clone().addScaledVector(new THREE.Vector3(-1,0.35,0.1).normalize(),d*1.15);
     addBond(g,cC,n1,br,0x9aa3ad); addBond(g,cC,n2,br,0x9aa3ad);
-    addSphere(g,cC,rs,COL_C,0.3,0.5); addSphere(g,n1,rs,COL_N,0.3,0.5,EN); addSphere(g,n2,rs,COL_N,0.3,0.5,EN);
+    addSphere(g,cC,rs,sC,0.3,0.5); addSphere(g,n1,rs,sN,0.3,0.5,EN); addSphere(g,n2,rs,sN,0.3,0.5,EN);
   }
 }
 // 坐标三角：a=红 b=绿 c=蓝，随相机一同旋转，指示取向
@@ -665,6 +701,7 @@ function buildNetwork(viewer){
     });
   }
   const rX=R_X*SET.atomScale, rB=R_B*SET.atomScale, rBond=R_BOND*SET.bondScale;
+  const cX=shade(COL.X,SET.colorShade), cB=shade(COL.B,SET.colorShade);   // 颜色深浅作用于原子
   // 八面体（角共享：负向角借用邻居 +向桥氧）
   const drawnOx=new Set();
   for(let i=0;i<n;i++)for(let j=0;j<n;j++)for(let l=0;l<n;l++){
@@ -674,26 +711,26 @@ function buildNetwork(viewer){
     [['x',plusOx['x|'+i+','+j+','+l]],['y',plusOx['y|'+i+','+j+','+l]],['z',plusOx['z|'+i+','+j+','+l]]].forEach(([d,p])=>{
       corners.push(p);
       const key=d+'|'+i+','+j+','+l;
-      if(!drawnOx.has(key)){drawnOx.add(key);addSphere(g,p,rX,COL.X,0.1,0.5);}
+      if(!drawnOx.has(key)){drawnOx.add(key);addSphere(g,p,rX,cX,0.1,0.5);}
       addBond(g,c,p,rBond,COL.bond);
     });
     // -x
     let cm;
     if(i>0){cm=plusOx['x|'+(i-1)+','+j+','+l];}
-    else {cm=_ax.x.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cm,rX,COL.X,0.1,0.5);}
+    else {cm=_ax.x.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cm,rX,cX,0.1,0.5);}
     corners.push(cm); addBond(g,c,cm,rBond,COL.bond);
     // -y
     let cy;
     if(j>0){cy=plusOx['y|'+i+','+(j-1)+','+l];}
-    else {cy=_ax.y.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cy,rX,COL.X,0.1,0.5);}
+    else {cy=_ax.y.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cy,rX,cX,0.1,0.5);}
     corners.push(cy); addBond(g,c,cy,rBond,COL.bond);
     // -z
     let cz;
     if(l>0){cz=plusOx['z|'+i+','+j+','+(l-1)];}
-    else {cz=_ax.z.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cz,rX,COL.X,0.1,0.5);}
+    else {cz=_ax.z.clone().multiplyScalar(-HALF).applyQuaternion(q).add(c); addSphere(g,cz,rX,cX,0.1,0.5);}
     corners.push(cz); addBond(g,c,cz,rBond,COL.bond);
 
-    addSphere(g,c,rB,COL.B,0.55,0.4);             // B 阳离子
+    addSphere(g,c,rB,cB,0.55,0.4);                // B 阳离子
     addOcta(g,corners,COL.poly,SET.polyOpacity);  // 配位多面体
   }
   // A 位阳离子（内部体心）
@@ -734,18 +771,19 @@ function animateTo(presetName){
   const p=PRESETS[presetName]; if(!p)return;
   if(tween)tween=null;
   const startMags={...state.mags};
-  const midPhases={...state.phases};
-  const t0=performance.now(), HALF_T=SET.morphMs;   // 每半程时长（可调）
-  // 阶段1：当前幅度→0（保持当前相位）；阶段2：0→目标幅度（切到目标相位）
+  const t0=performance.now(), H=SET.morphMs, PA=SET.pauseMs;   // 半程时长 / 经立方停顿
+  // 阶段1：当前幅度→0（降回立方）；阶段2：在 Pm3̄m 停顿；阶段3：0→目标幅度（升起到目标相位）
   tween={
     step(now){
       const e=now-t0;
-      if(e<HALF_T){
-        const k=e/HALF_T;
+      if(e<H){
+        const k=e/H;
         state.mags={x:startMags.x*(1-k),y:startMags.y*(1-k),z:startMags.z*(1-k)};
-      }else if(e<HALF_T*2){
+      }else if(e<H+PA){
+        state.phases={x:'0',y:'0',z:'0'}; state.mags={x:0,y:0,z:0};   // 立方停顿，读数 a⁰a⁰a⁰
+      }else if(e<2*H+PA){
         state.phases={...p.phases};
-        const k=(e-HALF_T)/HALF_T;
+        const k=(e-H-PA)/H;
         state.mags={x:p.mags.x*k,y:p.mags.y*k,z:p.mags.z*k};
       }else{
         state.phases={...p.phases}; state.mags={...p.mags};
@@ -912,8 +950,21 @@ function wireControls(){
   // 精细设置
   const adv=(id,key,disp)=>{const el=document.getElementById(id);el.addEventListener('input',()=>{SET[key]=parseFloat(el.value);document.getElementById(disp).textContent=SET[key].toFixed(2);rebuild();});};
   adv('setAtom','atomScale','vAtom'); adv('setBond','bondScale','vBond'); adv('setPoly','polyOpacity','vPoly');
+  document.getElementById('setShade').addEventListener('input',e=>{SET.colorShade=parseFloat(e.target.value);document.getElementById('vShade').textContent=SET.colorShade.toFixed(2);rebuild();});
+  document.getElementById('setExp').addEventListener('input',e=>{SET.exposure=parseFloat(e.target.value);MAIN.setExposure(SET.exposure);document.getElementById('vExp').textContent=SET.exposure.toFixed(2);});
   document.getElementById('setMorph').addEventListener('input',e=>{const v=parseFloat(e.target.value);SET.morphMs=v*500;document.getElementById('vMorph').textContent=v.toFixed(1)+'s';});
+  document.getElementById('setPause').addEventListener('input',e=>{const v=parseFloat(e.target.value);SET.pauseMs=v*1000;document.getElementById('vPause').textContent=v.toFixed(2)+'s';});
   document.getElementById('setRot').addEventListener('input',e=>{SET.rotSpeed=parseFloat(e.target.value);document.getElementById('vRot').textContent=SET.rotSpeed.toFixed(3);});
+  // 取色器
+  const colWire=(id,key)=>document.getElementById(id).addEventListener('input',e=>{COL[key]=hex2int(e.target.value);rebuild();renderLegend();});
+  colWire('colA','A'); colWire('colB','B'); colWire('colX','X'); colWire('colPoly','poly'); colWire('colBond','bond');
+  document.getElementById('colBg').addEventListener('input',e=>{SET.bg=e.target.value;MAIN.setBg(SET.bg);});
+  // 导出配置
+  document.getElementById('cfgCopy').addEventListener('click',()=>{
+    const t=cfgText(), out=document.getElementById('cfgOut');
+    out.textContent=t; out.classList.add('show');
+    if(navigator.clipboard) navigator.clipboard.writeText(t).catch(()=>{});
+  });
   document.getElementById('btnReset').addEventListener('click',()=>{tween=null;applyPreset('a0a0a0');MAIN.resetView();});
   // 快捷预设
   const qp=document.getElementById('quickPresets');
@@ -953,6 +1004,18 @@ function renderLegend(){
   host.innerHTML=rows.map(([c,t])=>`<div class="lg-item"><span class="lg-sw" style="background:${c}"></span>${t}</div>`).join('');
 }
 
+/* ════════════════════ 导出配置 ════════════════════ */
+function cfgText(){
+  const v=MAIN.getView(), s=SET;
+  return [
+    '// 钙钛矿扭转台配置（把整段发我即设为默认值）',
+    `atomScale=${s.atomScale.toFixed(2)} bondScale=${s.bondScale.toFixed(2)} polyOpacity=${s.polyOpacity.toFixed(2)} colorShade=${s.colorShade.toFixed(2)} exposure=${s.exposure.toFixed(2)}`,
+    `morphMs=${Math.round(s.morphMs)} pauseMs=${Math.round(s.pauseMs)} rotSpeed=${s.rotSpeed.toFixed(3)} aType=${s.aType}`,
+    `A=${hex6(COL.A)} B=${hex6(COL.B)} X=${hex6(COL.X)} poly=${hex6(COL.poly)} bond=${hex6(COL.bond)} bg=${s.bg}`,
+    `view: theta=${v.theta.toFixed(2)} phi=${v.phi.toFixed(2)} radius=${v.radius.toFixed(2)}`
+  ].join('\n');
+}
+
 /* ════════════════════ 启动 ════════════════════ */
 function loop(now){
   requestAnimationFrame(loop);
@@ -968,7 +1031,7 @@ function wireModal(){
 }
 window.addEventListener('DOMContentLoaded',()=>{
   MAIN=makeViewer(document.getElementById('mainCanvas'));
-  MAIN.resetView();
+  MAIN.resetView(); MAIN.setExposure(SET.exposure); MAIN.setBg(SET.bg);
   wireControls(); renderGallery(); renderSwitcher(); wireScrollSpy(); wireModal();
   syncControls(); renderLegend(); rebuild();
   requestAnimationFrame(loop);
