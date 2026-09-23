@@ -161,7 +161,7 @@ canvas.crystal-canvas{width:100%!important;height:100%!important;display:block;}
         <h1>常用晶体结构对照表 <small style="font-size:55%;color:#9b9b9b;font-weight:400">Common Crystal Structures</small></h1>
         <div class="admonition note" style="margin-bottom:1.5em;">
           <span class="admonition-title">关于本页面</span>
-          <p>共收录 13 种经典无机晶体结构，涵盖立方 · 四方 · 六方 · 三方 4 大晶系。采用点线（球棍）结构呈现，原子为节点、化学键为连线，框架清晰。每个结构配有可交互三维模型（拖动旋转 · 滚轮缩放 · 双击重置），支持原胞/超胞视图切换。</p>
+          <p>共收录 14 种经典无机晶体结构，涵盖立方 · 四方 · 六方 · 三方 4 大晶系。采用点线（球棍）结构呈现，原子为节点、化学键为连线，框架清晰。每个结构配有可交互三维模型（拖动旋转 · 滚轮缩放 · 双击重置），支持原胞/超胞视图切换。</p>
         </div>
         <details class="tech-notes">
           <summary>技术说明 · 这个页面是怎么做出来的</summary>
@@ -343,6 +343,18 @@ const CRYSTALS = [
    related:['UO₂·ThO₂（核燃料）','YSZ氧化锆（SOFC电解质）','CeO₂（三效催化）','Na₂O（反萤石型）'],
    atoms:[{label:'Ca²⁺',color:'#4f93c4'},{label:'F⁻',color:'#8bd06a'}],
    buildPrim:(sc,v)=>buildFluorite(sc,v,false),buildSuper:(sc,v)=>buildFluorite(sc,v,true)},
+  {id:'bixbyite',bravais:'cubic',en:'Bixbyite',zh:'方铁锰矿结构',formula:'In₂O₃',
+   system:'立方晶系 Cubic',sg:'Ia3̄ (No.206)',
+   glance:'萤石的有序缺位超结构：2×2×2萤石胞中有序移去1/4阴离子，阳离子由8配位降为6配位，80原子大立方胞',
+   tags:[{l:'氧化物',c:'tag-oxide'},{l:'Cubic',c:'tag-cub'}],
+   origin:'"Bixbyite"以美国矿物学家Maynard Bixby命名，天然矿物为(Mn,Fe)₂O₃，1897年发现于美国犹他州。又称"C型稀土倍半氧化物"结构（Zachariasen 1927），In₂O₃、Y₂O₃、Sc₂O₃及重稀土氧化物均属此型。',
+   features:'a=10.117 Å，Z=16（In₃₂O₄₈，80原子）。In占两种阳离子位：8b位（1/4的In，S₆对称，6个O等距2.16 Å，缺失的2个O沿体对角线）与24d位（3/4的In，C₂对称，In–O 2.13/2.19/2.25 Å，缺失的2个O沿面对角线）。每个O²⁻位于4个In构成的畸变四面体中心；未占据的16c"结构空位"是间隙氧和掺杂原子的通道。',
+   insight:'In₂O₃是ITO（In₂O₃:Sn）的母体——最重要的透明导电氧化物（TCO）。导带底由球对称In 5s轨道构成，在共棱/共顶InO₆网络中高度交叠→导带色散大、电子有效质量小（≈0.22 m₀）；Sn⁴⁺替代In³⁺可提供~10²¹ cm⁻³载流子而保持可见光透明。基本带隙≈2.9 eV，但带边跃迁偶极禁戒，光学吸收边位于≈3.6 eV。',
+   props:{'配位数In':'6（8b · 24d）','配位数O':'4','a':'10.12 Å','带隙':'≈2.9 eV（光学≈3.6 eV）'},
+   related:['ITO（In₂O₃:Sn，透明电极）','Y₂O₃·Sc₂O₃（同构）','Mn₂O₃（方铁锰矿本体）','IGZO（氧化物TFT）','CaF₂萤石（母结构）'],
+   atoms:[{label:'In³⁺(24d)',color:'#a67573'},{label:'In³⁺(8b)',color:'#d4a15a'},{label:'O²⁻',color:'#e0544a'}],
+   buildPrim:(sc,v)=>buildBixbyite(sc,v,false),buildSuper:(sc,v)=>buildBixbyite(sc,v,true),
+   compareNote:'⚡ 方铁锰矿 vs 萤石：萤石MO₂中阳离子8配位（立方体）；将2×2×2萤石胞有序移去1/4阴离子得到M₂O₃，阳离子降为6配位（"缺两角的立方体"），O仍为4配位——阳离子FCC骨架不变，阴离子空位有序化即产生新结构。'},
   {id:'perovskite',bravais:'cubic',en:'Perovskite',zh:'钙钛矿结构',formula:'CaTiO₃',
    system:'立方晶系 Cubic（理想）',sg:'Pm3̄m (No.221)（理想）',
    glance:'A在12配位立方角，B在6配位体心TiO₆八面体，O在棱心：ABO₃三套格点严格分工',
@@ -735,6 +747,94 @@ direct
 0.0 0.69385450 0.25000000
 0.33333333 0.97281217 0.41666667
 0.63947883 0.66666667 0.41666667`,
+bixbyite:`In2O3 (COD 2310009, Marezio 1966; first 8 In = 8b, next 24 In = 24d)
+1.0
+10.117 0 0
+0 10.117 0
+0 0 10.117
+In O
+32 48
+direct
+0.75 0.25 0.75
+0.25 0.75 0.75
+0.75 0.75 0.25
+0.75 0.75 0.75
+0.25 0.75 0.25
+0.75 0.25 0.25
+0.25 0.25 0.75
+0.25 0.25 0.25
+0.75 0.4663 0.5
+0.25 0.9663 0
+0.75 0.5337 0
+0.5 0.75 0.4663
+0 0.25 0.9663
+0 0.75 0.5337
+0.4663 0.5 0.75
+0.9663 0 0.25
+0.5337 0 0.75
+0.25 0.5337 0.5
+0.75 0.0337 0
+0.25 0.4663 0
+0.5 0.25 0.5337
+0 0.75 0.0337
+0 0.25 0.4663
+0.5337 0.5 0.25
+0.0337 0 0.75
+0.4663 0 0.25
+0.25 0.0337 0.5
+0.5 0.25 0.0337
+0.0337 0.5 0.25
+0.75 0.9663 0.5
+0.5 0.75 0.9663
+0.9663 0.5 0.75
+0.6204 0.3912 0.6558
+0.3796 0.8912 0.8442
+0.8796 0.6088 0.1558
+0.6204 0.6088 0.8442
+0.6558 0.6204 0.3912
+0.8442 0.3796 0.8912
+0.1558 0.8796 0.6088
+0.8442 0.6204 0.6088
+0.3912 0.6558 0.6204
+0.8912 0.8442 0.3796
+0.6088 0.1558 0.8796
+0.6088 0.8442 0.6204
+0.3796 0.6088 0.3442
+0.6204 0.1088 0.1558
+0.1204 0.3912 0.8442
+0.3796 0.3912 0.1558
+0.3442 0.3796 0.6088
+0.1558 0.6204 0.1088
+0.8442 0.1204 0.3912
+0.1558 0.3796 0.3912
+0.6088 0.3442 0.3796
+0.1088 0.1558 0.6204
+0.3912 0.8442 0.1204
+0.3912 0.1558 0.3796
+0.1204 0.8912 0.1558
+0.8796 0.3912 0.3442
+0.3796 0.1088 0.6558
+0.1204 0.1088 0.3442
+0.1558 0.1204 0.8912
+0.3442 0.8796 0.3912
+0.6558 0.3796 0.1088
+0.3442 0.1204 0.1088
+0.8912 0.1558 0.1204
+0.3912 0.3442 0.8796
+0.1088 0.6558 0.3796
+0.1088 0.3442 0.1204
+0.8796 0.1088 0.8442
+0.1204 0.6088 0.6558
+0.6204 0.8912 0.3442
+0.8796 0.8912 0.6558
+0.8442 0.8796 0.1088
+0.6558 0.1204 0.6088
+0.3442 0.6204 0.8912
+0.6558 0.8796 0.8912
+0.1088 0.8442 0.8796
+0.6088 0.6558 0.1204
+0.8912 0.3442 0.6204
+0.8912 0.6558 0.8796`,
 graphite:`C
 1.0
 1.23364563 -2.13673691 0
@@ -901,6 +1001,23 @@ function buildFluorite(scene,viewers,sup){
   placeDots(scene,F,'#8bd06a',rF);
   scene.add(orthoBox(n*a,n*a,n*a,0x3a3f47));
   viewers.setRadius(sup?19:11);
+}
+function buildBixbyite(scene,viewers,sup){
+  // In2O3 bixbyite, Ia-3 (COD 2310009, Marezio 1966). 8b In (S6, 6×2.16 Å) + 24d In (C2, 2.13–2.25 Å), O 48e 4-coordinate.
+  const {lat,sites}=parsePoscar(POSCAR.bixbyite);
+  sites.slice(0,8).forEach(s=>s[0]='Inb');            // first 8 In sites are Wyckoff 8b
+  const n=sup?2:1;                                      // a=10.1 Å: 2×2×1 is already dense enough
+  const {atoms,full,ctr}=fromCell(lat,sites,n,n,1);
+  const Inb=atoms.Inb,Ind=atoms.In,O=atoms.O;
+  bondAB(scene,Inb,O,2.6);                             // InO₆, next O shell at 3.8 Å
+  bondAB(scene,Ind,O,2.6);
+  polyhedra(scene,Inb,full.O,2.6,'#d4a15a',6);        // regular-ish 8b octahedra
+  polyhedra(scene,Ind,full.O,2.6,'#a67573',6);        // distorted 24d octahedra
+  placeDots(scene,O,'#e0544a',0.20);
+  placeDots(scene,Ind,'#a67573',0.28);
+  placeDots(scene,Inb,'#d4a15a',0.28);
+  scene.add(cellBox(lat,n,n,1,ctr));
+  viewers.setRadius(fitRadius([Inb,Ind,O]));
 }
 function buildPerovskite(scene,viewers,sup){
   const a=3.91,rCa=0.36,rTi=0.20,rO=0.22;
