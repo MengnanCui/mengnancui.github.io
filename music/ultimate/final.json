@@ -1,0 +1,1511 @@
+{
+ "title": "First Light",
+ "title_zh": "第一缕光",
+ "bpm": 60,
+ "key": "Ab major",
+ "hook": {
+  "section": 2,
+  "bar": 0,
+  "notes": 5,
+  "description": "(.) Ab5 Ab5 Ab5 | Db6 (dotted quarter, on beat 3) C6 | Bb5 (dotted quarter) Ab5 F5 (half) = (breath) do do do FA~ mi | re~ do la——, over Fm7 -> Dbmaj7. Three whispered repeated eighths, the only leap (a perfect 4th) onto a long b6 appoggiatura (Db against the C of Fm7, a minor-9th sting), then a semitone sigh and a falling 'long-short-long' tail. Sequenced down a step (ti ti ti MI~ re over V) and up a third (re re re SOL~ fa over IV), then released into la -> le over IV -> iv."
+ },
+ "ending": {
+  "ritardando_bars": 3
+ },
+ "sections": [
+  {
+   "name": "Intro: two whispered questions (hook head on IV and ii, no sting yet; FA answered by MI in slow motion)",
+   "dynamic": 0.24,
+   "accomp": "pad",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Dbadd9"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Db6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "dyn": 0.92,
+     "melody": [
+      [
+       "C6",
+       3
+      ],
+      [
+       "rest",
+       1
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Bbm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Db6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Ebsus4",
+      "Eb"
+     ],
+     "dyn": 0.92,
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "G5",
+       2
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Verse: before dawn (low, syncopated, all consonant; fa~ mi foreshadowed; rising bass Bb-C-Db-Eb)",
+   "dynamic": 0.3,
+   "accomp": "sparse",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Ab"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "C5",
+       0.5
+      ],
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "C5",
+       0.5
+      ],
+      [
+       "Eb5",
+       1.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbadd9",
+      "Dbmaj7"
+     ],
+     "melody": [
+      [
+       "Db5",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "C5",
+       1.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abmaj7",
+      "Abmaj7"
+     ],
+     "dyn": 1.03,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "G5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7"
+     ],
+     "melody": [
+      [
+       "F5",
+       2.5
+      ],
+      [
+       "Eb5",
+       1.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Bbm7"
+     ],
+     "accomp": "arp8",
+     "dyn": 1.02,
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "Db5",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ],
+      [
+       "Ab5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "accomp": "arp8",
+     "dyn": 1.02,
+     "melody": [
+      [
+       "G5",
+       2.5
+      ],
+      [
+       "Eb5",
+       1.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7",
+      "Dbmaj7"
+     ],
+     "accomp": "arp8",
+     "dyn": 1.08,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Db6",
+       0.5
+      ],
+      [
+       "C6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Ebsus4",
+      "Eb"
+     ],
+     "accomp": "arp8",
+     "dyn": 1.05,
+     "melody": [
+      [
+       "Bb5",
+       1.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "G5",
+       2
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Chorus: the hook, now with the sting (vi-IV-V-iii | IV-I-IV/iv-V; 2+2+4 sentence; la->le)",
+   "dynamic": 0.4,
+   "accomp": "arp8_wave",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Fm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Db6",
+       1.5
+      ],
+      [
+       "C6",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7"
+     ],
+     "dyn": 0.95,
+     "melody": [
+      [
+       "Bb5",
+       1.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "F5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm7",
+      "Cm7"
+     ],
+     "dyn": 0.95,
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Eb5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7"
+     ],
+     "dyn": 1.07,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Eb6",
+       1.5
+      ],
+      [
+       "Db6",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abadd9",
+      "Abadd9"
+     ],
+     "dyn": 1.02,
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Db6",
+       0.5
+      ],
+      [
+       "C6",
+       1
+      ],
+      [
+       "Bb5",
+       1
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7",
+      "Dbm6"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1
+      ],
+      [
+       "F5",
+       1
+      ],
+      [
+       "Fb5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Ebsus4",
+      "Eb"
+     ],
+     "dyn": 0.9,
+     "melody": [
+      [
+       "Eb5",
+       3
+      ],
+      [
+       "rest",
+       1
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Interlude: the verse remembered (low, syncopated; a small fa->mi sigh hidden inside; no hook head, so Chorus II can truly return)",
+   "dynamic": 0.28,
+   "accomp": "sparse",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "C5",
+       0.5
+      ],
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "C5",
+       0.5
+      ],
+      [
+       "Eb5",
+       1.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Fm7"
+     ],
+     "dyn": 0.95,
+     "melody": [
+      [
+       "F5",
+       2.5
+      ],
+      [
+       "Eb5",
+       1.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7",
+      "Dbmaj7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "Db5",
+       0.5
+      ],
+      [
+       "C5",
+       0.5
+      ],
+      [
+       "Db5",
+       0.5
+      ],
+      [
+       "F5",
+       1.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Ebsus4",
+      "Eb"
+     ],
+     "dyn": 0.95,
+     "accomp": "pad",
+     "melody": [
+      [
+       "Ab5",
+       2
+      ],
+      [
+       "G5",
+       2
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Chorus II: the hook returns after the verse-memory, and a second voice answers (a touch warmer than Chorus I; inner counter sighs fa->mi above the arpeggio; iii-I reharmonised)",
+   "dynamic": 0.42,
+   "accomp": "arp8_wave",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Fm7"
+     ],
+     "dyn": 0.94,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Db6",
+       1.5
+      ],
+      [
+       "C6",
+       0.5
+      ]
+     ],
+     "counter": [
+      [
+       "rest",
+       2
+      ],
+      [
+       "F5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7",
+      "Dbmaj7"
+     ],
+     "dyn": 0.95,
+     "melody": [
+      [
+       "Bb5",
+       1.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "F5",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Db5",
+       0.5
+      ],
+      [
+       "Db5",
+       0.5
+      ],
+      [
+       "Db5",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       2
+      ],
+      [
+       "Eb5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abmaj7",
+      "Abmaj7"
+     ],
+     "dyn": 0.95,
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Eb5",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "G4",
+       0.5
+      ],
+      [
+       "G4",
+       0.5
+      ],
+      [
+       "G4",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7"
+     ],
+     "dyn": 1.07,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Eb6",
+       1.5
+      ],
+      [
+       "Db6",
+       0.5
+      ]
+     ],
+     "counter": [
+      [
+       "Ab4",
+       2
+      ],
+      [
+       "F5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abadd9",
+      "Abadd9"
+     ],
+     "dyn": 1.02,
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Db6",
+       0.5
+      ],
+      [
+       "C6",
+       1
+      ],
+      [
+       "Bb5",
+       1
+      ]
+     ],
+     "counter": [
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "C5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7",
+      "Dbm6"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1
+      ],
+      [
+       "F5",
+       1
+      ],
+      [
+       "Fb5",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       2
+      ],
+      [
+       "Db5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Ebsus4",
+      "Eb"
+     ],
+     "dyn": 0.9,
+     "melody": [
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "F5",
+       1
+      ],
+      [
+       "G5",
+       1
+      ]
+     ],
+     "counter": [
+      [
+       "Bb4",
+       4
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Bridge: Hello, World - night (bVI-bVII, me/te) turns to day (I-vi, mi/la); the light climbs me-mi-fa-sol",
+   "dynamic": 0.4,
+   "accomp": "arp8",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Fbmaj7",
+      "Fbmaj7"
+     ],
+     "accomp": "pad",
+     "dyn": 0.88,
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "B5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Gb",
+      "Gb"
+     ],
+     "dyn": 0.95,
+     "melody": [
+      [
+       "B5",
+       1.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Gb5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Ab"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "C6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Fm7"
+     ],
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "F5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Bbm7",
+      "Bbm7"
+     ],
+     "accomp": "arp8_wave",
+     "dyn": 1.05,
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "C6",
+       0.5
+      ],
+      [
+       "Db6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm7",
+      "Cm7"
+     ],
+     "accomp": "arp8_wave",
+     "dyn": 1.04,
+     "melody": [
+      [
+       "C6",
+       1
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "G5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbadd9",
+      "Dbadd9"
+     ],
+     "accomp": "arp8_wave",
+     "dyn": 1.12,
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "C6",
+       0.5
+      ],
+      [
+       "Db6",
+       0.5
+      ],
+      [
+       "Eb6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Ebsus4",
+      "Eb"
+     ],
+     "accomp": "arp8_wave",
+     "dyn": 1.05,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Db6",
+       1
+      ],
+      [
+       "C6",
+       0.5
+      ],
+      [
+       "Bb5",
+       2
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Final Chorus: bare hook, then the hook head reaches further - do do do LE (a sixth, not a fourth) as IV turns to iv",
+   "dynamic": 0.46,
+   "accomp": "arp8_wave",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Fm7"
+     ],
+     "accomp": "pad",
+     "dyn": 0.78,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Db6",
+       1.5
+      ],
+      [
+       "C6",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7"
+     ],
+     "dyn": 0.88,
+     "melody": [
+      [
+       "Bb5",
+       1.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "F5",
+       2
+      ]
+     ],
+     "accomp": "pad"
+    },
+    {
+     "chords": [
+      "Eb"
+     ],
+     "dyn": 1.02,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm7",
+      "Cm7"
+     ],
+     "dyn": 0.98,
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Eb5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Bbm7"
+     ],
+     "accomp": "arp8_wave",
+     "dyn": 1.05,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Eb6",
+       1.5
+      ],
+      [
+       "Db6",
+       0.5
+      ]
+     ],
+     "counter": [
+      [
+       "Db5",
+       2
+      ],
+      [
+       "F5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abadd9",
+      "Abadd9"
+     ],
+     "accomp": "arp8_wave",
+     "dyn": 1.1,
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Db6",
+       0.5
+      ],
+      [
+       "C6",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "Ab5",
+       4
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Dbmaj7",
+      "Dbm6"
+     ],
+     "accomp": "arp8_wave",
+     "dyn": 1.14,
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Fb6",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "F5",
+       2
+      ],
+      [
+       "Ab5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Ebsus4",
+      "Eb"
+     ],
+     "dyn": 0.9,
+     "melody": [
+      [
+       "Eb6",
+       1.5
+      ],
+      [
+       "Db6",
+       0.5
+      ],
+      [
+       "C6",
+       1
+      ],
+      [
+       "Bb5",
+       1
+      ]
+     ],
+     "counter": [
+      [
+       "Ab5",
+       2
+      ],
+      [
+       "G5",
+       2
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Outro: IV-iv-bVII-I, the sigh comes home (FA rests on Isus4, resolves to MI)",
+   "dynamic": 0.3,
+   "accomp": "arp8",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Dbmaj7"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Db6",
+       1.5
+      ],
+      [
+       "C6",
+       0.5
+      ]
+     ],
+     "dyn": 1.1
+    },
+    {
+     "chords": [
+      "Dbm6"
+     ],
+     "dyn": 0.95,
+     "melody": [
+      [
+       "Bb5",
+       1.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Fb5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Gb6"
+     ],
+     "dyn": 0.9,
+     "accomp": "pad",
+     "melody": [
+      [
+       "Eb5",
+       3
+      ],
+      [
+       "rest",
+       1
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Absus4"
+     ],
+     "dyn": 0.85,
+     "accomp": "pad",
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Db6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abadd9"
+     ],
+     "dyn": 0.78,
+     "accomp": "pad",
+     "melody": [
+      [
+       "C6",
+       4
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

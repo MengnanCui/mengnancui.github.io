@@ -189,9 +189,8 @@ def accomp_notes(pattern, voicing, start, span):
     seq, step = seqs[pattern]
     count = int(round(span / step))
     for k in range(count):
+        # 循环回到开头时照常重弹根音（原先换成五音，会让 triplet/arp16 在小节中间连弹三次同一个五音）
         m = seq[k % len(seq)]
-        if k and k % len(seq) == 0:
-            m = five
         s = start + k * step
         out.append((s, end - s, m, 1.0 if k == 0 else 0.72))
     return out
