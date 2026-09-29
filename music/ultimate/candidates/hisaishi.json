@@ -1,0 +1,1134 @@
+{
+ "title": "The Evening Glow I Remember",
+ "title_zh": "记得那天的晚霞",
+ "bpm": 60,
+ "key": "Eb major",
+ "hook": {
+  "section": 1,
+  "bar": 0,
+  "notes": 6,
+  "description": "sol | MI' (long, maj7 of IV) do' re' | LA (4-3 appoggiatura over iii) SOL"
+ },
+ "ending": {
+  "ritardando_bars": 3
+ },
+ "sections": [
+  {
+   "melody_octave_double": false,
+   "transpose": 0,
+   "name": "Intro - slow-motion hook",
+   "dynamic": 0.26,
+   "accomp": "pad",
+   "bars": [
+    {
+     "chords": [
+      "Abmaj9"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "G5",
+       2.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Gm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ],
+      [
+       "C5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "Bb4",
+       3
+      ],
+      [
+       "rest",
+       1
+      ]
+     ],
+     "dyn": 0.95
+    },
+    {
+     "chords": [
+      "Bbsus4",
+      "Bb"
+     ],
+     "melody": [
+      [
+       "rest",
+       4
+      ]
+     ],
+     "dyn": 0.85,
+     "accomp": "sparse"
+    }
+   ]
+  },
+  {
+   "melody_octave_double": false,
+   "transpose": 0,
+   "name": "A - theme",
+   "dynamic": 0.36,
+   "accomp": "arp8",
+   "bars": [
+    {
+     "chords": [
+      "Abmaj9"
+     ],
+     "melody": [
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "G5",
+       2.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Gm7"
+     ],
+     "melody": [
+      [
+       "C5",
+       1.5
+      ],
+      [
+       "Bb4",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Fm7"
+     ],
+     "melody": [
+      [
+       "Ab4",
+       0.5
+      ],
+      [
+       "F5",
+       2.5
+      ],
+      [
+       "D5",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "Bb4",
+       1.5
+      ],
+      [
+       "G4",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ],
+     "dyn": 0.95
+    },
+    {
+     "chords": [
+      "Abmaj9"
+     ],
+     "melody": [
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "G5",
+       2.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ]
+     ],
+     "dyn": 1.02
+    },
+    {
+     "chords": [
+      "Gm7",
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "C5",
+       1.5
+      ],
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "C5",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "G5",
+       1
+      ]
+     ],
+     "dyn": 1.06
+    },
+    {
+     "chords": [
+      "Abmaj7",
+      "Abm6"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       2
+      ]
+     ],
+     "dyn": 1.08
+    },
+    {
+     "chords": [
+      "Bbsus4",
+      "Bb"
+     ],
+     "melody": [
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "D5",
+       1.5
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ],
+     "dyn": 0.92
+    }
+   ]
+  },
+  {
+   "melody_octave_double": false,
+   "transpose": 0,
+   "name": "A' - theme with inner voice",
+   "dynamic": 0.42,
+   "accomp": "arp8_wave",
+   "bars": [
+    {
+     "chords": [
+      "Abmaj9"
+     ],
+     "melody": [
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "G5",
+       2.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ]
+     ],
+     "counter": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Eb5",
+       2.5
+      ],
+      [
+       "C5",
+       1
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Gm7"
+     ],
+     "melody": [
+      [
+       "C5",
+       1.5
+      ],
+      [
+       "Bb4",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ],
+     "counter": [
+      [
+       "Ab4",
+       1.5
+      ],
+      [
+       "G4",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Fm7"
+     ],
+     "melody": [
+      [
+       "Ab4",
+       0.5
+      ],
+      [
+       "F5",
+       2.5
+      ],
+      [
+       "D5",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ]
+     ],
+     "counter": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab4",
+       2.5
+      ],
+      [
+       "G4",
+       1
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "Bb4",
+       1.5
+      ],
+      [
+       "G4",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ],
+     "counter": [
+      [
+       "G4",
+       1.5
+      ],
+      [
+       "Eb4",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ],
+     "dyn": 0.95
+    },
+    {
+     "chords": [
+      "Abmaj9"
+     ],
+     "melody": [
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "G5",
+       2.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ]
+     ],
+     "counter": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Eb5",
+       2.5
+      ],
+      [
+       "C5",
+       1
+      ]
+     ],
+     "dyn": 1.03
+    },
+    {
+     "chords": [
+      "Gm7",
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "C5",
+       1.5
+      ],
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Bb5",
+       1
+      ]
+     ],
+     "counter": [
+      [
+       "Ab4",
+       1.5
+      ],
+      [
+       "G4",
+       1.5
+      ],
+      [
+       "Eb5",
+       1
+      ]
+     ],
+     "dyn": 1.08
+    },
+    {
+     "chords": [
+      "Abmaj7",
+      "Abm6"
+     ],
+     "melody": [
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       2
+      ],
+      [
+       "B4",
+       2
+      ]
+     ],
+     "dyn": 1.1
+    },
+    {
+     "chords": [
+      "Ebadd9"
+     ],
+     "melody": [
+      [
+       "Eb5",
+       3
+      ],
+      [
+       "rest",
+       1
+      ]
+     ],
+     "counter": [
+      [
+       "Bb4",
+       3
+      ],
+      [
+       "rest",
+       1
+      ]
+     ],
+     "dyn": 0.9
+    }
+   ]
+  },
+  {
+   "melody_octave_double": false,
+   "transpose": 0,
+   "name": "B - rising sighs",
+   "dynamic": 0.48,
+   "accomp": "arp8",
+   "bars": [
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "C5",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "G5",
+       2
+      ]
+     ],
+     "dyn": 0.88
+    },
+    {
+     "chords": [
+      "Abmaj7"
+     ],
+     "melody": [
+      [
+       "F5",
+       1.5
+      ],
+      [
+       "Eb5",
+       2.5
+      ]
+     ],
+     "dyn": 0.9
+    },
+    {
+     "chords": [
+      "Fm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "C5",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ],
+      [
+       "Ab5",
+       2
+      ]
+     ],
+     "dyn": 0.96
+    },
+    {
+     "chords": [
+      "Bb"
+     ],
+     "melody": [
+      [
+       "G5",
+       1.5
+      ],
+      [
+       "F5",
+       2.5
+      ]
+     ],
+     "dyn": 0.98
+    },
+    {
+     "chords": [
+      "Gm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "D5",
+       0.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Bb5",
+       2
+      ]
+     ],
+     "dyn": 1.05
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       2.5
+      ]
+     ],
+     "dyn": 1.08
+    },
+    {
+     "chords": [
+      "Fm9"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Ab4",
+       0.5
+      ],
+      [
+       "C5",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "G5",
+       1.5
+      ],
+      [
+       "F5",
+       0.5
+      ]
+     ],
+     "dyn": 1.0,
+     "accomp": "triplet"
+    },
+    {
+     "chords": [
+      "Bbsus4",
+      "Bb"
+     ],
+     "melody": [
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "D5",
+       2
+      ]
+     ],
+     "dyn": 0.9,
+     "accomp": "triplet"
+    }
+   ]
+  },
+  {
+   "melody_octave_double": true,
+   "transpose": 0,
+   "name": "Climax - hook over bVII",
+   "dynamic": 0.62,
+   "accomp": "triplet",
+   "bars": [
+    {
+     "chords": [
+      "Dbmaj9"
+     ],
+     "melody": [
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "C6",
+       2.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ]
+     ],
+     "dyn": 1.05
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "F5",
+       1.5
+      ],
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ],
+     "dyn": 1.0
+    },
+    {
+     "chords": [
+      "Abmaj9"
+     ],
+     "melody": [
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "C6",
+       2.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ]
+     ],
+     "dyn": 1.05
+    },
+    {
+     "chords": [
+      "Gm7"
+     ],
+     "melody": [
+      [
+       "Eb5",
+       1.5
+      ],
+      [
+       "D5",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ],
+     "dyn": 1.0
+    },
+    {
+     "chords": [
+      "Fm7",
+      "Bb"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ],
+      [
+       "Ab5",
+       0.5
+      ],
+      [
+       "C6",
+       0.5
+      ],
+      [
+       "Eb6",
+       1.5
+      ],
+      [
+       "D6",
+       0.5
+      ]
+     ],
+     "dyn": 1.15
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "G5",
+       1
+      ],
+      [
+       "Eb5",
+       1
+      ]
+     ],
+     "dyn": 1.1
+    },
+    {
+     "chords": [
+      "Abmaj7",
+      "Abm6"
+     ],
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ],
+      [
+       "B5",
+       1.5
+      ],
+      [
+       "Bb5",
+       0.5
+      ]
+     ],
+     "dyn": 1.0
+    },
+    {
+     "chords": [
+      "Ebadd9"
+     ],
+     "melody": [
+      [
+       "G5",
+       4
+      ]
+     ],
+     "dyn": 0.8,
+     "accomp": "arp8"
+    }
+   ]
+  },
+  {
+   "melody_octave_double": false,
+   "transpose": 0,
+   "name": "Return - hook remembered in minor",
+   "dynamic": 0.32,
+   "accomp": "sparse",
+   "bars": [
+    {
+     "chords": [
+      "Cm9"
+     ],
+     "melody": [
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "G5",
+       2.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abmaj7"
+     ],
+     "melody": [
+      [
+       "C5",
+       1.5
+      ],
+      [
+       "Bb4",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Fm7"
+     ],
+     "melody": [
+      [
+       "Ab4",
+       0.5
+      ],
+      [
+       "F5",
+       2.5
+      ],
+      [
+       "D5",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ]
+     ],
+     "dyn": 0.95
+    },
+    {
+     "chords": [
+      "Ebadd9"
+     ],
+     "melody": [
+      [
+       "Bb4",
+       1.5
+      ],
+      [
+       "G4",
+       2
+      ],
+      [
+       "rest",
+       0.5
+      ]
+     ],
+     "dyn": 0.9
+    }
+   ]
+  },
+  {
+   "melody_octave_double": false,
+   "transpose": 0,
+   "name": "Coda - IV, iv, bVII, I",
+   "dynamic": 0.26,
+   "accomp": "pad",
+   "bars": [
+    {
+     "chords": [
+      "Abmaj9"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Bb4",
+       0.5
+      ],
+      [
+       "G5",
+       3
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abm6"
+     ],
+     "melody": [
+      [
+       "rest",
+       0.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "F5",
+       3
+      ]
+     ],
+     "dyn": 0.95
+    },
+    {
+     "chords": [
+      "Dbmaj7"
+     ],
+     "melody": [
+      [
+       "C5",
+       1.5
+      ],
+      [
+       "Bb4",
+       2.5
+      ]
+     ],
+     "dyn": 0.9
+    },
+    {
+     "chords": [
+      "Ebadd9"
+     ],
+     "melody": [
+      [
+       "rest",
+       1
+      ],
+      [
+       "Eb5",
+       3
+      ]
+     ],
+     "dyn": 0.8
+    }
+   ]
+  }
+ ]
+}
