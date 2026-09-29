@@ -1,0 +1,79 @@
+{
+  "title": "Hello, World",
+  "title_zh": "你好，世界",
+  "bpm": 60,
+  "key": "G major",
+  "hook": {"section": 2, "bar": 0, "notes": 5, "description": "(rest) D5-E5 | B5 held 2 beats = maj7 of Cmaj7 | A5 dotted-quarter = 9th appoggiatura over G6, sighs to G5 | D5 held. Rhythm follows the prosody of 'hel-lo, WORLD': silent downbeat, two eighths on beat 2, long note on beat 3."},
+  "ending": {"ritardando_bars": 3},
+  "design_notes": "Hook science: arch contour + one surprising local leap (la->mi', +7, landing on the maj7 of IV); long notes; silent downbeat for rhythmic identity; appoggiatura + sequence (Sloboda 1991 tear triggers). Verse = the hook's rhythm with stepwise contour (the leap 'grows' +0 -> +3 -> +7 -> climax +7 from higher). Borrowed iv (Cm6) saved for the last phrase only.",
+  "sections": [
+    {"name": "Intro - the hook, whispered and slowed", "dynamic": 0.26, "accomp": "pad", "melody_octave_double": false, "transpose": 0, "bars": [
+      {"chords": ["Cmaj7"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["B5", 2]]},
+      {"chords": ["G6"], "melody": [["A5", 2], ["G5", 2]]},
+      {"chords": ["Am7"], "melody": [["rest", 1], ["C5", 0.5], ["D5", 0.5], ["A5", 2]]},
+      {"chords": ["Dsus4", "D"], "melody": [["G5", 2], ["F#5", 2]], "dyn": 0.9}
+    ]},
+    {"name": "Verse - the hook's rhythm, before it learns to leap", "dynamic": 0.32, "accomp": "arp8", "melody_octave_double": false, "transpose": 0, "bars": [
+      {"chords": ["G"], "melody": [["rest", 1], ["D5", 0.5], ["C5", 0.5], ["B4", 2]], "accomp": "sparse"},
+      {"chords": ["Em7"], "melody": [["C5", 1.5], ["B4", 0.5], ["G4", 2]], "accomp": "sparse"},
+      {"chords": ["Am7"], "melody": [["rest", 1], ["E5", 0.5], ["D5", 0.5], ["C5", 2]], "accomp": "sparse"},
+      {"chords": ["Dsus4", "D"], "melody": [["D5", 1.5], ["C5", 0.5], ["A4", 2]], "accomp": "sparse"},
+      {"chords": ["Em7"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["G5", 2]]},
+      {"chords": ["Cmaj7"], "melody": [["F#5", 1.5], ["E5", 0.5], ["B4", 2]]},
+      {"chords": ["Am7"], "melody": [["rest", 1], ["C5", 0.5], ["D5", 0.5], ["E5", 2]], "dyn": 1.05},
+      {"chords": ["Dsus4", "D"], "melody": [["D5", 1.5], ["E5", 0.5], ["F#5", 1], ["rest", 1]], "dyn": 1.1}
+    ]},
+    {"name": "Chorus 1 - the hook", "dynamic": 0.42, "accomp": "arp8_wave", "melody_octave_double": false, "transpose": 0, "bars": [
+      {"chords": ["Cmaj7"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["B5", 2]]},
+      {"chords": ["G6"], "melody": [["A5", 1.5], ["G5", 0.5], ["D5", 2]]},
+      {"chords": ["Am7"], "melody": [["rest", 1], ["C5", 0.5], ["D5", 0.5], ["A5", 2]]},
+      {"chords": ["Bm7"], "melody": [["G5", 1.5], ["F#5", 0.5], ["D5", 2]]},
+      {"chords": ["Cmaj7"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["B5", 2]], "dyn": 1.05},
+      {"chords": ["Em7"], "melody": [["C6", 1.5], ["B5", 0.5], ["G5", 2]], "dyn": 1.08},
+      {"chords": ["Am7", "D"], "melody": [["rest", 1], ["C6", 0.5], ["B5", 0.5], ["A5", 2]]},
+      {"chords": ["G"], "melody": [["G5", 4]], "dyn": 0.9}
+    ]},
+    {"name": "Interlude - the hook remembered in minor", "dynamic": 0.3, "accomp": "sparse", "melody_octave_double": false, "transpose": 0, "bars": [
+      {"chords": ["Em7"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["B5", 2]]},
+      {"chords": ["Cmaj9"], "melody": [["A5", 1.5], ["G5", 0.5], ["D5", 2]]},
+      {"chords": ["Am7"], "melody": [["rest", 1], ["E5", 0.5], ["D5", 0.5], ["C5", 2]]},
+      {"chords": ["Dsus4", "D"], "melody": [["D5", 1.5], ["C5", 0.5], ["A4", 2]], "dyn": 1.1}
+    ]},
+    {"name": "Chorus 2 - a second voice joins", "dynamic": 0.46, "accomp": "arp8_wave", "melody_octave_double": false, "transpose": 0, "bars": [
+      {"chords": ["Cmaj7"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["B5", 2]], "counter": [["rest", 2], ["G5", 2]]},
+      {"chords": ["G6"], "melody": [["A5", 1.5], ["G5", 0.5], ["D5", 2]], "counter": [["D5", 2], ["B4", 2]]},
+      {"chords": ["Am7"], "melody": [["rest", 1], ["C5", 0.5], ["D5", 0.5], ["A5", 2]], "counter": [["rest", 2], ["C5", 2]]},
+      {"chords": ["Bm7"], "melody": [["G5", 1.5], ["F#5", 0.5], ["D5", 2]], "counter": [["D5", 2], ["B4", 2]]},
+      {"chords": ["Cmaj7"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["B5", 2]], "counter": [["C5", 2], ["G5", 2]], "dyn": 1.05},
+      {"chords": ["Em7"], "melody": [["C6", 1.5], ["B5", 0.5], ["G5", 2]], "counter": [["E5", 4]], "dyn": 1.08},
+      {"chords": ["Am7", "D"], "melody": [["rest", 1], ["C6", 0.5], ["B5", 0.5], ["A5", 2]], "counter": [["E5", 2], ["F#5", 2]]},
+      {"chords": ["Dsus4", "D"], "melody": [["G5", 2], ["F#5", 1], ["rest", 1]], "counter": [["D5", 4]], "dyn": 0.9}
+    ]},
+    {"name": "Bridge - borrowed light (bVI, bVII)", "dynamic": 0.44, "accomp": "arp8", "melody_octave_double": false, "transpose": 0, "bars": [
+      {"chords": ["Em7"], "melody": [["B5", 1.5], ["A5", 0.5], ["G5", 1], ["E5", 1]], "dyn": 0.88},
+      {"chords": ["Cmaj7"], "melody": [["G5", 3], ["rest", 1]], "dyn": 0.9},
+      {"chords": ["Am7"], "melody": [["C6", 1.5], ["B5", 0.5], ["A5", 1], ["E5", 1]], "dyn": 0.96},
+      {"chords": ["D"], "melody": [["A5", 3], ["rest", 1]], "dyn": 1.0},
+      {"chords": ["Eb"], "melody": [["Bb5", 1.5], ["A5", 0.5], ["G5", 1], ["Eb5", 1]], "dyn": 1.08, "accomp": "triplet"},
+      {"chords": ["F"], "melody": [["C6", 1.5], ["Bb5", 0.5], ["A5", 1], ["F5", 1]], "dyn": 1.16, "accomp": "triplet"},
+      {"chords": ["Gsus4", "G"], "melody": [["C6", 2], ["B5", 2]], "dyn": 1.22, "accomp": "triplet"},
+      {"chords": ["Dsus4", "D"], "melody": [["A5", 1.5], ["G5", 0.5], ["F#5", 1], ["rest", 1]], "dyn": 1.0, "accomp": "pad"}
+    ]},
+    {"name": "Chorus 3 - the hook reaches further", "dynamic": 0.58, "accomp": "triplet", "melody_octave_double": true, "transpose": 0, "bars": [
+      {"chords": ["Cmaj7"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["B5", 2]]},
+      {"chords": ["G6"], "melody": [["A5", 1.5], ["G5", 0.5], ["D5", 2]]},
+      {"chords": ["Am7"], "melody": [["rest", 1], ["C5", 0.5], ["D5", 0.5], ["A5", 2]], "dyn": 1.03},
+      {"chords": ["Bm7"], "melody": [["G5", 1.5], ["F#5", 0.5], ["D5", 2]], "dyn": 1.05},
+      {"chords": ["Cmaj9"], "melody": [["rest", 1], ["E5", 0.5], ["G5", 0.5], ["D6", 2]], "dyn": 1.12},
+      {"chords": ["Em7"], "melody": [["C6", 1.5], ["B5", 0.5], ["G5", 2]], "dyn": 1.1},
+      {"chords": ["Am7", "D"], "melody": [["rest", 1], ["C6", 0.5], ["B5", 0.5], ["A5", 2]], "dyn": 0.95},
+      {"chords": ["Em7"], "melody": [["G5", 3], ["rest", 1]], "dyn": 0.8}
+    ]},
+    {"name": "Outro - hello, and goodnight", "dynamic": 0.28, "accomp": "pad", "melody_octave_double": false, "transpose": 0, "bars": [
+      {"chords": ["Cmaj7"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["B5", 2]]},
+      {"chords": ["Cm6"], "melody": [["A5", 1.5], ["G5", 0.5], ["Eb5", 2]]},
+      {"chords": ["Gadd9"], "melody": [["D5", 4]], "dyn": 0.95},
+      {"chords": ["Cmaj7", "Gadd9"], "melody": [["rest", 1], ["D5", 0.5], ["E5", 0.5], ["B5", 2]], "dyn": 0.9}
+    ]}
+  ]
+}

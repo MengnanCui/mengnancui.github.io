@@ -1,0 +1,1033 @@
+{
+ "title": "Good Morning, World",
+ "title_zh": "早安，世界",
+ "bpm": 60,
+ "key": "Eb major",
+ "hook": {
+  "section": 1,
+  "bar": 0,
+  "notes": 4,
+  "description": "(呼吸) Eb5♪ ↗ Bb5 半音符 | Ab5 附点四分(强拍倚音, Cm 上的 b6) ↘ G5 切分解决。\"早—安——世—界——\"。之后同一个起点 Eb5 依次喊向 C6、D6，直到高潮才第一次喊到高八度的 Eb6。"
+ },
+ "ending": {
+  "ritardando_bars": 3
+ },
+ "sections": [
+  {
+   "name": "Intro - 未醒",
+   "dynamic": 0.26,
+   "accomp": "pad",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm"
+     ],
+     "melody": [
+      [
+       "rest",
+       4
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abmaj7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "C6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Bbsus4",
+      "Bb"
+     ],
+     "melody": [
+      [
+       "rest",
+       4
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "A1 - 早安",
+   "dynamic": 0.34,
+   "accomp": "sparse",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm",
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       2.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abmaj7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "C6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Fm7",
+      "Bb7"
+     ],
+     "melody": [
+      [
+       "Bb5",
+       1.5
+      ],
+      [
+       "Ab5",
+       2.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "D6",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abmaj7",
+      "Gm7"
+     ],
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       2.5
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Fm7",
+      "Gm7"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "F5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Bbsus4",
+      "Bb"
+     ],
+     "melody": [
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "D5",
+       2
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "A2 - 早安（内声部）",
+   "dynamic": 0.42,
+   "accomp": "arp8",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "G4",
+       4
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm",
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       2.5
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       2
+      ],
+      [
+       "Bb4",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abmaj7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "C6",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "Ab4",
+       2
+      ],
+      [
+       "Eb5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Fm7",
+      "Bb7"
+     ],
+     "melody": [
+      [
+       "Bb5",
+       1.5
+      ],
+      [
+       "Ab5",
+       2.5
+      ]
+     ],
+     "counter": [
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "D5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "D6",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       4
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Abmaj7",
+      "Gm7"
+     ],
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       2.5
+      ]
+     ],
+     "counter": [
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "D5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Fm7",
+      "Bb7"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "F5",
+       1
+      ],
+      [
+       "Ab5",
+       1
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       2
+      ],
+      [
+       "D5",
+       2
+      ]
+     ]
+    },
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "G5",
+       3
+      ],
+      [
+       "rest",
+       1
+      ]
+     ],
+     "counter": [
+      [
+       "Eb5",
+       4
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "B - 光在生长",
+   "dynamic": 0.46,
+   "accomp": "arp8_wave",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Abmaj7"
+     ],
+     "melody": [
+      [
+       "Eb5",
+       1
+      ],
+      [
+       "G5",
+       1
+      ],
+      [
+       "C6",
+       2
+      ]
+     ],
+     "dyn": 0.95
+    },
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "Bb5",
+       1.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Eb5",
+       2
+      ]
+     ],
+     "dyn": 0.95
+    },
+    {
+     "chords": [
+      "Fm7",
+      "Bb7"
+     ],
+     "melody": [
+      [
+       "F5",
+       1
+      ],
+      [
+       "Ab5",
+       1
+      ],
+      [
+       "D6",
+       2
+      ]
+     ],
+     "dyn": 1.0
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "Eb5",
+       2
+      ]
+     ],
+     "dyn": 1.0
+    },
+    {
+     "chords": [
+      "Abmaj7"
+     ],
+     "melody": [
+      [
+       "C5",
+       1
+      ],
+      [
+       "Eb5",
+       1
+      ],
+      [
+       "Ab5",
+       2
+      ]
+     ],
+     "dyn": 1.04
+    },
+    {
+     "chords": [
+      "Bmaj7"
+     ],
+     "melody": [
+      [
+       "Eb5",
+       1
+      ],
+      [
+       "Gb5",
+       1
+      ],
+      [
+       "Bb5",
+       2
+      ]
+     ],
+     "dyn": 1.09
+    },
+    {
+     "chords": [
+      "Dbmaj7"
+     ],
+     "melody": [
+      [
+       "F5",
+       1
+      ],
+      [
+       "Ab5",
+       1
+      ],
+      [
+       "C6",
+       2
+      ]
+     ],
+     "dyn": 1.14
+    },
+    {
+     "chords": [
+      "Bbsus4",
+      "Bb"
+     ],
+     "melody": [
+      [
+       "F5",
+       1
+      ],
+      [
+       "Bb5",
+       1
+      ],
+      [
+       "D6",
+       2
+      ]
+     ],
+     "dyn": 1.18
+    }
+   ]
+  },
+  {
+   "name": "A3 - 你好，世界（渐强）",
+   "dynamic": 0.54,
+   "accomp": "triplet",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "G4",
+       4
+      ]
+     ],
+     "dyn": 1.0
+    },
+    {
+     "chords": [
+      "Cm",
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       2.5
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       1.5
+      ],
+      [
+       "Bb4",
+       2.5
+      ]
+     ],
+     "dyn": 1.0
+    },
+    {
+     "chords": [
+      "Abmaj7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "C6",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "Ab4",
+       2
+      ],
+      [
+       "Eb5",
+       2
+      ]
+     ],
+     "dyn": 1.04
+    },
+    {
+     "chords": [
+      "Db",
+      "Bb7"
+     ],
+     "melody": [
+      [
+       "Bb5",
+       1.5
+      ],
+      [
+       "Ab5",
+       2.5
+      ]
+     ],
+     "counter": [
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "D5",
+       2
+      ]
+     ],
+     "dyn": 1.04
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "D6",
+       2
+      ]
+     ],
+     "counter": [
+      [
+       "C5",
+       4
+      ]
+     ],
+     "dyn": 1.08
+    },
+    {
+     "chords": [
+      "Ab/Bb",
+      "Bb"
+     ],
+     "melody": [
+      [
+       "C6",
+       1.5
+      ],
+      [
+       "Bb5",
+       2.5
+      ]
+     ],
+     "counter": [
+      [
+       "Eb5",
+       2
+      ],
+      [
+       "D5",
+       2
+      ]
+     ],
+     "dyn": 1.12
+    }
+   ]
+  },
+  {
+   "name": "A3' - 到达 do'",
+   "dynamic": 0.54,
+   "accomp": "triplet",
+   "melody_octave_double": true,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Ebadd9"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "Eb6",
+       2
+      ]
+     ],
+     "dyn": 1.2
+    },
+    {
+     "chords": [
+      "Abmaj7",
+      "Gm7"
+     ],
+     "melody": [
+      [
+       "D6",
+       1.5
+      ],
+      [
+       "C6",
+       2.5
+      ]
+     ],
+     "dyn": 1.14
+    },
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "Eb6",
+       2
+      ]
+     ],
+     "dyn": 1.2
+    },
+    {
+     "chords": [
+      "Fm7",
+      "Bbsus4"
+     ],
+     "melody": [
+      [
+       "D6",
+       1.5
+      ],
+      [
+       "C6",
+       2.5
+      ]
+     ],
+     "dyn": 1.1
+    },
+    {
+     "chords": [
+      "Abmaj7",
+      "Bb7"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       0.5
+      ],
+      [
+       "F5",
+       1
+      ],
+      [
+       "Ab5",
+       1
+      ]
+     ],
+     "dyn": 1.0
+    },
+    {
+     "chords": [
+      "Eb"
+     ],
+     "melody": [
+      [
+       "G5",
+       3
+      ],
+      [
+       "rest",
+       1
+      ]
+     ],
+     "dyn": 0.9
+    }
+   ]
+  },
+  {
+   "name": "Coda - 晚安",
+   "dynamic": 0.3,
+   "accomp": "arp8",
+   "melody_octave_double": false,
+   "transpose": 0,
+   "bars": [
+    {
+     "chords": [
+      "Cm7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       2
+      ]
+     ],
+     "dyn": 1.0,
+     "accomp": "arp8"
+    },
+    {
+     "chords": [
+      "Ab",
+      "Eb"
+     ],
+     "melody": [
+      [
+       "Ab5",
+       1.5
+      ],
+      [
+       "G5",
+       2.5
+      ]
+     ],
+     "dyn": 0.95,
+     "accomp": "arp8"
+    },
+    {
+     "chords": [
+      "Abmaj7"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "C6",
+       2
+      ]
+     ],
+     "dyn": 0.9,
+     "accomp": "sparse"
+    },
+    {
+     "chords": [
+      "Abm6",
+      "Eb"
+     ],
+     "melody": [
+      [
+       "B5",
+       1.5
+      ],
+      [
+       "Bb5",
+       2.5
+      ]
+     ],
+     "dyn": 0.85,
+     "accomp": "pad"
+    },
+    {
+     "chords": [
+      "Ebadd9"
+     ],
+     "melody": [
+      [
+       "rest",
+       1.5
+      ],
+      [
+       "Eb5",
+       0.5
+      ],
+      [
+       "Bb5",
+       2
+      ]
+     ],
+     "dyn": 0.75,
+     "accomp": "pad"
+    }
+   ]
+  }
+ ]
+}
